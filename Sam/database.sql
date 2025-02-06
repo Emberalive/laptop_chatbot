@@ -1,11 +1,11 @@
 CREATE TABLE laptops (
 model VARCHAR(80) PRIMARY KEY,
 brand VARCHAR(50) NOT NULL,
-operatingSystem VARCHAR default 'none' NOT NULL,
+operatingSystem VARCHAR default 'none',
 screenSize DECIMAL(3, 1) NOT NULL,
 price DECIMAL(10, 2) NOT NULL,
-weight DECIMAL(10, 1) NOT NULL,
-batteryLife VARCHAR(10) 
+weight VARCHAR(10) NOT NULL,
+batteryLife VARCHAR(10) NOT NULL
 );
 
 CREATE TABLE CPU (
