@@ -38,6 +38,3 @@ laptop VARCHAR(80),
  FOREIGN KEY (laptop) REFERENCES laptops(model)
  );
 
---port forwarding on postgresql
---ip address 
-
