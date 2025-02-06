@@ -1,0 +1,6 @@
+# this is your original list
+my_list = [1, 2, 2, 3, 4, 4, 5]
+# calling set on your list will then remove all the duplicates
+# however you need to create ba second variable list to store the unique list
+unique_list = list(set(my_list))
+print(unique_list)  # Output: [1, 2, 3, 4, 5]
