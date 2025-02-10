@@ -37,4 +37,11 @@ laptop VARCHAR(80),
  type VARCHAR(30) NOT NULL,
  FOREIGN KEY (laptop) REFERENCES laptops(model)
  );
+ 
+ CREATE TABLE users (
+id int PRIMARY KEY,
+uname VARCHAR(50) NOT NULL,
+phonenum int NOT NULL,
+email VARCHAR(50) NULL
+);
 
