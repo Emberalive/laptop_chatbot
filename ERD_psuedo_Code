@@ -1,0 +1,42 @@
+Table laptops {
+  model varchar(80) [pk]
+  brand varchar(50) [not null]
+  operatingSystem varchar [default: 'none']
+  screenSize decimal(3, 1) [not null]
+  price decimal(10, 2) [not null]
+  weight varchar(10) [not null]
+  batteryLife varchar(10) [not null]
+}
+
+Table CPU {
+  laptop varchar(80) [not null]
+  model varchar(20) [pk]
+  brand varchar(20) [not null]
+  speed decimal(3, 1) [not null]
+}
+
+Table GPU {
+  laptop varchar(80) [pk]
+  model varchar(30) [pk]
+  brand varchar(20) [not null]
+}
+
+Table memory {
+  laptop varchar(80) [pk]
+  storage int [not null]
+}
+
+Table storage {
+  id serial [pk]
+  laptop varchar(80)
+  amount int [not null]
+  type varchar(30) [not null]
+}
+
+Ref: laptops.model < CPU.laptop
+
+Ref: laptops.model < GPU.laptop
+
+Ref: laptops.model < memory.laptop
+
+Ref: laptops.model < storage.laptop
