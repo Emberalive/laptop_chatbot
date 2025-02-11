@@ -79,5 +79,5 @@ SELECT
 	substring(md5(random()::text) FROM 1 FOR 10) AS fake_password
 	FROM users;
 
-SELECT * FROM user_info;
 -- selects the view
+SELECT * FROM user_info;
