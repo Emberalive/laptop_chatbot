@@ -8,6 +8,9 @@ weight VARCHAR(10) NOT NULL,
 batteryLife VARCHAR(10) NOT NULL
 );
 
+ALTER TABLE laptops
+ADD COLUMN memory VARCHAR(20) NOT NULL;
+
 CREATE TABLE CPU (
 laptop VARCHAR(80) NOT NULL,
 model VARCHAR(20) PRIMARY KEY,
@@ -15,6 +18,9 @@ brand VARCHAR(20) NOT NULL,
 speed DECIMAL(3, 1) NOT NULL,
 FOREIGN KEY (laptop) REFERENCES laptops(model)
 );
+
+ALTER TABLE cpu 
+DROP COLUMN speed;
 
 CREATE TABLE GPU (
 laptop VARCHAR(80),
@@ -44,6 +50,23 @@ uname VARCHAR(50) NOT NULL,
 phonenum int NOT NULL,
 email VARCHAR(50) NULL,
 password VARCHAR(200) NOT NULL
+);
+
+CREATE TABLE screen (
+laptop VARCHAR(80) PRIMARY KEY,
+size int NOT NULL,
+screen_res VARCHAR(20) NOT NULL,
+refresh VARCHAR(20) NOT NULL,
+touch_screen VARCHAR(10) NOT NULL,
+FOREIGN KEY (laptop) REFERENCES laptops(model)
+);
+
+CREATE TABLE features (
+laptop VARCHAR(80) PRIMARY KEY,
+bluetooth VARCHAR(4) NOT NULL,
+num_pad VARCHAR(4) NOT NULL,
+backlit VARCHAR(4) NOT NULL,
+FOREIGN KEY (laptop) REFERENCES laptops(model)
 );
 
 ALTER TABLE users
