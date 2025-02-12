@@ -5,10 +5,11 @@ import psycopg2
 
 def bd_access():
     try:
+        # put this is your name and password until we're at point where we can insert
         conn = psycopg2.connect(database = "laptopchatbot",
-            user = "samuel",
+            user = "your_username",
             host = "192.168.0.144",
-            password = "QwErTy1243!",
+            password = "your_pass",
             port = 5432)
 
         # Creating a cursor with name cur, allows queries to the db
