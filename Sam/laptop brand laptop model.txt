@@ -1,0 +1,39 @@
+laptop
+brand
+laptop model
+weight
+memory
+OS
+BatteryLife
+
+screen
+Size
+screenres
+screnrefresh
+touch screen 
+matted / glass
+
+cpu
+brand
+model
+
+GPU
+model
+brand
+
+storage
+size
+type of SSD
+
+features
+bluetooth
+numeric keyboard
+backlit keyboard
+
+ports
+HDMI
+ETHERNET
+thunderbolt
+type - C
+display port
+
