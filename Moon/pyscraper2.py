@@ -70,6 +70,12 @@ def read_urls(file_path):
         urls = [line.strip() for line in file if line.strip()]
     return urls
 
+def load_existing_data(file_path):
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as json_file:
+            return json.load(json_file)
+    return []
+
 def save_to_json(data, file_path):
     with open(file_path, 'w') as json_file:
         json.dump(data, json_file, indent=4)
@@ -81,15 +87,27 @@ def main():
     urls = read_urls(input_file)
     print(f"Found {len(urls)} URLs to scrape.")
 
+    # Load existing data to check for duplicates
+    existing_data = load_existing_data(output_file)
+    existing_urls = {item['url'] for item in existing_data}  # Set of already scraped URLs
+
     scraped_data = []
 
     for url in urls:
+        if url in existing_urls:
+            print(f"Skipping already scraped URL: {url}")
+            continue
+
         print(f"Scraping: {url}")
         data = scrape_url(url)
         if data:
             scraped_data.append(data)
 
-    save_to_json(scraped_data, output_file)
+    # Combine existing data with newly scraped data
+    combined_data = existing_data + scraped_data
+
+    # Save the combined data to the JSON file
+    save_to_json(combined_data, output_file)
     print(f"Scraping completed. Data saved to {output_file}")
 
 if __name__ == "__main__":
