@@ -63,9 +63,19 @@ FOREIGN KEY (laptop) REFERENCES laptops(model)
 
 CREATE TABLE features (
 laptop VARCHAR(80) PRIMARY KEY,
-bluetooth VARCHAR(4) NOT NULL,
-num_pad VARCHAR(4) NOT NULL,
-backlit VARCHAR(4) NOT NULL,
+bluetooth VARCHAR(5) NOT NULL,
+num_pad VARCHAR(5) NOT NULL,
+backlit VARCHAR(5) NOT NULL,
+FOREIGN KEY (laptop) REFERENCES laptops(model)
+);
+
+CREATE TABLE ports(
+laptop VARCHAR(80) PRIMARY KEY,
+hdmi VARCHAR(5) NOT NULL,
+ethernet VARCHAR(5) NOT NULL,
+thunderbolt VARCHAR(5) NOT NULL,
+typec VARCHAR(5) NOT NULL,
+display_port VARCHAR(5) NOT NULL,
 FOREIGN KEY (laptop) REFERENCES laptops(model)
 );
 
