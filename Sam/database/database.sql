@@ -46,6 +46,12 @@ email VARCHAR(50) NULL,
 password VARCHAR(200) NOT NULL
 );
 
+CREATE TABLE images (
+    image BYTEA NOT NULL,  -- creates a binary object to hold the image
+    laptop VARCHAR(80) PRIMARY KEY,
+    FOREIGN KEY (laptop) REFERENCES laptops(model)
+);
+
 ALTER TABLE users
 ALTER COLUMN uname TYPE VARCHAR(20);
 
