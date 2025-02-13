@@ -1,10 +1,11 @@
 laptop
-brand
-laptop model
-weight
-memory
-OS
-BatteryLife
+brand /
+laptop model /
+weight /
+memory /
+OS /
+BatteryLife /
+------------------------------- DONE
 
 screen
 Size
@@ -13,22 +14,28 @@ screnrefresh
 touch screen 
 matted / glass
 
+------------------------------- DONE
+
 cpu
 brand
 model
+------------------------------- DONE
 
 GPU
 model
 brand
+------------------------------- DONE
 
 storage
 size
 type of SSD
+------------------------------- DONE
 
 features
 bluetooth
 numeric keyboard
 backlit keyboard
+------------------------------- DONE
 
 ports
 HDMI

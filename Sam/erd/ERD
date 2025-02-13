@@ -2,17 +2,17 @@ Table laptops {
   model varchar(80) [pk]
   brand varchar(50) [not null]
   operatingSystem varchar [default: 'none']
-  screenSize decimal(3, 1) [not null]
-  price decimal(10, 2) [not null]
+  screenSize decimal(3,1) [not null]
+  price decimal(10,2) [not null]
   weight varchar(10) [not null]
   batteryLife varchar(10) [not null]
+  memory varchar(20) [not null]
 }
 
 Table CPU {
   laptop varchar(80) [not null]
   model varchar(20) [pk]
   brand varchar(20) [not null]
-  speed decimal(3, 1) [not null]
 }
 
 Table GPU {
@@ -33,10 +33,43 @@ Table storage {
   type varchar(30) [not null]
 }
 
+Table users {
+  id serial [pk]
+  uname varchar(20) [not null]
+  phonenum int [not null]
+  email varchar(50)
+  password varchar(512) [not null]
+}
+
+Table screen {
+  laptop varchar(80) [pk]
+  size int [not null]
+  screen_res varchar(20) [not null]
+  refresh varchar(20) [not null]
+  touch_screen varchar(10) [not null]
+}
+
+Table features {
+  laptop varchar(80) [pk]
+  bluetooth varchar(5) [not null]
+  num_pad varchar(5) [not null]
+  backlit varchar(5) [not null]
+}
+
+Table ports {
+  laptop varchar(80) [pk]
+  hdmi varchar(5) [not null]
+  ethernet varchar(5) [not null]
+  thunderbolt varchar(5) [not null]
+  typec varchar(5) [not null]
+  display_port varchar(5) [not null]
+}
+
 Ref: laptops.model < CPU.laptop
-
 Ref: laptops.model < GPU.laptop
-
 Ref: laptops.model < memory.laptop
-
 Ref: laptops.model < storage.laptop
+Ref: laptops.model < screen.laptop
+Ref: laptops.model < features.laptop
+Ref: laptops.model < ports.laptop
+
