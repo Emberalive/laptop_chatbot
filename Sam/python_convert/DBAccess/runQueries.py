@@ -1,4 +1,5 @@
-from V1.DBAccess.dbAccess import bd_access
+from DBAccess.dbAccess import bd_access
+
 # im selecting a view that generates a fake password hash, but the passwords are actually stored in the database
 
 # importing the connection and the cursor from the dbaccess function
