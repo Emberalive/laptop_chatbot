@@ -1,6 +1,7 @@
-from V1.DBAccess.dbAccess import bd_access
+from DBAccess.dbAccess import db_access
 
-conn, cur = bd_access()
+
+conn, cur = db_access()
 
 def image_to_bytea():
     with open('images/imageStock.jpg', 'rb') as file: # rb means read binary values the with clause makes sure the file is closed after read
