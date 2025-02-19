@@ -30,7 +30,7 @@ for laptop in data:
     features_details = {}
     ports_details = {}
 
-    brand_found = None
+    name_found = None
 
     # Loop through each table in the laptop
     # print("Adding table list items to their respected python dictionaries objects")
@@ -38,31 +38,31 @@ for laptop in data:
         title = table.get('title', '')
         table_data = table.get('data', {})
 
-        if brand_found is None and "Brand" in table_data:
-            laptop_brand = table_data.get("Brand", "")
-            brand_found = table_data["Brand"]  # Stop checking for "Brand" in other tables
+        if name_found is None and "Name" in table_data:
+            laptop_brand = table_data.get("Name", "")
+            name_found = table_data["Name"]  # Stop checking for "Brand" in other tables
 
 
         # this is here because the primary key for each of the tables is the laptop model, which means we need that to
         # be able to insert it into the database
 
         # ensure every dictionary gets the first brand found, (name of the laptop when we get that)
-        if brand_found:
-            if brand_found:
-                brand_details["Brand"] = brand_found
-                screen_details["Brand"] = brand_found
-                processor_details["Brand"] = brand_found
-                misc_details["Brand"] = brand_found
-                features_details["Brand"] = brand_found
-                ports_details["Brand"] = brand_found
+        if name_found:
+            if name_found:
+                brand_details["Name"] = name_found
+                screen_details["Name"] = name_found
+                processor_details["Name"] = name_found
+                misc_details["Name"] = name_found
+                features_details["Name"] = name_found
+                ports_details["Name"] = name_found
             else:
                 # Assign 'Unknown' if no brand is found
                 # don't need to assign brand to the brand table, because well....
-                screen_details["Brand"] = "Unknown"
-                processor_details["Brand"] = "Unknown"
-                misc_details["Brand"] = "Unknown"
-                features_details["Brand"] = "Unknown"
-                ports_details["Brand"] = "Unknown"
+                screen_details["Name"] = "Unknown"
+                processor_details["Name"] = "Unknown"
+                misc_details["Name"] = "Unknown"
+                features_details["Name"] = "Unknown"
+                ports_details["Name"] = "Unknown"
 
         # Organize the data based on the table title
         if title == 'Product Details':
