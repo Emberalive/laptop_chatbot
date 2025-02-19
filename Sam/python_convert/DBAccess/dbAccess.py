@@ -3,18 +3,22 @@
 
 import psycopg2
 
-def bd_access():
+def db_access():
     try:
+        print("Attempting connection to the database\n")
         # put this is your name and password until we're at point where we can insert
         conn = psycopg2.connect(database = "laptopchatbot",
-            user = "your_username",
-            host = "192.168.0.144",
-            password = "your_pass",
+            user = "samuel",
+            # host = "192.168.0.144",
+            host = "10.8.18.92",
+            password = "QwErTy1243!",
             port = 5432)
 
         # Creating a cursor with name cur, allows queries to the db
         cur = conn.cursor()
-        print('Connected to the PostgreSQL database')
+        print('Connected to the PostgreSQL database\n')
         return conn, cur
     except conn:
         print("connection was not made")
+
+db_access()

@@ -11,10 +11,12 @@ features = []
 ports = []
 
 # Load the JSON data from the file
+print("Opening the scraped data\n")
 with open('scraped_data.json', 'r') as file:
     data = json.load(file)
 
 # Loop through each laptop in the JSON data
+print("sorting through the JSON object lists\n")
 for laptop in data:
     # Extract the tables from each laptop
     tables = laptop.get('tables', [])
@@ -29,6 +31,7 @@ for laptop in data:
     ports_details = {}
 
     # Loop through each table in the laptop
+    # print("Adding table list items to their respected python dictionaries objects")
     for table in tables:
         title = table.get('title', '')
         table_data = table.get('data', {})
@@ -48,7 +51,7 @@ for laptop in data:
             ports_details.update(table_data)
 
     # Add the details to their respective lists
-    laptops.append(laptop_details)
+    # laptops.append(laptop_details)
     brands.append(brand_details)
     screens.append(screen_details)
     processors.append(processor_details)
@@ -56,16 +59,19 @@ for laptop in data:
     features.append(features_details)
     ports.append(ports_details)
 
+print("Adding the dictionary items to their respected list objects")
+
+
 # Print the lists to verify the data
-print("Brands:")
+print("\nBrands: \n")
 pprint(brands)
-print("Screens:")
+print("\nScreens: \n")
 pprint(screens)
-print("Processors:")
+print("\nProcessors: \n")
 pprint(processors)
-print("Misc:")
+print("\nMisc: \n")
 pprint(misc)
-print("Features:")
+print("\nFeatures: \n")
 pprint(features)
-print("Ports:")
+print("\nPorts: \n")
 pprint(ports)
