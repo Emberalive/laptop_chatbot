@@ -40,32 +40,32 @@ for laptop in data:
         title = table.get('title', '')
         table_data = table.get('data', {})
 
-        if name_found is None and "Name" in table_data:
-            laptop_brand = table_data.get("Name", "")
-            name_found = table_data["Name"]  # Stop checking for "Brand" in other tables
-
-
-        # this is here because the primary key for each of the tables is the laptop model, which means we need that to
-        # be able to insert it into the database
-
-        # ensure every dictionary gets the first brand found, (name of the laptop when we get that)
-        if name_found:
-            if name_found:
-                brand_details["Name"] = name_found
-                screen_details["Name"] = name_found
-                processor_details["Name"] = name_found
-                misc_details["Name"] = name_found
-                features_details["Name"] = name_found
-                ports_details["Name"] = name_found
-            else:
-                # Assign 'Unknown' if no brand is found
-                # don't need to assign brand to the brand table, because well....
-                screen_details["Name"] = "Unknown"
-                processor_details["Name"] = "Unknown"
-                misc_details["Name"] = "Unknown"
-                features_details["Name"] = "Unknown"
-                ports_details["Name"] = "Unknown"
-
+        # if name_found is None and "Name" in table_data:
+        #     laptop_brand = table_data.get("Name", "")
+        #     name_found = table_data["Name"]  # Stop checking for "Brand" in other tables
+        #
+        #
+        # # this is here because the primary key for each of the tables is the laptop model, which means we need that to
+        # # be able to insert it into the database
+        #
+        # # ensure every dictionary gets the first brand found, (name of the laptop when we get that)
+        # if name_found:
+        #     if name_found:
+        #         brand_details["Name"] = name_found
+        #         screen_details["Name"] = name_found
+        #         processor_details["Name"] = name_found
+        #         misc_details["Name"] = name_found
+        #         features_details["Name"] = name_found
+        #         ports_details["Name"] = name_found
+        #     else:
+        #         # Assign 'Unknown' if no brand is found
+        #         # don't need to assign brand to the brand table, because well....
+        #         screen_details["Name"] = "Unknown"
+        #         processor_details["Name"] = "Unknown"
+        #         misc_details["Name"] = "Unknown"
+        #         features_details["Name"] = "Unknown"
+        #         ports_details["Name"] = "Unknown"
+        #
         # Organize the data based on the table title
         if title == 'Product Details':
             brand_details.update(table_data)
@@ -110,7 +110,7 @@ pprint(brands)
 conn, cur = db_access()
 
 '''
-so for the laptop insert table we need
+for the laptop insert table we need
 # model - product details = Name
 # brand os - Misc = Operating System
 screensize - Screen - Size
@@ -141,7 +141,7 @@ for i in range(len(brands)):
     # extract screen details
     screen_size = screen.get('Size', '')
 
-    print("\nInserting into database:")
+    print("\nInserting into database table laptops:")
     print(f"Name: {name}, Weight: {weight}")
     print(f"Battery Life: {battery_life}, Memory Installed: {memory_installed}, OS: {operating_system}")
     print(f"Screen Size: {screen_size}")
@@ -155,37 +155,61 @@ for i in range(len(brands)):
 
     conn.commit()
     print("\nData inserted successfully")
-'''    
-for brand in brands:
-    # Check if 'Name' or 'Weight' exists in the dictionary
-    if 'Name' in brand or 'Weight' in brand:
-        # If 'Name' is present, print its value
-        if 'Name' in brand:
-            print(brand['Name'])
-        # If 'Weight' is present, print its value
-        if 'Weight' in brand:
-            print(brand['Weight'])
-    else:
-        print("no values found")
 
-print("\nsorting out the misc for laptops\n")
-for item in misc:
-    if "Battery Life" in item or "Memory Installed" in item or "Operating System" in item:
-        if "Battery Life" in item:
-            print(item['Battery Life'] )
-        if "Memory Installed" in item:
-            print(item["Memory Installed"])
-        if "Operating System" in item:
-            print(item["Operating System"])
-    else:
-        print("no value found")
-
-print("\nsorting the screen size\n")
-for screen in screens:
-    if "Size" in screen:
-        print(screen["Size"])
 '''
+inserting for the cpu table
+laptop - name
+model - name
+brand - Brand
+'''
+for i in range(len(processors)):
+    laptop = brands[i].get("Name", "")
+    brand = processors[i].get("Brand", "")
+    name = processors[i].get("Name", "")
 
+    print("\nInserting into database table cpu:")
+    print(f"Laptop: {laptop}")
+    print(f"Brand: {brand}")
+    print(f"COU: {name}")
+
+    query = '''
+        INSERT INTO cpu (laptop, model, brand)
+        VALUES (%s, %s, %s)
+    '''
+    values = (laptop, name, brand)
+    cur.execute(query, values)
+
+    conn.commit()
+    print("\nData inserted successfully")
+
+'''
+laptop name
+bluetooth
+num_pad
+backlit
+'''
+for i in range(len(features)):
+    laptop = brands[i].get("Name", "")
+    bluetooth = features[i].get("Bluetooth", "")
+    num_pad = features[i].get("Numeric Keyboard", "")
+    backlit = features[i].get("Backlit Keyboard", "")
+
+    print("\nInserting into database table features")
+    print(f"Laptop: {laptop}")
+    print(f"Bluetooth: {bluetooth}")
+    print(f"Num Pad: {num_pad}")
+    print(f"Backlit: {backlit}")
+
+    query = '''
+    INSERT INTO features (laptop, bluetooth, num_pad, backlit)
+    VALUES (%s, %s, %s, %s)
+    '''
+
+    values =(laptop, bluetooth, num_pad, backlit)
+    cur.execute(query, values)
+
+    conn.commit()
+    print("Data Inserted successfully")
 # checking if the objects exist
 # if conn and cur:
 #     try:

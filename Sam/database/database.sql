@@ -1,5 +1,6 @@
 CREATE TABLE laptops (
-model VARCHAR(80) PRIMARY KEY,
+id SERIAL PRIMARY KEY,
+model VARCHAR(80),
 brand VARCHAR(50) NOT NULL,
 operatingSystem VARCHAR default 'none',
 screenSize  VARCHAR (12) NOT NULL,
@@ -12,36 +13,41 @@ ALTER TABLE laptops
 ADD COLUMN memory VARCHAR(20) NOT NULL;
 
 CREATE TABLE CPU (
+laptop_id SERIAL NOT NULL,
 laptop VARCHAR(80) NOT NULL,
-model VARCHAR(20) PRIMARY KEY,
-brand VARCHAR(20) NOT NULL,
-speed DECIMAL(3, 1) NOT NULL,
-FOREIGN KEY (laptop) REFERENCES laptops(model)
+model VARCHAR(50),
+brand VARCHAR(50) NOT NULL,
+speed DECIMAL(3, 1) ,
+FOREIGN KEY (laptop_id) REFERENCES laptops(id),
+PRIMARY KEY (model, laptop_id)
 );
 
 ALTER TABLE cpu 
 DROP COLUMN speed;
 
 CREATE TABLE GPU (
+laptop_id SERIAL NOT NULL,
 laptop VARCHAR(80),
 model VARCHAR(30),
 brand VARCHAR(20) NOT NULL,
-FOREIGN KEY (laptop) REFERENCES laptops(model),
-PRIMARY KEY (laptop, model)
+FOREIGN KEY (laptop_id) REFERENCES laptops(id),
+PRIMARY KEY (laptop_id, model)
 );
 
 CREATE TABLE memory (
+laptop_id SERIAL NOT NULL,
 laptop VARCHAR(80) PRIMARY KEY,
 storage int NOT NULL,
-FOREIGN KEY (laptop) REFERENCES laptops(model)
+FOREIGN KEY (laptop_id) REFERENCES laptops(id)
 );
 
  CREATE TABLE storage (
- id SERIAL PRIMARY KEY, --this is so that there can be multiple storage types in one laptop
+ laptop_id SERIAL NOT NULL,
+ storage_id SERIAL PRIMARY KEY, --this is so that there can be multiple storage types in one laptop
 laptop VARCHAR(80),
  amount int NOT NULL,
  type VARCHAR(30) NOT NULL,
- FOREIGN KEY (laptop) REFERENCES laptops(model)
+ FOREIGN KEY (laptop_id) REFERENCES laptops(id)
  );
  
  CREATE TABLE users (
@@ -54,35 +60,38 @@ password VARCHAR(200) NOT NULL
 
 CREATE TABLE images (
 image BYTEA NOT NULL,  -- creates a binary object to hold the image
+laptop_id SERIAL NOT NULL,
 laptop VARCHAR(80) PRIMARY KEY,
-FOREIGN KEY (laptop) REFERENCES laptops(model)
+FOREIGN KEY (laptop_id) REFERENCES laptops(id)
 );
 
 CREATE TABLE screen (
+laptop_id SERIAL NOT NULL,
 laptop VARCHAR(80) PRIMARY KEY,
 size int NOT NULL,
 screen_res VARCHAR(20) NOT NULL,
 refresh VARCHAR(20) NOT NULL,
 touch_screen VARCHAR(10) NOT NULL,
-FOREIGN KEY (laptop) REFERENCES laptops(model)
+FOREIGN KEY (laptop_id) REFERENCES laptops(id)
 );
 
 CREATE TABLE features (
-laptop VARCHAR(80) PRIMARY KEY,
-bluetooth VARCHAR(5) NOT NULL,
-num_pad VARCHAR(5) NOT NULL,
-backlit VARCHAR(5) NOT NULL,
-FOREIGN KEY (laptop) REFERENCES laptops(model)
+laptop_id SERIAL PRIMARY KEY,
+laptop VARCHAR(80),
+bluetooth VARCHAR(5) default 'none',
+num_pad VARCHAR(5) default 'none',
+backlit VARCHAR(5) default 'none'
 );
 
 CREATE TABLE ports(
+laptop_id SERIAL NOT NULL,
 laptop VARCHAR(80) PRIMARY KEY,
 hdmi VARCHAR(5) NOT NULL,
 ethernet VARCHAR(5) NOT NULL,
 thunderbolt VARCHAR(5) NOT NULL,
 typec VARCHAR(5) NOT NULL,
 display_port VARCHAR(5) NOT NULL,
-FOREIGN KEY (laptop) REFERENCES laptops(model)
+FOREIGN KEY (laptop_id) REFERENCES laptops(id)
 );
 
 ALTER TABLE users
