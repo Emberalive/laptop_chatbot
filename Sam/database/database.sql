@@ -2,10 +2,10 @@ CREATE TABLE laptops (
 model VARCHAR(80) PRIMARY KEY,
 brand VARCHAR(50) NOT NULL,
 operatingSystem VARCHAR default 'none',
-screenSize DECIMAL(3, 1) NOT NULL,
+screenSize  VARCHAR (12) NOT NULL,
 price DECIMAL(10, 2) NOT NULL,
 weight VARCHAR(10) NOT NULL,
-batteryLife VARCHAR(10) NOT NULL
+batteryLife VARCHAR (30)NOT NULL
 );
 
 ALTER TABLE laptops

@@ -1,5 +1,7 @@
 import json
 from pprint import pprint
+from DBAccess.dbAccess import db_access
+
 
 # Initialize dictionaries to store different laptop details
 laptops = []
@@ -93,13 +95,97 @@ print("Adding the dictionary items to their respected list objects")
 # Print the lists to verify the data
 print("\nBrands: \n")
 pprint(brands)
-print("\nScreens: \n")
-pprint(screens)
-print("\nProcessors: \n")
-pprint(processors)
-print("\nMisc: \n")
-pprint(misc)
-print("\nFeatures: \n")
-pprint(features)
-print("\nPorts: \n")
-pprint(ports)
+# print("\nScreens: \n")
+# pprint(screens)
+# print("\nProcessors: \n")
+# pprint(processors)
+# print("\nMisc: \n")
+# pprint(misc)
+# print("\nFeatures: \n")
+# pprint(features)
+# print("\nPorts: \n")
+# pprint(ports)
+
+
+conn, cur = db_access()
+
+'''
+so for the laptop insert table we need
+# model - product details = Name
+# brand os - Misc = Operating System
+screensize - Screen - Size
+price - 
+# weight - product details = Weight
+# batterylife - Misc = Battery Life
+# memory - Misc = Memory Installed
+'''
+
+for i in range(len(brands)):
+    # get each dict by index
+    brand = brands[i] if i < len(brands) else{}
+    item = misc[i] if i < len(misc) else {}
+    screen = screens[i] if i < len(screens) else {}
+
+    # extract the brand details
+    name = brand.get('Name', '')
+    weight = brand.get('Weight', '')
+    laptop_brand = brand.get('Brand', '')
+
+    price =1200
+
+    # extract the misc details
+    battery_life = item.get('Battery Life', '')
+    memory_installed = item.get('Memory Installed', '')
+    operating_system = item.get('Operating Syste,', '')
+
+    # extract screen details
+    screen_size = screen.get('Size', '')
+
+    print("\nInserting into database:")
+    print(f"Name: {name}, Weight: {weight}")
+    print(f"Battery Life: {battery_life}, Memory Installed: {memory_installed}, OS: {operating_system}")
+    print(f"Screen Size: {screen_size}")
+
+    query = '''
+        INSERT INTO laptops (model, brand, operatingsystem, screensize, price, weight, batterylife, memory)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+    '''
+    values = (name, laptop_brand, operating_system, screen_size, price, weight, battery_life, memory_installed)
+    cur.execute(query, values)
+
+    conn.commit()
+    print("\nData inserted successfully")
+'''    
+for brand in brands:
+    # Check if 'Name' or 'Weight' exists in the dictionary
+    if 'Name' in brand or 'Weight' in brand:
+        # If 'Name' is present, print its value
+        if 'Name' in brand:
+            print(brand['Name'])
+        # If 'Weight' is present, print its value
+        if 'Weight' in brand:
+            print(brand['Weight'])
+    else:
+        print("no values found")
+
+print("\nsorting out the misc for laptops\n")
+for item in misc:
+    if "Battery Life" in item or "Memory Installed" in item or "Operating System" in item:
+        if "Battery Life" in item:
+            print(item['Battery Life'] )
+        if "Memory Installed" in item:
+            print(item["Memory Installed"])
+        if "Operating System" in item:
+            print(item["Operating System"])
+    else:
+        print("no value found")
+
+print("\nsorting the screen size\n")
+for screen in screens:
+    if "Size" in screen:
+        print(screen["Size"])
+'''
+
+# checking if the objects exist
+# if conn and cur:
+#     try:
