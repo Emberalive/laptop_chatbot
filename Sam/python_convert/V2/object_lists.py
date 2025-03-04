@@ -178,3 +178,96 @@ for i in range(len(brands)):
     except Exception as e:
         print(f"Database error: {e}")
         conn.rollback()
+
+# inserting memory data into database
+for i in range(len(brands)):
+    cur.execute("ROLLBACK")
+
+    laptop = brands[i].get("Name", "")
+    storage = misc[i].get("Storage", "")
+
+    storage_list = storage.split(" ")
+    amount = storage_list[0]
+    storage_type = storage_list[1]
+
+
+    print("\nInserting into database table memory")
+    print(f"laptop: {laptop}, Storage Amount: {amount}, Storage Type: {storage_type}")
+
+    query = '''
+    INSERT INTO memory (laptop, storage_amount, storage_type)
+    VALUES(%s, %s, %s)
+    '''
+    values = (laptop, amount, storage_type)
+
+    try:
+        cur.execute(query, values)
+        conn.commit()
+    except Exception as e:
+        print(f"Database error: {e}")
+        conn.rollback()
+
+# Inserting ports data into table database
+for i in range(len(brands)):
+    cur.execute("ROLLBACK")
+
+    laptop = brands[i].get("Name", "")
+
+    ethernet = ports[i].get("Ethernet (RJ45)", "None")
+    hdmi = ports[i].get("HDMI", "None")
+    usb_c = ports[i].get("USB Type-C", "None")
+    thunderbolt = ports[i].get("Thunderbolt", "None")
+    display_port = ports[i].get("Display Port", "None")
+
+    # print("\nConverting all values into String rather than boolean")
+    #
+    # Ethernet = str(ethernet)
+    # HDMI = str(hdmi)
+    # USB_C = str(usb_c)
+    # Thunderbolt = str(thunderbolt)
+    # Display_Port = str(display_port)
+
+    print("\nInserting into database table ports")
+    print(f"laptop: {laptop}, Ethernet: {ethernet}, HDMI: {hdmi}, USB Type C: {usb_c}, Thunderbolt: {thunderbolt}")
+
+    query = '''
+    INSERT INTO ports (laptop, hdmi, ethernet, thunderbolt, typec, display_port)
+    VALUES (%s, %s, %s, %s, %s, %s)
+    '''
+    values = (laptop, hdmi, ethernet, thunderbolt, usb_c, display_port)
+    # values = (laptop, HDMI, Ethernet, Thunderbolt, USB_C, Display_Port)
+
+    try:
+        cur.execute(query, values)
+        conn.commit()
+    except Exception as e:
+        print(f"Database error: {e}")
+        conn.rollback()
+
+for i in range(len(brands)):
+    cur.execute("ROLLBACK")
+
+    laptop = brands[i].get("Name", "")
+
+    screen_res = screens[i].get("Resolution", "Unknown")
+    refresh_rate = screens[i].get("Refresh Rate", "Unknown")
+    touch_screen = screens[i].get("Touchscreen", "Unknown")
+
+    print("\nInserting into database table screen")
+    print(f"Screen Resolution: {screen_res}, Refresh Rate: {refresh_rate}, Touch Screen: {touch_screen}")
+
+    query = '''
+    INSERT INTO screen (laptop, screen_res, refresh, touch_screen)
+    VALUES(%s, %s, %s, %s)
+    '''
+
+    values = (laptop, screen_res, refresh_rate, touch_screen)
+
+    try:
+        cur.execute(query, values)
+        conn.commit()
+    except Exception as e:
+        print(f"Database error: {e}")
+        conn.rollback()
+
+
