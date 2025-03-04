@@ -35,9 +35,10 @@ PRIMARY KEY (laptop_id, model)
 );
 
 CREATE TABLE memory (
-laptop_id SERIAL NOT NULL,
-laptop VARCHAR(80) PRIMARY KEY,
-storage int NOT NULL,
+laptop_id SERIAL NOT NULL PRIMARY KEY,
+laptop VARCHAR(80) ,
+storage_amount VARCHAR(15) NOT NULL,
+storage_type VARCHAR(15) NOT NULL,
 FOREIGN KEY (laptop_id) REFERENCES laptops(id)
 );
 
@@ -66,9 +67,8 @@ FOREIGN KEY (laptop_id) REFERENCES laptops(id)
 );
 
 CREATE TABLE screen (
-laptop_id SERIAL NOT NULL,
-laptop VARCHAR(80) PRIMARY KEY,
-size int NOT NULL,
+laptop_id SERIAL PRIMARY KEY,
+laptop VARCHAR(80)  NOT NULL,
 screen_res VARCHAR(20) NOT NULL,
 refresh VARCHAR(20) NOT NULL,
 touch_screen VARCHAR(10) NOT NULL,
@@ -84,13 +84,13 @@ backlit VARCHAR(5) default 'none'
 );
 
 CREATE TABLE ports(
-laptop_id SERIAL NOT NULL,
-laptop VARCHAR(80) PRIMARY KEY,
-hdmi VARCHAR(5) NOT NULL,
-ethernet VARCHAR(5) NOT NULL,
-thunderbolt VARCHAR(5) NOT NULL,
-typec VARCHAR(5) NOT NULL,
-display_port VARCHAR(5) NOT NULL,
+laptop_id SERIAL  PRIMARY KEY,
+laptop VARCHAR(80) NOT NULL,
+hdmi VARCHAR(10) NOT NULL,
+ethernet VARCHAR(10) NOT NULL,
+thunderbolt VARCHAR(10) NOT NULL,
+typec VARCHAR(10) NOT NULL,
+display_port VARCHAR(10) NOT NULL,
 FOREIGN KEY (laptop_id) REFERENCES laptops(id)
 );
 
