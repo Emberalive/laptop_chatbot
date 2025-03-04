@@ -2,8 +2,7 @@ import json
 from pprint import pprint
 from DBAccess.dbAccess import db_access
 
-
-# Initialize dictionaries to store different laptop details
+# Initialize lists to store different laptop details
 laptops = []
 brands = []
 screens = []
@@ -18,13 +17,11 @@ with open('scraped_data.json', 'r') as file:
     data = json.load(file)
 
 # Loop through each laptop in the JSON data
-print("sorting through the JSON object lists\n")
+print("Sorting through the JSON object lists\n")
 for laptop in data:
-    # Extract the tables from each laptop
-    tables = laptop.get('tables', [])
+    tables = laptop.get('tables', [])  # Extract tables from each laptop
 
-    # Initialize dictionaries to store the details for each laptop
-    laptop_details = {}
+    # Initialize dictionaries for each category
     brand_details = {}
     screen_details = {}
     processor_details = {}
@@ -32,41 +29,11 @@ for laptop in data:
     features_details = {}
     ports_details = {}
 
-    name_found = None
-
-    # Loop through each table in the laptop
-    # print("Adding table list items to their respected python dictionaries objects")
+    # Loop through each table and store data in respective dictionaries
     for table in tables:
         title = table.get('title', '')
         table_data = table.get('data', {})
 
-        # if name_found is None and "Name" in table_data:
-        #     laptop_brand = table_data.get("Name", "")
-        #     name_found = table_data["Name"]  # Stop checking for "Brand" in other tables
-        #
-        #
-        # # this is here because the primary key for each of the tables is the laptop model, which means we need that to
-        # # be able to insert it into the database
-        #
-        # # ensure every dictionary gets the first brand found, (name of the laptop when we get that)
-        # if name_found:
-        #     if name_found:
-        #         brand_details["Name"] = name_found
-        #         screen_details["Name"] = name_found
-        #         processor_details["Name"] = name_found
-        #         misc_details["Name"] = name_found
-        #         features_details["Name"] = name_found
-        #         ports_details["Name"] = name_found
-        #     else:
-        #         # Assign 'Unknown' if no brand is found
-        #         # don't need to assign brand to the brand table, because well....
-        #         screen_details["Name"] = "Unknown"
-        #         processor_details["Name"] = "Unknown"
-        #         misc_details["Name"] = "Unknown"
-        #         features_details["Name"] = "Unknown"
-        #         ports_details["Name"] = "Unknown"
-        #
-        # Organize the data based on the table title
         if title == 'Product Details':
             brand_details.update(table_data)
         elif title == 'Screen':
@@ -80,8 +47,7 @@ for laptop in data:
         elif title == 'Ports':
             ports_details.update(table_data)
 
-    # Add the details to their respective lists
-    # laptops.append(laptop_details)
+    # Append extracted details to their respective lists
     brands.append(brand_details)
     screens.append(screen_details)
     processors.append(processor_details)
@@ -89,74 +55,36 @@ for laptop in data:
     features.append(features_details)
     ports.append(ports_details)
 
-print("Adding the dictionary items to their respected list objects")
+print("Adding the dictionary items to their respective list objects")
 
-
-# Print the lists to verify the data
+# Print extracted brands for verification
 print("\nBrands: \n")
 pprint(brands)
-# print("\nScreens: \n")
 
-
-# pprint(screens)
-
-
-# print("\nProcessors: \n")
-# pprint(processors)
-# print("\nMisc: \n")
-
-
-# pprint(misc)
-
-
-# print("\nFeatures: \n")
-
-
-# pprint(features)
-
-
-# print("\nPorts: \n")
-# pprint(ports)
-
-
+# Establish database connection
 conn, cur = db_access()
 
-'''
-for the laptop insert table we need
-# model - product details = Name
-# brand os - Misc = Operating System
-screensize - Screen - Size
-price - 
-# weight - product details = Weight
-# batterylife - Misc = Battery Life
-# memory - Misc = Memory Installed
-'''
-
+# Insert laptops data into database
 for i in range(len(brands)):
-    # get each dict by index
-    brand = brands[i] if i < len(brands) else{}
+    cur.execute("ROLLBACK")  # Ensure previous errors don't affect this iteration
+
+    # Extract details from dictionaries
+    brand = brands[i] if i < len(brands) else {}
     item = misc[i] if i < len(misc) else {}
     screen = screens[i] if i < len(screens) else {}
 
-    # extract the brand details
     name = brand.get('Name', '')
     weight = brand.get('Weight', '')
     laptop_brand = brand.get('Brand', '')
-
-    price =1200
-
-    # extract the misc details
     battery_life = item.get('Battery Life', '')
     memory_installed = item.get('Memory Installed', '')
-    operating_system = item.get('Operating System,', '')
-
-    # extract screen details
+    operating_system = item.get('Operating System', '')
     screen_size = screen.get('Size', '')
+    price = 1200  # Default price (consider making this dynamic)
 
     print("\nInserting into database table laptops:")
-    print(f"Name: {name}, Weight: {weight}")
-    print(f"Battery Life: {battery_life}, Memory Installed: {memory_installed}, OS: {operating_system}")
-    print(f"Screen Size: {screen_size}")
+    print(
+        f"Name: {name}, Weight: {weight}, Battery Life: {battery_life}, Memory Installed: {memory_installed}, OS: {operating_system}, Screen Size: {screen_size}")
 
     query = '''
         INSERT INTO laptops (model, brand, operatingsystem, screensize, price, weight, batterylife, memory)
@@ -164,107 +92,89 @@ for i in range(len(brands)):
     '''
     values = (name, laptop_brand, operating_system, screen_size, price, weight, battery_life, memory_installed)
 
-    if conn and cur:
-        try:
-            cur.execute(query, values)
-            conn.commit()
-        except Exception as e:
-            print(f"Database error: {e}")
-    else:
-        print(f"Data inserted successfully")
+    try:
+        cur.execute(query, values)
+        conn.commit()
+    except Exception as e:
+        print(f"Database error: {e}")
+        conn.rollback()
 
-'''
-inserting for the cpu table
-laptop - name
-model - name
-brand - Brand
-'''
+# Insert CPU data into database
 for i in range(len(processors)):
+    cur.execute("ROLLBACK")
+
     laptop = brands[i].get("Name", "")
     brand = processors[i].get("Brand", "")
     name = processors[i].get("Name", "")
 
     print("\nInserting into database table cpu:")
-    print(f"Laptop: {laptop}")
-    print(f"Brand: {brand}")
-    print(f"COU: {name}")
+    print(f"Laptop: {laptop}, Brand: {brand}, CPU: {name}")
 
     query = '''
         INSERT INTO cpu (laptop, model, brand)
         VALUES (%s, %s, %s)
     '''
     values = (laptop, name, brand)
-    cur.execute(query, values)
 
-    conn.commit()
-    print("\nData inserted successfully")
+    try:
+        cur.execute(query, values)
+        conn.commit()
+    except Exception as e:
+        print(f"Database error: {e}")
+        conn.rollback()
 
-'''
-laptop name
-bluetooth
-num_pad
-backlit
-'''
+# Insert Features data into database
 for i in range(len(features)):
+    cur.execute("ROLLBACK")
+
     laptop = brands[i].get("Name", "")
     bluetooth = features[i].get("Bluetooth", "")
     num_pad = features[i].get("Numeric Keyboard", "")
     backlit = features[i].get("Backlit Keyboard", "")
 
     print("\nInserting into database table features")
-    print(f"Laptop: {laptop}")
-    print(f"Bluetooth: {bluetooth}")
-    print(f"Num Pad: {num_pad}")
-    print(f"Backlit: {backlit}")
+    print(f"Laptop: {laptop}, Bluetooth: {bluetooth}, Num Pad: {num_pad}, Backlit: {backlit}")
 
     query = '''
-    INSERT INTO features (laptop, bluetooth, num_pad, backlit)
-    VALUES (%s, %s, %s, %s)
+        INSERT INTO features (laptop, bluetooth, num_pad, backlit)
+        VALUES (%s, %s, %s, %s)
     '''
+    values = (laptop, bluetooth, num_pad, backlit)
 
-    values =(laptop, bluetooth, num_pad, backlit)
-    if conn and cur:
-        try:
-            cur.execute(query, values)
-            conn.commit()
-        except Exception as e:
-            print(f"Database error: {e}")
-    else:
-        print(f"Data inserted successfully")
-# checking if the objects exist
-# if conn and cur:
-#     try:
+    try:
+        cur.execute(query, values)
+        conn.commit()
+    except Exception as e:
+        print(f"Database error: {e}")
+        conn.rollback()
 
+# Insert GPU data into database
 for i in range(len(brands)):
-    cur.execute("ROLLBACK")  # Ensures the previous error does not affect this iteration
+    cur.execute("ROLLBACK")
+
     laptop = brands[i].get("Name", "")
     gpu = misc[i].get("Graphics Card", "")
+
     if not gpu:
         print(f"Skipping GPU insertion for laptop: {laptop}, No GPU found")
-    else:
-        gpu_list = gpu.split(' ')
-        gpu_brand = gpu_list[0]
+        continue
 
-    gpu_brand = gpu_list[0] if gpu_list else "None"
-    gpu = gpu if gpu.lower() != "unknown" else "None"
+    gpu_list = gpu.split(' ')
+    gpu_brand = gpu_list[0] if gpu_list else None
+    gpu = gpu if gpu.lower() != "unknown" else None
 
     print("\nInserting into database table gpu")
-    print(f"Laptop: {laptop}")
-    print(f"GPU: {gpu}")
-    print(f"Brand: {gpu_brand}")
+    print(f"Laptop: {laptop}, GPU: {gpu}, Brand: {gpu_brand}")
 
     query = '''
-    INSERT INTO gpu (laptop, model, brand)
-    VALUES (%s, %s, %s)
+        INSERT INTO gpu (laptop, model, brand)
+        VALUES (%s, %s, %s)
     '''
     values = (laptop, gpu, gpu_brand)
 
-    if conn and cur:
-        try:
-            cur.execute(query, values)
-            conn.commit()
-        except Exception as e:
-            print(f"Database error: {e}")
-            conn.rollback()
-    else:
-        print(f"Data inserted successfully")
+    try:
+        cur.execute(query, values)
+        conn.commit()
+    except Exception as e:
+        print(f"Database error: {e}")
+        conn.rollback()
