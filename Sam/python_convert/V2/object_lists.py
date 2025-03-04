@@ -96,13 +96,25 @@ print("Adding the dictionary items to their respected list objects")
 print("\nBrands: \n")
 pprint(brands)
 # print("\nScreens: \n")
+
+
 # pprint(screens)
+
+
 # print("\nProcessors: \n")
 # pprint(processors)
 # print("\nMisc: \n")
+
+
 # pprint(misc)
+
+
 # print("\nFeatures: \n")
+
+
 # pprint(features)
+
+
 # print("\nPorts: \n")
 # pprint(ports)
 
@@ -136,7 +148,7 @@ for i in range(len(brands)):
     # extract the misc details
     battery_life = item.get('Battery Life', '')
     memory_installed = item.get('Memory Installed', '')
-    operating_system = item.get('Operating Syste,', '')
+    operating_system = item.get('Operating System,', '')
 
     # extract screen details
     screen_size = screen.get('Size', '')
@@ -151,10 +163,15 @@ for i in range(len(brands)):
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
     '''
     values = (name, laptop_brand, operating_system, screen_size, price, weight, battery_life, memory_installed)
-    cur.execute(query, values)
 
-    conn.commit()
-    print("\nData inserted successfully")
+    if conn and cur:
+        try:
+            cur.execute(query, values)
+            conn.commit()
+        except Exception as e:
+            print(f"Database error: {e}")
+    else:
+        print(f"Data inserted successfully")
 
 '''
 inserting for the cpu table
@@ -206,10 +223,48 @@ for i in range(len(features)):
     '''
 
     values =(laptop, bluetooth, num_pad, backlit)
-    cur.execute(query, values)
-
-    conn.commit()
-    print("Data Inserted successfully")
+    if conn and cur:
+        try:
+            cur.execute(query, values)
+            conn.commit()
+        except Exception as e:
+            print(f"Database error: {e}")
+    else:
+        print(f"Data inserted successfully")
 # checking if the objects exist
 # if conn and cur:
 #     try:
+
+for i in range(len(brands)):
+    cur.execute("ROLLBACK")  # Ensures the previous error does not affect this iteration
+    laptop = brands[i].get("Name", "")
+    gpu = misc[i].get("Graphics Card", "")
+    if not gpu:
+        print(f"Skipping GPU insertion for laptop: {laptop}, No GPU found")
+    else:
+        gpu_list = gpu.split(' ')
+        gpu_brand = gpu_list[0]
+
+    gpu_brand = gpu_list[0] if gpu_list else "None"
+    gpu = gpu if gpu.lower() != "unknown" else "None"
+
+    print("\nInserting into database table gpu")
+    print(f"Laptop: {laptop}")
+    print(f"GPU: {gpu}")
+    print(f"Brand: {gpu_brand}")
+
+    query = '''
+    INSERT INTO gpu (laptop, model, brand)
+    VALUES (%s, %s, %s)
+    '''
+    values = (laptop, gpu, gpu_brand)
+
+    if conn and cur:
+        try:
+            cur.execute(query, values)
+            conn.commit()
+        except Exception as e:
+            print(f"Database error: {e}")
+            conn.rollback()
+    else:
+        print(f"Data inserted successfully")

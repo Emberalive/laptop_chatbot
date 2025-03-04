@@ -28,8 +28,8 @@ DROP COLUMN speed;
 CREATE TABLE GPU (
 laptop_id SERIAL NOT NULL,
 laptop VARCHAR(80),
-model VARCHAR(30),
-brand VARCHAR(20) NOT NULL,
+model VARCHAR(50) default 'none',
+brand VARCHAR(20)  default 'none',
 FOREIGN KEY (laptop_id) REFERENCES laptops(id),
 PRIMARY KEY (laptop_id, model)
 );
@@ -129,3 +129,8 @@ SELECT
 
 -- selects the view
 SELECT * FROM user_info;
+
+-- created a view for all of the laptops that have no gpu
+CREATE VIEW no_gpu as
+SELECT * FROM gpu
+where model = 'None';
