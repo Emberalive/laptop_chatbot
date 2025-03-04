@@ -34,7 +34,7 @@ FOREIGN KEY (laptop_id) REFERENCES laptops(id),
 PRIMARY KEY (laptop_id, model)
 );
 
-CREATE TABLE memory (
+CREATE TABLE storage (
 laptop_id SERIAL NOT NULL PRIMARY KEY,
 laptop VARCHAR(80) ,
 storage_amount VARCHAR(15) NOT NULL,
@@ -42,15 +42,6 @@ storage_type VARCHAR(15) NOT NULL,
 FOREIGN KEY (laptop_id) REFERENCES laptops(id)
 );
 
- CREATE TABLE storage (
- laptop_id SERIAL NOT NULL,
- storage_id SERIAL PRIMARY KEY, --this is so that there can be multiple storage types in one laptop
-laptop VARCHAR(80),
- amount int NOT NULL,
- type VARCHAR(30) NOT NULL,
- FOREIGN KEY (laptop_id) REFERENCES laptops(id)
- );
- 
  CREATE TABLE users (
 id int PRIMARY KEY,
 uname VARCHAR(50) NOT NULL,
@@ -133,4 +124,4 @@ SELECT * FROM user_info;
 -- created a view for all of the laptops that have no gpu
 CREATE VIEW no_gpu as
 SELECT * FROM gpu
-where model = 'None';
+where model = 'none';
