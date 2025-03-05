@@ -1,7 +1,7 @@
 import subprocess
 
 # List of scripts in the order they should run
-scripts = ["scrapers/pyScraper1.py", "scrapers/pyScraper2.py", "database_persistence.py"]
+scripts = ["/home/samuel/Documents/2_Brighton/sem2/GroupProject/laptop_chatbot/Sam/server_side/scrapers/pyScraper1.py", "/home/samuel/Documents/2_Brighton/sem2/GroupProject/laptop_chatbot/Sam/server_side/scrapers/pyScraper2.py", "/home/samuel/Documents/2_Brighton/sem2/GroupProject/laptop_chatbot/Sam/server_side/database_persistence.py"]
 
 try:
     for script in scripts:

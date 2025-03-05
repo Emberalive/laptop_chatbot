@@ -17,3 +17,13 @@ python3: can't open file '/home/samuel/scrapers/pyScraper1.py': [Errno 2] No suc
 
 Error: scrapers/pyScraper1.py exited with code 2. Stopping execution.
 All scripts completed.
+Running /home/samuel/Documents/2_Brighton/sem2/GroupProject/laptop_chatbot/Sam/server_side/scrapers/pyScraper1.py...
+
+Traceback (most recent call last):
+  File "/home/samuel/Documents/2_Brighton/sem2/GroupProject/laptop_chatbot/Sam/server_side/scrapers/pyScraper1.py", line 2, in <module>
+    from bs4 import BeautifulSoup  # Import BeautifulSoup which parses data from HTML content
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'bs4'
+
+Error: /home/samuel/Documents/2_Brighton/sem2/GroupProject/laptop_chatbot/Sam/server_side/scrapers/pyScraper1.py exited with code 1. Stopping execution.
+All scripts completed.

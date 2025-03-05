@@ -16,6 +16,8 @@ print("Opening the scraped data\n")
 with open('scrapers/scraped_data/scraped_data.json', 'r') as file:
     data = json.load(file)
 
+
+
 # Loop through each laptop in the JSON data
 print("Sorting through the JSON object lists\n")
 for laptop in data:
