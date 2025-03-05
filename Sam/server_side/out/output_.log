@@ -1,0 +1,19 @@
+python3: can't open file '/run_all.py': [Errno 2] No such file or directory
+python3: can't open file '/home/samuel/run_all.py': [Errno 2] No such file or directory
+python3: can't open file '/run_all.py': [Errno 2] No such file or directory
+python3: can't open file '/run_all.py': [Errno 2] No such file or directory
+python3: can't open file '/run_all.py': [Errno 2] No such file or directory
+python3: can't open file '/run_all.py': [Errno 2] No such file or directory
+python3: can't open file '/run_all.py': [Errno 2] No such file or directory
+Running scrapers/pyScraper1.py...
+
+python3: can't open file '/home/samuel/scrapers/pyScraper1.py': [Errno 2] No such file or directory
+
+Error: scrapers/pyScraper1.py exited with code 2. Stopping execution.
+All scripts completed.
+Running scrapers/pyScraper1.py...
+
+python3: can't open file '/home/samuel/scrapers/pyScraper1.py': [Errno 2] No such file or directory
+
+Error: scrapers/pyScraper1.py exited with code 2. Stopping execution.
+All scripts completed.
