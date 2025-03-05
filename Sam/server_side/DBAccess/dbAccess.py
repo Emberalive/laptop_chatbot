@@ -9,8 +9,7 @@ def db_access():
         # put this is your name and password until we're at point where we can insert
         conn = psycopg2.connect(database = "laptopchatbot",
             user = "samuel",
-            # host = "192.168.0.144",
-            host = "10.8.18.92",
+            host = "192.168.0.144",
             password = "QwErTy1243!",
             port = 5432)
 

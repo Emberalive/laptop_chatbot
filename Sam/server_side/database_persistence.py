@@ -13,7 +13,7 @@ ports = []
 
 # Load the JSON data from the file
 print("Opening the scraped data\n")
-with open('scrapers/scraped_data/scraped_data.json', 'r') as file:
+with open('/home/samuel/Documents/2_Brighton/sem2/GroupProject/laptop_chatbot/Sam/server_side/scrapers/scraped_data/scraped_data.json', 'r') as file:
     data = json.load(file)
 
 
