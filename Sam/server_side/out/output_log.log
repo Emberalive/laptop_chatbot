@@ -4,6 +4,7 @@ Error fetching the website: HTTPSConnectionPool(host='laptop-finder.co.uk', port
 Total links scraped: 0
 
 
+
 Running /home/samuel/Documents/2_Brighton/sem2/GroupProject/laptop_chatbot/Sam/server_side/scrapers/pyScraper2.py...
 Found 0 URLs to scrape.
 Scraping completed. Data saved to scraped_data/scraped_data.json
