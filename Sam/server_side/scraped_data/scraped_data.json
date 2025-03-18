@@ -37504,5 +37504,417 @@
                 }
             }
         ]
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/23510/apple-macbook-air-13-2024-136-2560x1664-m3-8-core-mrxw3ba",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Apple",
+                    "Name": "MacBook Air 13 (2024)",
+                    "MPN": "MRXW3B/A",
+                    "EAN": "195949127243",
+                    "Weight": "1.24 kg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "13.6\"",
+                    "Resolution": "2560x1664"
+                }
+            },
+            {
+                "title": "Processor",
+                "data": {
+                    "Brand": "Apple",
+                    "Name": "M3 (8 Core CPU / 10 Core GPU)"
+                }
+            },
+            {
+                "title": "Misc",
+                "data": {
+                    "Graphics Card": "Unknown",
+                    "Memory Installed": "8 GB",
+                    "Storage": "512GB SSD",
+                    "Operating System": "macOS"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Bluetooth": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "USB Type-C": true
+                }
+            }
+        ]
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/22346/msi-modern-15-b13m-003uk-156-1920x1080-core-i7-137-9s7-15h411-003",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "MSI",
+                    "Name": "Modern 15",
+                    "MPN": "9S7-15H411-003",
+                    "EAN": "4711377110440",
+                    "Weight": "1.9 kg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "15.6\"",
+                    "Resolution": "1920x1080",
+                    "Refresh Rate": "60 Hz",
+                    "Touchscreen": false
+                }
+            },
+            {
+                "title": "Processor",
+                "data": {
+                    "Brand": "Intel",
+                    "Name": "Core i7-13700H",
+                    "# Cores": "14",
+                    "# Threads": "20",
+                    "Boost Speed": "5 GHz"
+                }
+            },
+            {
+                "title": "Misc",
+                "data": {
+                    "Graphics Card": "Intel Iris Xe Graphics eligible",
+                    "Memory Installed": "16 GB",
+                    "Storage": "512GB SSD",
+                    "Operating System": "Windows 11 Home"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": true,
+                    "Bluetooth": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": false,
+                    "HDMI": true,
+                    "USB Type-C": true
+                }
+            }
+        ]
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/17057/hp-probook-440-g8-14-1920x1080-core-i5-1135g7-24gh-2e9g7ea",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "HP",
+                    "Name": "ProBook 440 G8",
+                    "MPN": "2E9G7EA",
+                    "EAN": "0195697310904",
+                    "Weight": "1.38 kg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "14\"",
+                    "Resolution": "1920x1080",
+                    "Touchscreen": false,
+                    "Matte": true
+                }
+            },
+            {
+                "title": "Processor",
+                "data": {
+                    "Brand": "Intel",
+                    "Name": "Core i5-1135G7",
+                    "# Cores": "4",
+                    "# Threads": "8",
+                    "Base Speed": "2.4 GHz",
+                    "Boost Speed": "4.2 GHz"
+                }
+            },
+            {
+                "title": "Misc",
+                "data": {
+                    "Graphics Card": "Intel Iris Xe Graphics",
+                    "Memory Installed": "8 GB",
+                    "Storage": "256GB SSD",
+                    "Operating System": "Windows 10 Professional"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": false,
+                    "Bluetooth": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": true,
+                    "HDMI": true,
+                    "USB Type-C": true
+                }
+            }
+        ]
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/19860/asus-tuf-gaming-f15-fx506he-hn011w-156-1920x1080-1-90nr0704-m00dx0",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "ASUS",
+                    "Name": "TUF Gaming F15",
+                    "MPN": "90NR0704-M00DX0",
+                    "EAN": "195553995870",
+                    "Weight": "2.3 kg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "15.6\"",
+                    "Resolution": "1920x1080",
+                    "Refresh Rate": "144 Hz",
+                    "Touchscreen": false,
+                    "Matte": true
+                }
+            },
+            {
+                "title": "Processor",
+                "data": {
+                    "Brand": "Intel",
+                    "Name": "Core i5-11400H",
+                    "# Cores": "6",
+                    "# Threads": "12",
+                    "Base Speed": "2.7 GHz",
+                    "Boost Speed": "4.5 GHz"
+                }
+            },
+            {
+                "title": "Misc",
+                "data": {
+                    "Graphics Card": "GeForce RTX 3050 Ti",
+                    "Memory Installed": "8 GB",
+                    "Storage": "512GB SSD",
+                    "Operating System": "Windows 11 Home"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": true,
+                    "Bluetooth": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": true,
+                    "HDMI": true,
+                    "Thunderbolt": true,
+                    "USB Type-C": true
+                }
+            }
+        ]
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/23536/asus-tuf-gaming-a15-fa507uv-lp010w-156-1920x1080-1-fa507uv-lp010w",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "ASUS",
+                    "Name": "TUF Gaming A15",
+                    "MPN": "FA507UV-LP010W",
+                    "EAN": "4711387320648",
+                    "Weight": "2.2 kg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "15.6\"",
+                    "Resolution": "1920x1080",
+                    "Refresh Rate": "144 Hz",
+                    "Touchscreen": false,
+                    "Matte": true
+                }
+            },
+            {
+                "title": "Processor",
+                "data": {
+                    "Brand": "AMD",
+                    "Name": "Ryzen 9 8945H",
+                    "# Cores": "8",
+                    "# Threads": "16",
+                    "Base Speed": "4 GHz",
+                    "Boost Speed": "5.2 GHz"
+                }
+            },
+            {
+                "title": "Misc",
+                "data": {
+                    "Graphics Card": "GeForce RTX 4060",
+                    "Memory Installed": "16 GB",
+                    "Storage": "1TB SSD",
+                    "Operating System": "Windows 11 Home"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": true,
+                    "Bluetooth": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": true,
+                    "HDMI": true,
+                    "USB Type-C": true
+                }
+            }
+        ]
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/23878/lg-mobile-thin-client-15zt90p-gax36a1-156-1920x108-15zt90p-gax36a1",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "LG",
+                    "Name": "Mobile Thin Client",
+                    "MPN": "15ZT90P-G.AX36A1",
+                    "EAN": "8806091957856",
+                    "Weight": "1.19 kg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "15.6\"",
+                    "Resolution": "1920x1080",
+                    "Touchscreen": false,
+                    "Matte": true
+                }
+            },
+            {
+                "title": "Processor",
+                "data": {
+                    "Brand": "Intel",
+                    "Name": "Core i3-1115G4",
+                    "# Cores": "2",
+                    "# Threads": "4",
+                    "Base Speed": "3 GHz",
+                    "Boost Speed": "4.1 GHz"
+                }
+            },
+            {
+                "title": "Misc",
+                "data": {
+                    "Graphics Card": "Intel UHD Graphics for 11th Gen Intel Processors",
+                    "Memory Installed": "8 GB",
+                    "Storage": "256GB SSD",
+                    "Operating System": "No"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": true,
+                    "Bluetooth": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "HDMI": true,
+                    "USB Type-C": true
+                }
+            }
+        ]
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/16556/asus-rog-strix-scar-15-g533zx-ln083w-156-2560x1440-90nr08e2-m00410",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "ASUS",
+                    "Name": "ROG Strix SCAR 15",
+                    "MPN": "90NR08E2-M00410",
+                    "EAN": "4711081549093",
+                    "Weight": "2.3 kg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "15.6\"",
+                    "Resolution": "2560x1440",
+                    "Refresh Rate": "240 Hz",
+                    "Touchscreen": false,
+                    "Matte": true
+                }
+            },
+            {
+                "title": "Processor",
+                "data": {
+                    "Brand": "Intel",
+                    "Name": "Core i9-12900H",
+                    "# Cores": "14",
+                    "# Threads": "20",
+                    "Boost Speed": "5 GHz"
+                }
+            },
+            {
+                "title": "Misc",
+                "data": {
+                    "Graphics Card": "GeForce RTX 3080 Ti",
+                    "Memory Installed": "32 GB",
+                    "Storage": "2TB SSD",
+                    "Operating System": "Windows 11 Home"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": false,
+                    "Bluetooth": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": true,
+                    "HDMI": true,
+                    "Thunderbolt": true,
+                    "USB Type-C": true
+                }
+            }
+        ]
     }
 ]

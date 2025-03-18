@@ -120,59 +120,59 @@ for i in range(len(brands)):
 
 
     print("\nInserting into database table laptops:")
-    print(f"Name: {laptop_name}, Weight: {weight}, Battery Life: {battery_life}, Memory Installed: {memory_installed}, OS: {operating_system}, Screen Size: {screen_size}")
+    print(f"Name: {laptop_name}, Weight: {weight}, Battery Life: {battery_life}, Memory Installed: {memory_installed}, OS: {operating_system}, Screen Size: {screen_size}, CPU: {cpu_name}")
 
     laptop_query = '''
-        INSERT INTO laptops (model, brand, operatingsystem, screensize, price, weight, batterylife, memory)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO laptops (model, brand, operatingsystem, screensize, price, weight, batterylife, memory, cpu)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
     '''
-    laptop_values = (laptop_name, laptop_brand, operating_system, screen_size, price, weight, battery_life, memory_installed)
+    laptop_values = (laptop_name, laptop_brand, operating_system, screen_size, price, weight, battery_life, memory_installed, cpu_name)
 
     print("\nInserting into database table features")
-    print(f"Laptop: {laptop_name}, Bluetooth: {bluetooth}, Num Pad: {num_pad}, Backlit: {backlit}")
+    print(f"Laptop: {laptop_name}, Bluetooth: {bluetooth}, Num Pad: {num_pad}, Backlit: {backlit}, CPU: {cpu_name}")
 
     features_query = '''
-        INSERT INTO features (laptop, bluetooth, num_pad, backlit)
-        VALUES (%s, %s, %s, %s)
+        INSERT INTO features (laptop, bluetooth, num_pad, backlit, cpu)
+        VALUES (%s, %s, %s, %s, %s)
     '''
-    features_values = (laptop_name, bluetooth, num_pad, backlit)
+    features_values = (laptop_name, bluetooth, num_pad, backlit, cpu_name)
 
     print("\nInserting into database table gpu")
-    print(f"Laptop: {laptop_name}, GPU: {gpu}, Brand: {gpu_brand}")
+    print(f"Laptop: {laptop_name}, GPU: {gpu}, Brand: {gpu_brand}, CPU: {cpu_name}")
 
     gpu_query = '''
         INSERT INTO gpu (laptop, model, brand)
-        VALUES (%s, %s, %s)
+        VALUES (%s, %s, %s, %s)
     '''
-    gpu_values = (laptop_name, gpu, gpu_brand)
+    gpu_values = (laptop_name, gpu, gpu_brand, cpu_name)
 
     print("\nInserting into database table storage")
-    print(f"laptop: {laptop_name}, Storage Amount: {amount}, Storage Type: {storage_type}")
+    print(f"laptop: {laptop_name}, Storage Amount: {amount}, Storage Type: {storage_type}, CPU: {cpu_name}")
 
     storage_query = '''
-    INSERT INTO storage (laptop, storage_amount, storage_type)
-    VALUES(%s, %s, %s)
-    '''
-    storage_values = (laptop_name, amount, storage_type)
-
-    print("\nInserting into database table ports")
-    print(f"laptop: {laptop_name}, Ethernet: {ethernet}, HDMI: {hdmi}, USB Type C: {usb_c}, Thunderbolt: {thunderbolt}")
-
-    ports_query = '''
-    INSERT INTO ports (laptop, hdmi, ethernet, thunderbolt, typec, display_port)
-    VALUES (%s, %s, %s, %s, %s, %s)
-    '''
-    ports_values = (laptop_name, hdmi, ethernet, thunderbolt, usb_c, display_port)
-
-    print("\nInserting into database table screen")
-    print(f"Laptop: {laptop_name}, Screen Resolution: {screen_res}, Refresh Rate: {refresh_rate}, Touch Screen: {touch_screen}")
-
-    screen_query = '''
-    INSERT INTO screen (laptop, screen_res, refresh, touch_screen)
+    INSERT INTO storage (laptop, storage_amount, storage_type, cpu)
     VALUES(%s, %s, %s, %s)
     '''
+    storage_values = (laptop_name, amount, storage_type, cpu_name)
 
-    screen_values = (laptop_name, screen_res, refresh_rate, touch_screen)
+    print("\nInserting into database table ports")
+    print(f"laptop: {laptop_name}, Ethernet: {ethernet}, HDMI: {hdmi}, USB Type C: {usb_c}, Thunderbolt: {thunderbolt}, CPU: {cpu_name}")
+
+    ports_query = '''
+    INSERT INTO ports (laptop, hdmi, ethernet, thunderbolt, typec, display_port, cpu)
+    VALUES (%s, %s, %s, %s, %s, %s, %s)
+    '''
+    ports_values = (laptop_name, hdmi, ethernet, thunderbolt, usb_c, display_port, cpu_name)
+
+    print("\nInserting into database table screen")
+    print(f"Laptop: {laptop_name}, Screen Resolution: {screen_res}, Refresh Rate: {refresh_rate}, Touch Screen: {touch_screen}, CPU: {cpu_name}")
+
+    screen_query = '''
+    INSERT INTO screen (laptop, screen_res, refresh, touch_screen, cpu)
+    VALUES(%s, %s, %s, %s, %s)
+    '''
+
+    screen_values = (laptop_name, screen_res, refresh_rate, touch_screen, cpu_name)
 
     print("\nInserting into database table cpu:")
     print(f"Laptop: {laptop_name}, Brand: {cpu_brand}, CPU: {cpu_name}")
