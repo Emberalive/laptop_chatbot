@@ -30,8 +30,7 @@ CREATE TABLE gpu (
 
 -- Create the storage table
 CREATE TABLE storage (
-    storage_id SERIAL PRIMARY KEY,  -- Only storage_id as the primary key
-    laptop_model VARCHAR(80) NOT NULL,
+    laptop_model VARCHAR(80) PRIMARY KEY,
     storage_amount VARCHAR(15) NOT NULL,
     storage_type VARCHAR(15) NOT NULL,
     FOREIGN KEY (laptop_model) REFERENCES laptops(model)
@@ -49,8 +48,7 @@ CREATE TABLE screen (
 
 -- Create the features table
 CREATE TABLE features (
-    feature_id SERIAL PRIMARY KEY,  -- Unique ID for each feature entry
-    laptop_model VARCHAR(80) NOT NULL,
+    laptop_model VARCHAR(80) PRIMARY KEY,
     bluetooth VARCHAR(10) NOT NULL,
     num_pad VARCHAR(10) NOT NULL,
     backlit_keyboard VARCHAR(10) NOT NULL,
@@ -59,8 +57,7 @@ CREATE TABLE features (
 
 -- Create the ports table
 CREATE TABLE ports (
-    port_id SERIAL PRIMARY KEY,  -- Unique ID for each port entry
-    laptop_model VARCHAR(80) NOT NULL,
+    laptop_model VARCHAR(80) PRIMARY KEY,
     hdmi VARCHAR(10) NOT NULL,
     ethernet VARCHAR(10) NOT NULL,
     thunderbolt VARCHAR(10) NOT NULL,
