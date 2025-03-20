@@ -212,7 +212,7 @@ class LaptopRecommendationBot:
 
         return response
 
-# Example usage:
+#Simulated conversation
 def sample_conversation(laptop_data):
     chatbot = LaptopRecommendationBot(laptop_data)
     
