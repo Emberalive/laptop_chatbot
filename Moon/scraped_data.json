@@ -1,0 +1,2577 @@
+[
+    {
+        "url": "https://laptop-finder.co.uk/info/17437/lenovo-yoga-c940-14-1920x1080-core-i7-1065g7-13ghz-81q9001euk",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Lenovo",
+                    "Name": "Yoga C940",
+                    "Weight": "1.35 kg",
+                    "image": "https://pcparts.uk/img.large.998c543514e0bfafe8ca0b93dbb408f335fbcf0958d35424ac48d2a849feae7f.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "14\"",
+                    "Resolution": "1920x1080",
+                    "Touchscreen": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": false,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core i7-1065G7",
+                    "Graphics Card": "Intel Iris Plus Graphics",
+                    "Memory Installed": "8 GB",
+                    "Storage": "512GB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 10 Home",
+                    "Battery Life": "Up to 18 hours",
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": false,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/23368/samsung-galaxy-book3-np734qfg-ka4uk-133-1920x1080-np734qfg-ka4uk",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Samsung",
+                    "Name": "Galaxy Book3",
+                    "Weight": "1.16 kg",
+                    "image": "https://pcparts.uk/img.large.2fe6bc7c9da7032cced6a7d78e80962c4345e7cb95413ba78488a9333b36e9ae.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "13.3\"",
+                    "Resolution": "1920x1080",
+                    "Touchscreen": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": false,
+                    "HDMI": true,
+                    "Thunderbolt": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core i5-1340P",
+                    "Graphics Card": "Intel Iris Xe Graphics eligible",
+                    "Memory Installed": "16 GB",
+                    "Storage": "256GB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 Professional",
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": false,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": [
+            {
+                "shop_url": "https://laptop-finder.co.uk/product/go/adcda095-8a1b-48c2-9dda-0129b9ae8ca5",
+                "price": "£1,086.36"
+            },
+            {
+                "shop_url": "https://laptop-finder.co.uk/product/go/adbbe84e-c458-41f7-ab1d-c6fe48d6dfa0",
+                "price": "£1,199.97"
+            }
+        ]
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/18336/lenovo-yoga-9i-14-3840x2160-core-i7-1185g7-3ghz-16-82bg000juk",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Lenovo",
+                    "Name": "Yoga 9i",
+                    "Weight": "1.37 kg",
+                    "image": "https://pcparts.uk/img.large.37f7761f91f44416eaa2917dd989d9a262d6b4c4452e6ca1d62e5a744bf91b99.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "14\"",
+                    "Resolution": "3840x2160",
+                    "Refresh Rate": "60 Hz",
+                    "Touchscreen": true,
+                    "Matte": false
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": false,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core i7-1185G7",
+                    "Graphics Card": "Intel Iris Xe Graphics",
+                    "Memory Installed": "16 GB",
+                    "Storage": "512GB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 10 Home",
+                    "Battery Life": "Up to 10 hours",
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": false,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/23764/dell-latitude-5540-80w3y-156-1920x1080-core-i5-134-80w3y",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Dell",
+                    "Name": "Latitude 5540",
+                    "Weight": "1.61 kg",
+                    "image": "https://pcparts.uk/img.large.aa381e149c0136e29f35dddd2bffacd4a00d01bcbbd18753593e2e0748abcce7.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "15.6\"",
+                    "Resolution": "1920x1080",
+                    "Refresh Rate": "60 Hz",
+                    "Touchscreen": false,
+                    "Matte": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": true,
+                    "HDMI": true,
+                    "Thunderbolt": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core i5-1345U",
+                    "Graphics Card": "Intel Iris Xe Graphics eligible",
+                    "Memory Installed": "16 GB",
+                    "Storage": "512GB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 Professional",
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": true,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": [
+            {
+                "shop_url": "https://laptop-finder.co.uk/product/go/4e2fc9a4-5c14-4d9e-aef8-18647caec03f",
+                "price": "£922.24"
+            },
+            {
+                "shop_url": "https://laptop-finder.co.uk/product/go/93790061-9d28-4219-a878-9826f4154940",
+                "price": "£1,002.75"
+            }
+        ]
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/17278/lenovo-thinkpad-l13-gen-3-133-1920x1200-core-i5-12-21b3001buk",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Lenovo",
+                    "Name": "ThinkPad L13 Gen 3",
+                    "Weight": "1.26 kg",
+                    "image": "https://pcparts.uk/img.large.f3aa1013041f18c90de39bed2b36f3da15bf74de9db53f39283b7da3f888f3c0.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "13.3\"",
+                    "Resolution": "1920x1200",
+                    "Matte": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "HDMI": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core i5-1235U",
+                    "Graphics Card": "Intel Iris Xe Graphics eligible",
+                    "Memory Installed": "8 GB",
+                    "Storage": "256GB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 Professional",
+                    "Battery Life": "Up to 14 hours",
+                    "Backlit Keyboard": true,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": [
+            {
+                "shop_url": "https://laptop-finder.co.uk/product/go/7c67aacb-f750-441e-8920-b6a6e0bfdae3",
+                "price": "£957.25"
+            }
+        ]
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/17629/msi-katana-gf66-12ux-156-1920x1080-240hz-core-i7-1-gf66-12ugs-402uk",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "MSI",
+                    "Name": "Katana GF66 12UX",
+                    "Weight": "2.25 kg",
+                    "image": "https://pcparts.uk/img.large.659c40f4ef7daf76eb5a786f7b1fcc2e19860bf167cb87d294d033b2f7cbec91.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "15.6\"",
+                    "Resolution": "1920x1080",
+                    "Refresh Rate": "240 Hz",
+                    "Touchscreen": false
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": true,
+                    "HDMI": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core i7-12700H",
+                    "Graphics Card": "GeForce RTX 3070 Ti",
+                    "Memory Installed": "16 GB",
+                    "Storage": "1TB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 Home",
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": true,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/17287/lenovo-thinkpad-l13-yoga-133-1920x1080-core-i7-105-20r5000suk",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Lenovo",
+                    "Name": "ThinkPad L13 Yoga",
+                    "Weight": "1.43 kg",
+                    "image": "https://pcparts.uk/img.large.b1f7d57f52ea79f88c766caf5c1984051103872697c7e55df6d1f922991fa542.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "13.3\"",
+                    "Resolution": "1920x1080",
+                    "Touchscreen": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": false,
+                    "HDMI": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core i7-10510U",
+                    "Graphics Card": "Intel UHD Graphics for 10th Gen Intel Processors",
+                    "Memory Installed": "16 GB",
+                    "Storage": "512GB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 10 Professional",
+                    "Battery Life": "Up to 12 hours",
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": false,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/17643/msi-pulse-gl76-12ux-173-1920x1080-360hz-core-i9-12-gl76-12ugk-091uk",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "MSI",
+                    "Name": "Pulse GL76 12UX",
+                    "Weight": "2.8 kg",
+                    "image": "https://pcparts.uk/img.large.5b0ff2802c6b855152711159f64c83b3eb101356d43be3942d2fe8ca5f696c29.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "17.3\"",
+                    "Resolution": "1920x1080",
+                    "Refresh Rate": "360 Hz",
+                    "Touchscreen": false
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": true,
+                    "HDMI": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core i9-12900H",
+                    "Graphics Card": "GeForce RTX 3070",
+                    "Memory Installed": "16 GB",
+                    "Storage": "1TB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 Home",
+                    "Battery Life": "Up to 6 hours",
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": true,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/22697/apple-macbook-pro-16-m3-16-3024x1964-120hz-m3-pro-mrw63ba",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Apple",
+                    "Name": "MacBook Pro 16 M3",
+                    "image": "https://pcparts.uk/img.large.190b5318253ca5a0380d1aaef0074ca30f3ad18e2e696d2d98d74034c84c199b.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "16\"",
+                    "Resolution": "3024x1964",
+                    "Refresh Rate": "120 Hz"
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "HDMI": true,
+                    "Thunderbolt": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Apple",
+                    "Processor Name": "M3 Pro (12 Core CPU / 18 Core GPU)",
+                    "Graphics Card": "Unknown",
+                    "Memory Installed": "36 GB",
+                    "Storage": "512GB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "macOS",
+                    "Battery Life": "Up to 18 hours",
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": [
+            {
+                "shop_url": "https://laptop-finder.co.uk/product/go/e53b6260-f3c1-46fc-9093-adb35c64a2b1",
+                "price": "£2,736.09"
+            }
+        ]
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/18335/lenovo-yoga-7i-gen-7-16-2560x1600-core-i7-1260p-16-82qg002uuk",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Lenovo",
+                    "Name": "Yoga 7i Gen 7",
+                    "Weight": "1.98 kg",
+                    "image": "https://pcparts.uk/img.large.cb466155c290f3b199fc5609d516b5d57d16b74797aeff32bb62eab6acdba866.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "16\"",
+                    "Resolution": "2560x1600",
+                    "Touchscreen": true,
+                    "Matte": false
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": false,
+                    "HDMI": true,
+                    "Thunderbolt": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core i7-1260P",
+                    "Graphics Card": "Intel Iris Xe Graphics eligible",
+                    "Memory Installed": "16 GB",
+                    "Storage": "512GB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 Home",
+                    "Battery Life": "Up to 11 hours",
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": true,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/24537/msi-modern-15-h-ai-c1m-9s7-15h551-003-156-1920x108-9s7-15h551-003",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "MSI",
+                    "Name": "Modern 15 H AI C1M",
+                    "Weight": "1.9 kg",
+                    "image": "https://pcparts.uk/img.large.000ca001b5550bd45e314b21fac10c776487cbcb52d915b323807da42bc922e8.png"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "15.6\"",
+                    "Resolution": "1920x1080",
+                    "Refresh Rate": "60 Hz",
+                    "Touchscreen": false
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "HDMI": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core Ultra 5 125H",
+                    "Graphics Card": "Intel Arc",
+                    "Memory Installed": "16 GB",
+                    "Storage": "512GB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 Home",
+                    "Backlit Keyboard": true,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/22959/acer-travelmate-p2-tmp216-51-tco-73d4-16-1920x1200-nxb1cek003",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Acer",
+                    "Name": "TravelMate P2",
+                    "Weight": "1.87 kg",
+                    "image": "https://pcparts.uk/img.large.1fa341fcbd0c9ff52ad7e6db221cb8b964318ad23d8fe193c6796ccb7da25978.webp"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "16\"",
+                    "Resolution": "1920x1200",
+                    "Refresh Rate": "60 Hz",
+                    "Touchscreen": false,
+                    "Matte": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": true,
+                    "HDMI": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core i7-1355U",
+                    "Graphics Card": "Intel Iris Xe Graphics eligible",
+                    "Memory Installed": "32 GB",
+                    "Storage": "1TB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 Professional",
+                    "Battery Life": "Up to 13 hours",
+                    "Backlit Keyboard": true,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/23754/razer-blade-18-rz09-05092wk4-r3w1-18-2560x1600-300-rz09-05092wk4-r3w1",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Razer",
+                    "Name": "Blade 18",
+                    "Weight": "3.1 kg",
+                    "image": "https://pcparts.uk/img.large.4ff046be728d68eb9abc0c5c984cc1846b56bd94c59897c6940830d90c672ca5.png"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "18\"",
+                    "Resolution": "2560x1600",
+                    "Refresh Rate": "300 Hz",
+                    "Touchscreen": false
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": true,
+                    "HDMI": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core i9-14900HX",
+                    "Graphics Card": "GeForce RTX 4090",
+                    "Memory Installed": "32 GB",
+                    "Storage": "2TB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 Home",
+                    "Backlit Keyboard": true,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/17338/lenovo-thinkpad-t14-gen-2-14-1920x1080-core-i7-116-20w000nxuk",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Lenovo",
+                    "Name": "ThinkPad T14 Gen 2",
+                    "Weight": "1.53 kg",
+                    "image": "https://pcparts.uk/img.large.a27fe33d35f7819652472b5407aae5c325bf5b52cbb1b791e0524853f9ee47f6.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "14\"",
+                    "Resolution": "1920x1080",
+                    "Refresh Rate": "60 Hz",
+                    "Touchscreen": false,
+                    "Matte": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": false,
+                    "HDMI": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core i7-1165G7",
+                    "Graphics Card": "Intel Iris Xe Graphics",
+                    "Memory Installed": "16 GB",
+                    "Storage": "512GB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 10 Professional",
+                    "Battery Life": "Up to 11 hours",
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": false,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/23647/msi-cyborg-15-ai-a1ve-002uk-156-1920x1080-144hz-co-9s7-15k211-002",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "MSI",
+                    "Name": "Cyborg 15 AI",
+                    "Weight": "1.98 kg",
+                    "image": "https://pcparts.uk/img.large.4d990dffebd6c4634aa208a979fecf9f32acb8939b785353259d3247a10a5ea3.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "15.6\"",
+                    "Resolution": "1920x1080",
+                    "Refresh Rate": "144 Hz",
+                    "Touchscreen": false
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": true,
+                    "HDMI": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core Ultra 7 155H",
+                    "Graphics Card": "GeForce RTX 4050",
+                    "Memory Installed": "16 GB",
+                    "Storage": "512GB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 Home",
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": true,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": [
+            {
+                "shop_url": "https://laptop-finder.co.uk/product/go/c8659db6-12b5-4be5-a685-cc772176d31b",
+                "price": "£929.00"
+            },
+            {
+                "shop_url": "https://laptop-finder.co.uk/product/go/316151eb-47ce-42d6-aea6-e897ed754718",
+                "price": "£929.01"
+            },
+            {
+                "shop_url": "https://laptop-finder.co.uk/product/go/b0d3d68a-712d-4b95-973f-bf9c6fd36f8f",
+                "price": "£986.22"
+            }
+        ]
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/22778/acer-conceptd-3-pro-cn316-73p-76zs-16-1920x1200-co-nxc6vek001",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Acer",
+                    "Name": "ConceptD 3 Pro",
+                    "Weight": "1.7 kg",
+                    "image": "https://pcparts.uk/img.large.4fb1012185a7f8e2dcadfaf6d3a6b96ea9f7f4a09d2169048610a58d42febe6d.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "16\"",
+                    "Resolution": "1920x1200",
+                    "Touchscreen": false
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": true,
+                    "HDMI": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core i7-11800H",
+                    "Graphics Card": "Quadro T1200",
+                    "Memory Installed": "16 GB",
+                    "Storage": "1TB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 Professional",
+                    "Battery Life": "Up to 13 hours",
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": false,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/9672/asus-rog-zephyrus-g14-ga401-ga401iu-ha032t-14-2560-ga401iu-ha032t",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "ASUS",
+                    "Name": "ROG Zephyrus G14 GA401",
+                    "Weight": "1.6 kg",
+                    "image": "https://pcparts.uk/img.large.2497e7303916bcae4bb45c8cc4dd6b0e4dbc3f40aca1fe5bf0aa9f84b9cf0cf3.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "14\"",
+                    "Resolution": "2560x1440",
+                    "Touchscreen": false,
+                    "Matte": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": false,
+                    "HDMI": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "AMD",
+                    "Processor Name": "Ryzen 7 4800HS",
+                    "Graphics Card": "GeForce GTX 1660 Ti Max-Q",
+                    "Memory Installed": "16 GB",
+                    "Storage": "512GB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 10 Home",
+                    "Battery Life": "Up to 11 hours",
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": false,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/17383/lenovo-thinkpad-x13-gen-1-133-1920x1080-core-i5-10-20t3000nuk",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Lenovo",
+                    "Name": "ThinkPad X13 Gen 1",
+                    "Weight": "1.28 kg",
+                    "image": "https://pcparts.uk/img.large.5ec34ef7e6bbfad6c80b409ef1b728d47bb30b819637ae9071500fa48d16905e.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "13.3\"",
+                    "Resolution": "1920x1080",
+                    "Touchscreen": true,
+                    "Matte": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "HDMI": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core i5-10310U",
+                    "Graphics Card": "Intel UHD Graphics for 10th Gen Intel Processors",
+                    "Memory Installed": "16 GB",
+                    "Storage": "256GB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 10 Professional",
+                    "Battery Life": "Up to 16 hours",
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": false,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/23475/lenovo-ideapad-slim-5-83da001uuk-14-1920x1200-core-83da001uuk",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Lenovo",
+                    "Name": "IdeaPad Slim 5",
+                    "Weight": "1.46 kg",
+                    "image": "https://pcparts.uk/img.large.ab0b1014befac3969a476fde907461cfe018f5055dbc33274385334743d4c661.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "14\"",
+                    "Resolution": "1920x1200",
+                    "Refresh Rate": "60 Hz",
+                    "Touchscreen": false,
+                    "Matte": false
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "HDMI": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core Ultra 5 125H",
+                    "Graphics Card": "Intel Arc",
+                    "Memory Installed": "16 GB",
+                    "Storage": "512GB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 Home",
+                    "Backlit Keyboard": false,
+                    "Numeric Keyboard": false,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": [
+            {
+                "shop_url": "https://laptop-finder.co.uk/product/go/cea985fc-a754-439e-9492-5a777d694adc",
+                "price": "£699.00"
+            },
+            {
+                "shop_url": "https://laptop-finder.co.uk/product/go/fcbe4ba9-9204-4a66-b137-c422e4fa6fff",
+                "price": "£871.84"
+            }
+        ]
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/16927/geo-geobook-140-minecraft-edition-14-1366x768-cele-ge334",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Geo",
+                    "Name": "GeoBook 140 Minecraft Edition",
+                    "Weight": "1.3 kg",
+                    "image": "https://pcparts.uk/img.large.1d04ca9ede592391d34b79402a843e5b79f666bb232edbc41ac798c330003203.png"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "14\"",
+                    "Resolution": "1366x768",
+                    "Refresh Rate": "60 Hz",
+                    "Touchscreen": false
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": false,
+                    "HDMI": true,
+                    "USB Type-C": false
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Celeron N4020",
+                    "Graphics Card": "Intel UHD Graphics 600",
+                    "Memory Installed": "4 GB",
+                    "Storage": "64GB eMMC"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 Home (S mode)",
+                    "Numeric Keyboard": false,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/17345/lenovo-thinkpad-t14s-gen-2-14-1920x1080-core-i5-11-20wm004nuk",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Lenovo",
+                    "Name": "ThinkPad T14s Gen 2",
+                    "Weight": "1.36 kg",
+                    "image": "https://pcparts.uk/img.large.8ddf9c3132eb1beb6264bb1a6ba3c257ab062eb80f414ece4c8e25039db30e53.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "14\"",
+                    "Resolution": "1920x1080",
+                    "Refresh Rate": "60 Hz",
+                    "Touchscreen": false,
+                    "Matte": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": true,
+                    "HDMI": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core i5-1135G7",
+                    "Graphics Card": "Intel Iris Xe Graphics",
+                    "Memory Installed": "16 GB",
+                    "Storage": "512GB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 10 Professional",
+                    "Battery Life": "Up to 14 hours",
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": false,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/25356/msi-vector-16-hx-ai-a2xwig-006uk-16-2560x1600-240h-9s7-15m352-006",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "MSI",
+                    "Name": "Vector 16 HX AI",
+                    "Weight": "2.7 kg",
+                    "image": "https://pcparts.uk/img.large.3c75cf2e47078aabfd2e26d635555855d378172b3bddbdb07a6a51741ea5325e.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "16\"",
+                    "Resolution": "2560x1600",
+                    "Refresh Rate": "240 Hz",
+                    "Touchscreen": false,
+                    "Matte": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": true,
+                    "HDMI": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core Ultra 9 275HX",
+                    "Graphics Card": "GeForce RTX 5080",
+                    "Memory Installed": "32 GB",
+                    "Storage": "1TB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 Home",
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": true,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": [
+            {
+                "shop_url": "https://laptop-finder.co.uk/product/go/d7b12e84-afdb-4bde-bf87-e5426867c221",
+                "price": "£2,729.01"
+            },
+            {
+                "shop_url": "https://laptop-finder.co.uk/product/go/b092b203-b7ff-4542-be33-94b24ed90dbf",
+                "price": "£2,798.99"
+            }
+        ]
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/16383/acer-predator-helios-300-ph317-56-76xp-173-2560x14-nhqgfek001",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Acer",
+                    "Name": "Predator Helios 300",
+                    "Weight": "3 kg",
+                    "image": "https://pcparts.uk/img.large.6e9830b8d88d86b314a0d5a4088998edfaa54ba812b77902a04bb267bc28e096.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "17.3\"",
+                    "Resolution": "2560x1440",
+                    "Refresh Rate": "165 Hz",
+                    "Touchscreen": false
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": true,
+                    "HDMI": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core i7-12700H",
+                    "Graphics Card": "GeForce RTX 3070 Ti",
+                    "Memory Installed": "16 GB",
+                    "Storage": "1TB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 Home",
+                    "Battery Life": "Up to 6 hours",
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": true,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/16635/asus-vivobook-pro-15-oled-k3500pa-l1215w-156-1920x-k3500pa-l1215w",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "ASUS",
+                    "Name": "VivoBook Pro 15 OLED",
+                    "Weight": "1.65 kg",
+                    "image": "https://pcparts.uk/img.large.6f0d3b872afef0dee8addd755503de76c57fb5158640b14432534ed65f590b35.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "15.6\"",
+                    "Resolution": "1920x1080",
+                    "Refresh Rate": "60 Hz",
+                    "Touchscreen": false,
+                    "Matte": false
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": false,
+                    "HDMI": true,
+                    "Thunderbolt": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core i7-11370H",
+                    "Graphics Card": "Intel Iris Xe Graphics",
+                    "Memory Installed": "16 GB",
+                    "Storage": "1TB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 Home",
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": true,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/9267/hp-zbook-studio-g7-156-1920x1080-core-i7-10750h-26-1j3v6eaabu",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "HP",
+                    "Name": "ZBook Studio G7",
+                    "Weight": "1.74 kg",
+                    "image": "https://pcparts.uk/img.large.5943c9d280cac21d6963d22baaea73064ed4bc6e0fdf69f34bf0d8e3d0285834.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "15.6\"",
+                    "Resolution": "1920x1080",
+                    "Touchscreen": false,
+                    "Matte": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": false,
+                    "HDMI": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core i7-10750H",
+                    "Graphics Card": "Quadro T1000",
+                    "Memory Installed": "16 GB",
+                    "Storage": "256GB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 10 Professional",
+                    "Battery Life": "Up to 18 hours",
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": true,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/19672/msi-katana-15-b12vgk-033uk-156-1920x1080-144hz-cor-9s7-158571-033",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "MSI",
+                    "Name": "Katana 15",
+                    "image": "https://pcparts.uk/img.large.a171da2797cae1787c2f07dcc922431b9c652bbb8446b6bcaab2971f0cc45c37.png"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "15.6\"",
+                    "Resolution": "1920x1080",
+                    "Refresh Rate": "144 Hz"
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "HDMI": true,
+                    "USB Type-C": false
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core i7-12650H",
+                    "Graphics Card": "GeForce RTX 4070",
+                    "Memory Installed": "16 GB",
+                    "Storage": "1TB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 Home",
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/23566/acer-predator-triton-neo-16-pro-ptn16-51-94w8-16-3-nhqppek002",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Acer",
+                    "Name": "Predator Triton Neo 16 Pro",
+                    "Weight": "2.05 kg",
+                    "image": "https://pcparts.uk/img.large.3a352cb3955484dfddb47b1c3e8b4ff94c9d2a5c67af155c0004414770087681.webp"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "16\"",
+                    "Resolution": "3200x2000",
+                    "Refresh Rate": "165 Hz",
+                    "Touchscreen": false,
+                    "Matte": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": false,
+                    "HDMI": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core Ultra 9 185H",
+                    "Graphics Card": "GeForce RTX 4070",
+                    "Memory Installed": "32 GB",
+                    "Storage": "2TB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 Professional",
+                    "Battery Life": "Up to 8 hours",
+                    "Backlit Keyboard": true,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/21599/samsung-galaxy-book3-np750xfg-ka3uk-156-1920x1080-np750xfg-ka3uk",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Samsung",
+                    "Name": "Galaxy Book3",
+                    "Weight": "1.58 kg",
+                    "image": "https://pcparts.uk/img.large.cbc828e33956f14e05f2277729c0b706409abdfc64bf50ce74dc2ecb6c486925.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "15.6\"",
+                    "Resolution": "1920x1080",
+                    "Refresh Rate": "60 Hz",
+                    "Touchscreen": false
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "HDMI": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core i5-1335U",
+                    "Graphics Card": "Intel Iris Xe Graphics eligible",
+                    "Memory Installed": "8 GB",
+                    "Storage": "512GB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 Home",
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": true,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/17453/lg-gram-16t90p-16-2560x1600-core-i7-1165g7-28ghz-1-16t90p-kaa75a1",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "LG",
+                    "Name": "Gram 16T90P",
+                    "Weight": "1.48 kg",
+                    "image": "https://pcparts.uk/img.large.eacb03bdd4298f63c905234028055449412f1fb71135868e0db084557b695b62.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "16\"",
+                    "Resolution": "2560x1600",
+                    "Touchscreen": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core i7-1165G7",
+                    "Graphics Card": "Intel Iris Xe Graphics",
+                    "Memory Installed": "16 GB",
+                    "Storage": "512GB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 10 Home",
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": false,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/16734/chillblast-fnatic-flash-16-1920x1200-165hz-core-i7-nbfnatic780-3",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Chillblast",
+                    "Name": "Fnatic Flash",
+                    "image": "https://pcparts.uk/img.large.a01f8c5b9088459cbdbef24259a9337246770486a440a8958b05954ae70c7290.png"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "16\"",
+                    "Resolution": "1920x1200",
+                    "Refresh Rate": "165 Hz"
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": false,
+                    "HDMI": true,
+                    "USB Type-C": false
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core i7-12700H",
+                    "Graphics Card": "GeForce RTX 3080",
+                    "Memory Installed": "32 GB",
+                    "Storage": "1TB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 Home",
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/18363/msi-summit-e16-flip-evo-a12m-16-1920x1200-165hz-co-9s7-159231-030",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "MSI",
+                    "Name": "Summit E16 Flip Evo A12M",
+                    "Weight": "1.9 kg",
+                    "image": "https://pcparts.uk/img.large.193909d7e3698363a3396c33e5585941266261a19c77b549c2d696e2adf6f543.png"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "16\"",
+                    "Resolution": "1920x1200",
+                    "Refresh Rate": "165 Hz",
+                    "Touchscreen": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": false,
+                    "HDMI": true,
+                    "USB Type-C": false
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core i7-1260P",
+                    "Graphics Card": "Intel Iris Xe Graphics eligible",
+                    "Memory Installed": "16 GB",
+                    "Storage": "512GB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 Home",
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": [
+            {
+                "shop_url": "https://laptop-finder.co.uk/product/go/ea1e3612-a929-4ff0-a4ea-85f0ae9ca251",
+                "price": "£1,016.81"
+            }
+        ]
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/17436/lenovo-yoga-7i-14-1920x1080-core-i5-1135g7-24ghz-8-82bh000duk",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Lenovo",
+                    "Name": "Yoga 7i",
+                    "Weight": "1.43 kg",
+                    "image": "https://pcparts.uk/img.large.f5a5dd99ec689e34544734c0af3687a98c1e84cd856a3b83a3ad9cab1f66e365.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "14\"",
+                    "Resolution": "1920x1080",
+                    "Refresh Rate": "60 Hz",
+                    "Touchscreen": true,
+                    "Matte": false
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": false,
+                    "Thunderbolt": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core i5-1135G7",
+                    "Graphics Card": "Intel Iris Xe Graphics",
+                    "Memory Installed": "8 GB",
+                    "Storage": "256GB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 10 Home",
+                    "Battery Life": "Up to 16 hours",
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": false,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/23538/asus-rog-strix-g17-g713pu-hx045w-173-1920x1080-144-g713pu-hx045w",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "ASUS",
+                    "Name": "ROG STRIX G17",
+                    "Weight": "2.8 kg",
+                    "image": "https://pcparts.uk/img.large.0b22b8ef45d2783f0fb0601a3ec9ec04eabd1266d8dbf960239b2bd3a6b6dd15.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "17.3\"",
+                    "Resolution": "1920x1080",
+                    "Refresh Rate": "144 Hz",
+                    "Touchscreen": false,
+                    "Matte": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": true,
+                    "HDMI": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "AMD",
+                    "Processor Name": "Ryzen 9 7945HX",
+                    "Graphics Card": "GeForce RTX 4050",
+                    "Memory Installed": "16 GB",
+                    "Storage": "1TB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 Home",
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": true,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/12697/gigabyte-aorus-17g-yd-74uk345sh-173-1920x1080-300h-aorus-17g-yd-74uk345sh",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Gigabyte",
+                    "Name": "AORUS 17G YD-74UK345SH",
+                    "Weight": "2.7 kg",
+                    "image": "https://pcparts.uk/img.large.99807f2b0b8ec81c56935ca49f19e83d11ab9ece70450b2d845d9a5c0ffc2dd3.png"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "17.3\"",
+                    "Resolution": "1920x1080",
+                    "Refresh Rate": "300 Hz"
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": true,
+                    "HDMI": true,
+                    "Thunderbolt": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core i7-11800H",
+                    "Graphics Card": "GeForce RTX 3080",
+                    "Memory Installed": "32 GB",
+                    "Storage": "512GB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 10 Home",
+                    "Battery Life": "Up to 8 hours",
+                    "Backlit Keyboard": true,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/24673/lenovo-thinkpad-p16s-21ks0004uk-16-1920x1200-core-21ks0004uk",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Lenovo",
+                    "Name": "ThinkPad P16s",
+                    "Weight": "1.82 kg",
+                    "image": "https://pcparts.uk/img.large.fba1208f23256dc451b603a5c6ce4ac4c972e1b181b2f4f1c98813bec13b0f23.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "16\"",
+                    "Resolution": "1920x1200",
+                    "Touchscreen": false,
+                    "Matte": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": true,
+                    "HDMI": true,
+                    "Thunderbolt": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core Ultra 7 155H",
+                    "Graphics Card": "RTX 500 Ada",
+                    "Memory Installed": "32 GB",
+                    "Storage": "1TB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 Professional",
+                    "Backlit Keyboard": true,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": [
+            {
+                "shop_url": "https://laptop-finder.co.uk/product/go/cfe1bd77-130b-4d35-ba1e-ceb5d41f805f",
+                "price": "£1,401.70"
+            },
+            {
+                "shop_url": "https://laptop-finder.co.uk/product/go/34847dc9-a10b-4d4f-a432-d8a40050580f",
+                "price": "£1,699.97"
+            },
+            {
+                "shop_url": "https://laptop-finder.co.uk/product/go/94a21e7d-726c-4fa8-882f-f1d1dc526e39",
+                "price": "£1,802.99"
+            }
+        ]
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/23745/samsung-galaxy-book4-fe-np750xgj-kg1uk-156-1920x10-np750xgj-kg1uk",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Samsung",
+                    "Name": "Galaxy Book4 FE",
+                    "Weight": "1.55 kg",
+                    "image": "https://pcparts.uk/img.large.78aed2980683d36412bf014a638adda3d394f0986d4da99332b2e5c4db6985e5.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "15.6\"",
+                    "Resolution": "1920x1080",
+                    "Refresh Rate": "60 Hz",
+                    "Touchscreen": false,
+                    "Matte": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": true,
+                    "HDMI": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core i3-1315U",
+                    "Graphics Card": "Intel UHD Graphics for 13th Gen Intel Processors",
+                    "Memory Installed": "8 GB",
+                    "Storage": "256GB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 Home",
+                    "Numeric Keyboard": true,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": [
+            {
+                "shop_url": "https://laptop-finder.co.uk/product/go/d1630bb0-4461-47d6-88bd-09a2bd17cd50",
+                "price": "£499.00"
+            }
+        ]
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/9952/gigabyte-aorus-17g-173-1920x1080-300hz-core-i7-118-aorus-17g-xd-73uk345sh",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Gigabyte",
+                    "Name": "AORUS 17G",
+                    "Weight": "2.7 kg",
+                    "image": "https://pcparts.uk/img.large.b8f47ab40f41b088f666b14a13f1ae9ea9c764f787295d83b8ed8893eaac5625.png"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "17.3\"",
+                    "Resolution": "1920x1080",
+                    "Refresh Rate": "300 Hz",
+                    "Touchscreen": false,
+                    "Matte": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": true,
+                    "HDMI": true,
+                    "Thunderbolt": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core i7-11800H",
+                    "Graphics Card": "GeForce RTX 3070",
+                    "Memory Installed": "32 GB",
+                    "Storage": "512GB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 10 Home",
+                    "Battery Life": "Up to 8 hours",
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": true,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/23746/lenovo-yoga-pro-7-83e2000kuk-145-3072x1920-120hz-c-83e2000kuk",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Lenovo",
+                    "Name": "Yoga Pro 7",
+                    "Weight": "1.59 kg",
+                    "image": "https://pcparts.uk/img.large.77aba02d04dc549cdc7996f1e57a816220ea5e0fa96e7301f6435d121bdf8cb1.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "14.5\"",
+                    "Resolution": "3072x1920",
+                    "Refresh Rate": "120 Hz",
+                    "Touchscreen": true,
+                    "Matte": false
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": false,
+                    "HDMI": true,
+                    "Thunderbolt": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core Ultra 9 185H",
+                    "Graphics Card": "Intel Arc graphics",
+                    "Memory Installed": "32 GB",
+                    "Storage": "1TB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 Home",
+                    "Battery Life": "Up to 8 hours",
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": false,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": [
+            {
+                "shop_url": "https://laptop-finder.co.uk/product/go/aa1696a2-981a-4f42-baf9-4331e209db43",
+                "price": "£1,199.00"
+            }
+        ]
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/16535/asus-expertbook-p1-p1511cea-bq0466x-156-1920x1080-p1511cea-bq0466x",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "ASUS",
+                    "Name": "ExpertBook P1",
+                    "image": "https://pcparts.uk/img.large.7395c6cbcaf45986fc3869a4dc87eea55e151b95be8e544c864f8c1fecda76c6.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "15.6\"",
+                    "Resolution": "1920x1080",
+                    "Matte": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": true,
+                    "HDMI": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core i5-1135G7",
+                    "Graphics Card": "Intel Iris Xe Graphics",
+                    "Memory Installed": "8 GB",
+                    "Storage": "512GB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 Professional",
+                    "Numeric Keyboard": true,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/16365/acer-extensa-15-ex215-52-53t9-156-1920x1080-core-i-nxeg8ek006",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Acer",
+                    "Name": "Extensa 15",
+                    "Weight": "1.9 kg",
+                    "image": "https://pcparts.uk/img.large.0f3477c3f6687e3e9e754bb1173dab79ed8d3d72a5111ceeeebabd3e953897c4.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "15.6\"",
+                    "Resolution": "1920x1080"
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": true,
+                    "HDMI": true,
+                    "USB Type-C": false
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core i5-1035G1",
+                    "Graphics Card": "Intel UHD Graphics for 10th Gen Intel Processors",
+                    "Memory Installed": "8 GB",
+                    "Storage": "512GB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 10 Home",
+                    "Battery Life": "Up to 8 hours",
+                    "Numeric Keyboard": true,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/23655/lenovo-legion-pro-7-82ws003guk-16-2560x1600-240hz-82ws003guk",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Lenovo",
+                    "Name": "Legion Pro 7",
+                    "Weight": "2.8 kg",
+                    "image": "https://pcparts.uk/img.large.bf36907df30769da94ef2471e8b575bca39c94c088761562b96d3b233c9f6df8.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "16\"",
+                    "Resolution": "2560x1600",
+                    "Refresh Rate": "240 Hz",
+                    "Touchscreen": false,
+                    "Matte": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": true,
+                    "HDMI": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "AMD",
+                    "Processor Name": "Ryzen 9 7945HX",
+                    "Graphics Card": "GeForce RTX 4090",
+                    "Memory Installed": "32 GB",
+                    "Storage": "1TB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 Home",
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": true,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/17269/lenovo-thinkpad-e15-gen-3-156-1920x1080-ryzen-5-55-20yg00a3uk",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Lenovo",
+                    "Name": "ThinkPad E15 Gen 3",
+                    "Weight": "1.7 kg",
+                    "image": "https://pcparts.uk/img.large.ae72230ce5b98e30253235b6ce05f763567010a13f4410e5f788ad05d45c7c37.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "15.6\"",
+                    "Resolution": "1920x1080",
+                    "Refresh Rate": "60 Hz",
+                    "Touchscreen": false,
+                    "Matte": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": true,
+                    "HDMI": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "AMD",
+                    "Processor Name": "Ryzen 5 5500U",
+                    "Graphics Card": "AMD Radeon Graphics",
+                    "Memory Installed": "8 GB",
+                    "Storage": "256GB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 Professional",
+                    "Battery Life": "Up to 14 hours",
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": true,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/23674/hp-envy-x360-16-ac0503sa-16-1920x1200-core-ultra-5-9v466ea",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "HP",
+                    "Name": "ENVY x360 16-ac0503sa",
+                    "Weight": "1.87 kg",
+                    "image": "https://pcparts.uk/img.large.96b041974b9d1cdddfdb4f77fb7537105ab7386a65769f0f16437ca86490ec4d.png"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "16\"",
+                    "Resolution": "1920x1200",
+                    "Touchscreen": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": true,
+                    "HDMI": true,
+                    "Thunderbolt": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core Ultra 5 125U",
+                    "Graphics Card": "Intel Graphics",
+                    "Memory Installed": "8 GB",
+                    "Storage": "512GB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 Home",
+                    "Battery Life": "Up to 13 hours",
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": false,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": [
+            {
+                "shop_url": "https://laptop-finder.co.uk/product/go/6341796e-a130-494c-9587-894f7b2c4547",
+                "price": "£699.00"
+            }
+        ]
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/23638/acer-aspire-go-ag14-21p-r14t-14-1920x1200-ryzen-3-nxkwvek002",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Acer",
+                    "Name": "Aspire Go",
+                    "Weight": "1.49 kg",
+                    "image": "https://pcparts.uk/img.large.e466dc3ae9572babfa19a4925a9756c1506586435692032f51cdc6fcb6a58304.png"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "14\"",
+                    "Resolution": "1920x1200",
+                    "Refresh Rate": "60 Hz",
+                    "Touchscreen": false,
+                    "Matte": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": false,
+                    "HDMI": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "AMD",
+                    "Processor Name": "Ryzen 3 7320U",
+                    "Graphics Card": "AMD Radeon 610M",
+                    "Memory Installed": "4 GB",
+                    "Storage": "128GB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 (S mode)",
+                    "Battery Life": "Up to 13 hours",
+                    "Backlit Keyboard": false,
+                    "Numeric Keyboard": false,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": [
+            {
+                "shop_url": "https://laptop-finder.co.uk/product/go/5c89d395-7b0e-4b72-ad75-36ec71b3d7f0",
+                "price": "£399.00"
+            }
+        ]
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/17346/lenovo-thinkpad-t14s-gen-2-14-1920x1080-ryzen-5-pr-20xf009auk",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Lenovo",
+                    "Name": "ThinkPad T14s Gen 2",
+                    "Weight": "1.36 kg",
+                    "image": "https://pcparts.uk/img.large.a956cd2658530b4b6ad165e440ca52a4b62d6e8ed1b558f7524f630a6bebcbde.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "14\"",
+                    "Resolution": "1920x1080",
+                    "Touchscreen": false,
+                    "Matte": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "HDMI": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "AMD",
+                    "Processor Name": "Ryzen 5 PRO 5650U",
+                    "Graphics Card": "AMD Radeon Graphics",
+                    "Memory Installed": "16 GB",
+                    "Storage": "512GB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 Professional",
+                    "Battery Life": "Up to 15 hours",
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": false,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": [
+            {
+                "shop_url": "https://laptop-finder.co.uk/product/go/762e3642-4391-4622-987f-5ccf2915392e",
+                "price": "£449.99"
+            },
+            {
+                "shop_url": "https://laptop-finder.co.uk/product/go/a56a4b5f-6900-4ff4-b9b2-6da9fcf8d56a",
+                "price": "£470.29"
+            }
+        ]
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/23358/asus-zenbook-14-ux3405ma-pz185w-14-2880x1800-120hz-ux3405ma-pz185w",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "ASUS",
+                    "Name": "Zenbook 14",
+                    "Weight": "1.28 kg",
+                    "image": "https://pcparts.uk/img.large.d1f5f914027d81d8f7363194e3a8cedafed5e3a94f720f7436477dd759d681d2.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "14\"",
+                    "Resolution": "2880x1800",
+                    "Refresh Rate": "120 Hz",
+                    "Touchscreen": true,
+                    "Matte": false
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": false,
+                    "HDMI": true,
+                    "Thunderbolt": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core Ultra 7 155H",
+                    "Graphics Card": "Intel Arc",
+                    "Memory Installed": "16 GB",
+                    "Storage": "1TB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 11 Home",
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": false,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": [
+            {
+                "shop_url": "https://laptop-finder.co.uk/product/go/8317492b-5f77-44ce-9208-ad60a1517e20",
+                "price": "£799.00"
+            },
+            {
+                "shop_url": "https://laptop-finder.co.uk/product/go/b2851f4d-b492-422a-9a88-4a0bda2bf20d",
+                "price": "£1,286.99"
+            },
+            {
+                "shop_url": "https://laptop-finder.co.uk/product/go/6aa46278-3020-4c7e-9443-c6a22fded26c",
+                "price": "£1,322.99"
+            }
+        ]
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/9440/msi-ws75-10tm-ws75-10tm-825uk-173-1920x1080-144hz-9s7-17g312-825",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "MSI",
+                    "Name": "WS75-10TM",
+                    "Weight": "2.4 kg",
+                    "image": "https://pcparts.uk/img.large.5d51bc8448a5fe5e90b94599c9e4f42656ff04f6fe4e905031c5b1eb33a7ad42.png"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "17.3\"",
+                    "Resolution": "1920x1080",
+                    "Refresh Rate": "144 Hz",
+                    "Touchscreen": false
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": true,
+                    "HDMI": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core i7-10875H",
+                    "Graphics Card": "Quadro RTX 5000",
+                    "Memory Installed": "64 GB",
+                    "Storage": "2TB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 10 Professional",
+                    "Backlit Keyboard": true,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    },
+    {
+        "url": "https://laptop-finder.co.uk/info/17354/lenovo-thinkpad-t15g-gen-2-156-3840x2160-core-i7-1-20ys000fuk",
+        "tables": [
+            {
+                "title": "Product Details",
+                "data": {
+                    "Brand": "Lenovo",
+                    "Name": "ThinkPad T15g Gen 2",
+                    "Weight": "2.87 kg",
+                    "image": "https://pcparts.uk/img.large.2ab789c20b371e65561eed0d2e46242e11d8111d6b73dbf901ef8d7c04cfb099.jpg"
+                }
+            },
+            {
+                "title": "Screen",
+                "data": {
+                    "Size": "15.6\"",
+                    "Resolution": "3840x2160",
+                    "Refresh Rate": "60 Hz",
+                    "Touchscreen": false,
+                    "Matte": true
+                }
+            },
+            {
+                "title": "Ports",
+                "data": {
+                    "Ethernet (RJ45)": true,
+                    "HDMI": true,
+                    "Thunderbolt": true,
+                    "USB Type-C": true
+                }
+            },
+            {
+                "title": "Specs",
+                "data": {
+                    "Processor Brand": "Intel",
+                    "Processor Name": "Core i7-11800H",
+                    "Graphics Card": "GeForce RTX 3080",
+                    "Memory Installed": "32 GB",
+                    "Storage": "1TB SSD"
+                }
+            },
+            {
+                "title": "Features",
+                "data": {
+                    "Operating System": "Windows 10 Professional",
+                    "Battery Life": "Up to 7 hours",
+                    "Backlit Keyboard": true,
+                    "Numeric Keyboard": true,
+                    "Bluetooth": true
+                }
+            }
+        ],
+        "Prices": []
+    }
+]
