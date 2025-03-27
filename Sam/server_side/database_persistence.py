@@ -1,16 +1,13 @@
 import json
-from distutils.util import execute
-from pprint import pprint
+# from distutils.util import execute
 from DBAccess.dbAccess import db_access
 
 # Initialize lists to store different laptop details
-laptops = []
-brands = []
+products = []
 screens = []
-processors = []
-misc = []
-features = []
 ports = []
+specs = []
+features = []
 
 # Load the JSON data from the file
 print("Opening the scraped data\n")
@@ -25,12 +22,11 @@ for laptop in data:
     tables = laptop.get('tables', [])  # Extract tables from each laptop
 
     # Initialize dictionaries for each category
-    brand_details = {}
+    product_details = {}
     screen_details = {}
-    processor_details = {}
-    misc_details = {}
+    port_details = {}
+    spec_details = {}
     features_details = {}
-    ports_details = {}
 
     # Loop through each table and store data in respective dictionaries
     for table in tables:
@@ -38,31 +34,25 @@ for laptop in data:
         table_data = table.get('data', {})
 
         if title == 'Product Details':
-            brand_details.update(table_data)
+            product_details.update(table_data)
         elif title == 'Screen':
             screen_details.update(table_data)
-        elif title == 'Processor':
-            processor_details.update(table_data)
-        elif title == 'Misc':
-            misc_details.update(table_data)
+        elif title == 'Ports':
+            port_details.update(table_data)
+        elif title == 'Specs':
+            spec_details.update(table_data)
         elif title == 'Features':
             features_details.update(table_data)
-        elif title == 'Ports':
-            ports_details.update(table_data)
+
 
     # Append extracted details to their respective lists
-    brands.append(brand_details)
+    products.append(product_details)
     screens.append(screen_details)
-    processors.append(processor_details)
-    misc.append(misc_details)
+    ports.append(port_details)
+    specs.append(spec_details)
     features.append(features_details)
-    ports.append(ports_details)
 
 print("Adding the dictionary items to their respective list objects")
-
-# Print extracted brands for verification
-print("\nBrands: \n")
-pprint(brands)
 
 # Establish database connection
 conn, cur = db_access()
@@ -108,28 +98,29 @@ except Exception as e:
     print(f"Database error: {e}")
     conn.rollback()
 
-for i in range(len(brands)):
-    brand = brands[i] if i < len(brands) else {}
-    item = misc[i] if i < len(misc) else {}
+for i in range(len(products)):
+    brand = products[i] if i < len(products) else {}
     screen = screens[i] if i < len(screens) else {}
+    feature = features[i] if i <len(features) else {}
+    spec = specs[i] if i < len(specs) else {}
 
     laptop_name = brand.get('Name', '')
     weight = brand.get('Weight', '')
     laptop_brand = brand.get('Brand', '')
-    battery_life = item.get('Battery Life', '')
-    memory_installed = item.get('Memory Installed', '')
-    operating_system = item.get('Operating System', '')
+    battery_life = feature.get('Battery Life', '')
+    memory_installed = spec.get('Memory Installed', '')
+    operating_system = spec.get('Operating System', '')
     screen_size = screen.get('Size', '')
     price = 1200
 
-    cpu_brand = processors[i].get("Brand", "")
-    cpu_name = processors[i].get("Name", "")
+    cpu_brand = spec[i].get("Processor Brand", "")
+    cpu_name = spec[i].get("Processor Name", "")
 
     bluetooth = features[i].get("Bluetooth", "")
     num_pad = features[i].get("Numeric Keyboard", "")
     backlit = features[i].get("Backlit Keyboard", "")
 
-    gpu = misc[i].get("Graphics Card", "")
+    gpu = spec[i].get("Graphics Card", "")
 
     if not gpu:
         print(f"Skipping GPU insertion for laptop: {laptop}, No GPU found")
@@ -138,16 +129,16 @@ for i in range(len(brands)):
     gpu_brand = gpu_list[0] if gpu_list else "Unknown"
     gpu = gpu if gpu.lower() != "unknown" else "None"
 
-    storage = misc[i].get("Storage", "")
+    storage = spec[i].get("Storage", "")
 
     storage_list = storage.split(" ")
     amount = storage_list[0]
     storage_type = storage_list[1]
 
-    storage = misc[i].get("Storage", "")
-    storage_list = storage.split(" ")
-    amount = storage_list[0]
-    storage_type = storage_list[1]
+    # storage = spec[i].get("Storage", "")
+    # storage_list = storage.split(" ")
+    # amount = storage_list[0]
+    # storage_type = storage_list[1]
 
     ethernet = ports[i].get("Ethernet (RJ45)", "None")
     hdmi = ports[i].get("HDMI", "None")
