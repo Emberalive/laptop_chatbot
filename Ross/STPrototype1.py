@@ -5,6 +5,7 @@ import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from typing import List, Dict, Tuple
 import json
+import sys 
 
 class LaptopRecommendationBot:
     def __init__(self, laptop_data: List[Dict]):
@@ -242,10 +243,97 @@ def sample_conversation(laptop_data):
             print(f"   Specs: {laptop['specs']}")
     
     return chatbot
+#Allows user to converse with the chatbot 
+def convserse_with_chatbot(laptop_data_path: str):
+    """
+    This is the function that is used to run the itneractive conversation with the laptop 
+    recommendation bot
+    Args: 
+        laptop_data_path: Path to the JSON file containing laptop data 
+    """
+    # Initial messages and user instructions
+    print("\n"+ "=" * 50)
+    print("Wlecome to the laptop Recommendation Chabot")
+    print("="*50)
+    print("This chatbot will assist you in the best way possible about which laptop fits you the best")
+    print("You can exit the conversation at any time by typing 'quit', 'exit' or 'bye'")
+    print("Type 'restart'to begin a new search.\n")
+    
+    #Load patop data
+    try:
+        with open(laptop_data_path, 'r') as f:
+            try:
+                laptop_data = json.load(f)
+                print(f"Succesfully loaded {len(laptop_data)} laptops from the database")
+            except json.JSONDecodeError:
+                print("Error: The laptop data file is not valid JSON. Please check the file")
+                return 
+    except FileNotFoundError:
+        print(f"Error: Could not find laptop data file at {laptop_data_path}")
+        print("Please check the file path and try again")
+        return
+    except Exception as e:
+        print(f"Error loading laptop data: {str(e)}")
+        return 
+
+
+    #Initialising the chatbot 
+
+    try: 
+        chatbot = LaptopRecommendationBot(laptop_data)
+    except Exception as e:
+        print(f"Error initlialising the chatbot: {str(e)}")
+        print("This could be due issues witht he sentence tranformers")
+        print("Make sure you have the 'sentence_transformers' package installed !")
+
+    # Begin the conversation with initial question
+    print("\nBot:", chatbot.questions["initial"])
+
+    #Main conversation loop
+    while True:
+        try: 
+            user_input = input("\nYou:").strip()
+
+            # Check if user wants to exit 
+            if user_input.lower() in ["quit", "exit", "bye", "goodbye"]:
+                print("\nBot: Than you for using the Laptop recommendation Chatbot.")
+                break
+
+            #processing user input
+
+            response = chatbot.process_input(user_input)
+
+            #displaying chatbot response
+            print("\nBot:", response["message"])
+
+            # Display recommndeations
+            if response["recommendations"]:
+                print("\nRecommneded Laptops:")
+                for i, laptop in enumerate(response["recommendations"], 1):
+                    print(f"{i}. {laptop['brand']} {laptop['name']}")
+                    print(f" Specs: {laptop['specs']}")
+                print()
+
+            # Display next questions if any
+
+            if response["next_question"]:
+                print("Bot:", response["next_question"])
+
+        except KeyboardInterrupt:
+            print("\n\nBot: Conversation interrupted. Goodbye! ")
+            break
+        except Exception as e:
+            print(f"\nBot: Error has been found while processing your request: {str(e)}")
+            print("Bot: Lets try again or type 'restart' to begina a new search")
 
 if __name__ == "__main__":
-    # Load laptop data from the provided JSON
-    with open('../Sam/python_convert/V2/scraped_data.json', 'r') as f:
-        laptop_data = json.load(f)
+    # Load laptop data from the provided JSON, can now be overriden by next command
+    data_path = '../Sam/python_convert/V2/scraped_data.json' 
     
-    chatbot = sample_conversation(laptop_data)
+
+    # Allow command line argument to specify data path
+    if len(sys.argv) > 1:
+        data_path = sys.argv[1]
+    
+    #run to start conversation
+    convserse_with_chatbot(data_path)
