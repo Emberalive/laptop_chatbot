@@ -1,0 +1,3 @@
+nguagge_transformmer
+typing
+pyscopg2-binary
