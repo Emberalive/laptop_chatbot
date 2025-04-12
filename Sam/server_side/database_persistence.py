@@ -529,7 +529,7 @@ for i in range(len(products)):
         # Insert storage
         if storage_type and amount:
             storage_query = '''
-                INSERT INTO storage_types (type)
+                INSERT INTO storage (type)
                 VALUES (%s)
                 RETURNING storage_id;
             '''
