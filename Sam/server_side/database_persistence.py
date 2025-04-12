@@ -1,6 +1,6 @@
-# import json
-# from DBAccess.dbAccess import db_access
-# import pprint
+import json
+from DBAccess.dbAccess import db_access
+import pprint
 #
 # # Initialize lists to store different laptop details
 # products = []
