@@ -115,7 +115,7 @@ for i in range(len(products)):
     feature = features[i] if i <len(features) else {}
     spec = specs[i] if i < len(specs) else {}
     price_shop = prices[i] if i < len(prices) else {}
-        
+    laptop_price = prices[i] if i < len(prices) else {}
 
     laptop_name = brand.get('Name', '')
     weight = brand.get('Weight', '')
@@ -123,7 +123,7 @@ for i in range(len(products)):
     battery_life = feature.get('Battery Life', '')
     
     # price = 1200
-    price = prices.get('price', '')
+    price = laptop_price.get('price', '')
     if price == '':
         price = 'No Price available'
 
