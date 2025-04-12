@@ -122,7 +122,11 @@ for i in range(len(products)):
     laptop_brand = brand.get('Brand', '')
     battery_life = feature.get('Battery Life', '')
     
-    price = 1200
+    # price = 1200
+    price = prices.get('price', '')
+    if price == '':
+        price = 'No Price available'
+
     
     if not battery_life:
         battery_life = "Not Specified"
