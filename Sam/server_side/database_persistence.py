@@ -285,10 +285,8 @@ import pprint
 #     except Exception as e:
 #         print(f"Database error: {e}")
 #         conn.rollback()
-
 import json
 from DBAccess.dbAccess import db_access
-import pprint
 
 # Initialize lists to store different laptop details
 products = []
@@ -352,39 +350,40 @@ conn, cur = db_access()
 
 print("\nClearing the database, so that new data can be inserted")
 try:
+    # Delete in reverse order of dependencies
+    print("\nDeleting from configuration_storage")
+    cur.execute("DELETE FROM configuration_storage;")
+
+    print("\nDeleting from configuration_gpus")
+    cur.execute("DELETE FROM configuration_gpus;")
+
+    print("\nDeleting from configuration_processors")
+    cur.execute("DELETE FROM configuration_processors;")
+
     print("\nDeleting from features")
-    delete_features = "DELETE FROM features;"
-    cur.execute(delete_features)
-    conn.commit()
-
-    print("\nDeleting from gpu")
-    delete_gpu = "DELETE FROM gpu;"
-    cur.execute(delete_gpu)
-    conn.commit()
-
-    print("\nDeleting from storage")
-    delete_storage = "DELETE FROM storage;"
-    cur.execute(delete_storage)
-    conn.commit()
+    cur.execute("DELETE FROM features;")
 
     print("\nDeleting from ports")
-    delete_ports = "DELETE FROM ports;"
-    cur.execute(delete_ports)
-    conn.commit()
+    cur.execute("DELETE FROM ports;")
 
-    print("\nDeleting from screen")
-    delete_screen = "DELETE FROM screen;"
-    cur.execute(delete_screen)
-    conn.commit()
+    print("\nDeleting from screens")
+    cur.execute("DELETE FROM screens;")
 
-    print("\nDelete from cpu")
-    delete_cpu = "DELETE FROM cpu;"
-    cur.execute(delete_cpu)
-    conn.commit()
+    print("\nDeleting from storage")
+    cur.execute("DELETE FROM storage;")
 
-    print("\nDeleting from laptops")
-    delete_laptops = "DELETE FROM laptops"
-    cur.execute(delete_laptops)
+    print("\nDeleting from graphics_cards")
+    cur.execute("DELETE FROM graphics_cards;")
+
+    print("\nDeleting from processors")
+    cur.execute("DELETE FROM processors;")
+
+    print("\nDeleting from laptop_configurations")
+    cur.execute("DELETE FROM laptop_configurations;")
+
+    print("\nDeleting from laptop_models")
+    cur.execute("DELETE FROM laptop_models;")
+
     conn.commit()
 
 except Exception as e:
@@ -400,13 +399,17 @@ for i in range(len(products)):
     laptop_price = prices[i] if i < len(prices) else {}
 
     laptop_name = brand.get('Name', '')
-    weight = brand.get('Weight', '')
+    weight_str = brand.get('Weight', '')
+    weight = float(weight_str.split()[0]) if weight_str and 'kg' in weight_str else 0.0
     laptop_brand = brand.get('Brand', '')
     battery_life = feature.get('Battery Life', '')
+    image_url = brand.get('image', '')
 
     price = laptop_price.get('price', '')
-    if price == '':
-        price = 'No Price available'
+    try:
+        price = float(price.replace('£', '').replace(',', '')) if price and price != 'No Price available' else 0.0
+    except:
+        price = 0.0
 
     if not battery_life:
         battery_life = "Not Specified"
@@ -422,17 +425,17 @@ for i in range(len(products)):
     cpu_brand = spec.get('Processor Brand', '')
     cpu_name = spec.get("Processor Name", "")
 
-    bluetooth = feature.get("Bluetooth", "")
-    num_pad = features[i].get("Numeric Keyboard", "")
-    backlit = features[i].get("Backlit Keyboard", "")
+    bluetooth = feature.get("Bluetooth", "false").lower() == "true"
+    num_pad = features[i].get("Numeric Keyboard", "false").lower() == "true"
+    backlit = features[i].get("Backlit Keyboard", "false").lower() == "true"
 
     gpu = spec.get("Graphics Card", "")
     if not gpu:
-        print(f"Skipping GPU insertion for laptop: {laptop}, No GPU found")
+        print(f"Skipping GPU insertion for laptop: {laptop_name}, No GPU found")
 
     gpu_list = gpu.split(' ')
     gpu_brand = gpu_list[0] if gpu_list else "Unknown"
-    gpu = gpu if gpu.lower() != "unknown" else "None"
+    gpu_model = gpu if gpu.lower() != "unknown" else "None"
 
     storage = spec.get("Storage", "")
     storage_list = storage.split()
@@ -440,118 +443,119 @@ for i in range(len(products)):
     amount = storage_list[0] if storage_list else 'none'
     storage_type = storage_list[1] if len(storage_list) > 1 else 'none'
 
-    ethernet = ports[i].get("Ethernet (RJ45)", "None")
-    hdmi = ports[i].get("HDMI", "None")
-    usb_c = ports[i].get("USB Type-C", "None")
-    thunderbolt = ports[i].get("Thunderbolt", "None")
-    display_port = ports[i].get("Display Port", "None")
+    ethernet = ports[i].get("Ethernet (RJ45)", "false").lower() == "true"
+    hdmi = ports[i].get("HDMI", "false").lower() == "true"
+    usb_c = ports[i].get("USB Type-C", "false").lower() == "true"
+    thunderbolt = ports[i].get("Thunderbolt", "false").lower() == "true"
+    display_port = ports[i].get("Display Port", "false").lower() == "true"
 
     screen_res = screens[i].get("Resolution", "Unknown")
     refresh_rate = screens[i].get("Refresh Rate", "Unknown")
-    touch_screen = screens[i].get("Touchscreen", "Unknown")
+    touch_screen = screens[i].get("Touchscreen", "false").lower() == "true"
+    matte = screens[i].get("Matte", "false").lower() == "true"
 
     try:
-        print("\nInserting into database table laptops:")
-        print(
-            f"Name: {laptop_name}, Weight: {weight}, Battery Life: {battery_life}, Memory Installed: {memory_installed}, OS: {operating_system}, Screen Size: {screen_size}, Price: {price}")
-
-        laptop_query = '''
-            INSERT INTO laptops (model, brand, operating_system, screen_size, price, weight, battery_life, memory_installed)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        # Insert into laptop_models (only once per model)
+        print(f"\nInserting model: {laptop_brand} {laptop_name}")
+        model_query = '''
+            INSERT INTO laptop_models (brand, model_name, image_url)
+            VALUES (%s, %s, %s)
+            ON CONFLICT (brand, model_name) DO NOTHING
+            RETURNING model_id;
         '''
-        laptop_values = (
-        laptop_name, laptop_brand, operating_system, screen_size, price, weight, battery_life, memory_installed)
+        cur.execute(model_query, (laptop_brand, laptop_name, image_url))
+        model_id = cur.fetchone()
 
-        cur.execute(laptop_query, laptop_values)
-        conn.commit()
+        if not model_id:
+            # Model already exists, get its ID
+            cur.execute("SELECT model_id FROM laptop_models WHERE brand = %s AND model_name = %s",
+                        (laptop_brand, laptop_name))
+            model_id = cur.fetchone()[0]
+        else:
+            model_id = model_id[0]
 
-    except Exception as e:
-        print(f"Database error: {e}")
-        conn.rollback()
-
-    composite_keys = (screen_size, memory_installed, weight, laptop_name, battery_life)  # Updated composite key
-
-    try:
-        print("\nInserting into database table features")
-        print(f"Laptop: {laptop_name}, Bluetooth: {bluetooth}, Num Pad: {num_pad}, Backlit: {backlit}")
-
-        features_query = '''
-            INSERT INTO features (laptop_screen, laptop_memory, laptop_weight, laptop_model, battery_life, bluetooth, num_pad, backlit_keyboard)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        # Insert into laptop_configurations
+        print(f"Inserting configuration: {memory_installed}, {screen_size}, {weight}kg")
+        config_query = '''
+            INSERT INTO laptop_configurations (
+                model_id, price, weight, battery_life, 
+                memory_installed, screen_size, operating_system
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s)
+            RETURNING config_id;
         '''
-        features_values = (*composite_keys, bluetooth, num_pad, backlit)
+        config_values = (
+            model_id, price, weight, battery_life,
+            memory_installed, screen_size, operating_system
+        )
+        cur.execute(config_query, config_values)
+        config_id = cur.fetchone()[0]
 
-        cur.execute(features_query, features_values)
-        conn.commit()
+        # Insert processor if it doesn't exist
+        if cpu_name:
+            cur.execute('''
+                INSERT INTO processors (brand, model)
+                VALUES (%s, %s)
+                ON CONFLICT (brand, model) DO NOTHING;
+            ''', (cpu_brand, cpu_name))
 
-    except Exception as e:
-        print(f"Database error: {e}")
-        conn.rollback()
+            # Link processor to configuration
+            cur.execute('''
+                INSERT INTO configuration_processors (config_id, processor_id)
+                SELECT %s, processor_id FROM processors 
+                WHERE brand = %s AND model = %s;
+            ''', (config_id, cpu_brand, cpu_name))
 
-    try:
-        print("\nInserting into database table gpu")
-        print(f"Laptop: {laptop_name}, GPU: {gpu}, Brand: {gpu_brand}")
+        # Insert GPU if it doesn't exist
+        if gpu_model and gpu_model.lower() != "none":
+            cur.execute('''
+                INSERT INTO graphics_cards (brand, model)
+                VALUES (%s, %s)
+                ON CONFLICT (brand, model) DO NOTHING;
+            ''', (gpu_brand, gpu_model))
 
-        gpu_query = '''
-            INSERT INTO gpu (laptop_screen, laptop_memory, laptop_weight, laptop_model, battery_life, model, brand)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
-        '''
-        gpu_values = (*composite_keys, gpu, gpu_brand)
+            # Link GPU to configuration
+            cur.execute('''
+                INSERT INTO configuration_gpus (config_id, gpu_id)
+                SELECT %s, gpu_id FROM graphics_cards 
+                WHERE brand = %s AND model = %s;
+            ''', (config_id, gpu_brand, gpu_model))
 
-        cur.execute(gpu_query, gpu_values)
-        conn.commit()
+        # Insert storage if it doesn't exist
+        if storage_type and amount:
+            cur.execute('''
+                INSERT INTO storage_types (type)
+                VALUES (%s)
+                ON CONFLICT (type) DO NOTHING;
+            ''', (storage_type,))
 
-    except Exception as e:
-        print(f"Database error: {e}")
-        conn.rollback()
+            # Link storage to configuration
+            cur.execute('''
+                INSERT INTO configuration_storage (config_id, storage_id, capacity)
+                SELECT %s, storage_id, %s FROM storage_types 
+                WHERE type = %s;
+            ''', (config_id, amount, storage_type))
 
-    try:
-        print("\nInserting into database table storage")
-        print(f"laptop: {laptop_name}, Storage Amount: {amount}, Storage Type: {storage_type}")
+        # Insert screen details
+        cur.execute('''
+            INSERT INTO screens (
+                config_id, size, resolution, touchscreen, matte, refresh_rate
+            ) VALUES (%s, %s, %s, %s, %s, %s);
+        ''', (config_id, screen_size, screen_res, touch_screen, matte, refresh_rate))
 
-        storage_query = '''
-        INSERT INTO storage (laptop_screen, laptop_memory, laptop_weight, laptop_model, battery_life, storage_amount, storage_type)
-        VALUES(%s, %s, %s, %s, %s, %s, %s)
-        '''
-        storage_values = (*composite_keys, amount, storage_type)
+        # Insert ports
+        cur.execute('''
+            INSERT INTO ports (
+                config_id, ethernet, hdmi, usb_type_c, thunderbolt, display_port
+            ) VALUES (%s, %s, %s, %s, %s, %s);
+        ''', (config_id, ethernet, hdmi, usb_c, thunderbolt, display_port))
 
-        cur.execute(storage_query, storage_values)
-        conn.commit()
+        # Insert features
+        cur.execute('''
+            INSERT INTO features (
+                config_id, backlit_keyboard, numeric_keyboard, bluetooth
+            ) VALUES (%s, %s, %s, %s);
+        ''', (config_id, backlit, num_pad, bluetooth))
 
-    except Exception as e:
-        print(f"Database error: {e}")
-        conn.rollback()
-
-    try:
-        print("\nInserting into database table ports")
-        print(
-            f"laptop: {laptop_name}, Ethernet: {ethernet}, HDMI: {hdmi}, USB Type C: {usb_c}, Thunderbolt: {thunderbolt}")
-
-        ports_query = '''
-        INSERT INTO ports (laptop_screen, laptop_memory, laptop_weight, laptop_model, battery_life, hdmi, ethernet, thunderbolt, type_c, display_port)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        '''
-        ports_values = (*composite_keys, hdmi, ethernet, thunderbolt, usb_c, display_port)
-
-        cur.execute(ports_query, ports_values)
-        conn.commit()
-
-    except Exception as e:
-        print(f"Database error: {e}")
-        conn.rollback()
-
-    try:
-        print("\nInserting into database table screen")
-        print(
-            f"Laptop: {laptop_name}, Screen Resolution: {screen_res}, Refresh Rate: {refresh_rate}, Touch Screen: {touch_screen}")
-
-        screen_query = '''
-        INSERT INTO screen (laptop_screen, laptop_memory, laptop_weight, laptop_model, battery_life, screen_resolution, refresh_rate, touch_screen)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-        '''
-        screen_values = (*composite_keys, screen_res, refresh_rate, touch_screen)
-
-        cur.execute(screen_query, screen_values)
         conn.commit()
 
     except Exception as e:
