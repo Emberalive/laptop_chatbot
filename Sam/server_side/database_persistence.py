@@ -287,6 +287,7 @@ import pprint
 #         conn.rollback()
 import json
 from DBAccess.dbAccess import db_access
+import pprint
 
 # Initialize lists to store different laptop details
 products = []
@@ -425,9 +426,9 @@ for i in range(len(products)):
     cpu_brand = spec.get('Processor Brand', '')
     cpu_name = spec.get("Processor Name", "")
 
-    bluetooth = feature.get("Bluetooth", "false") == "true"
-    num_pad = features[i].get("Numeric Keyboard", "false") == "true"
-    backlit = features[i].get("Backlit Keyboard", "false") == "true"
+    bluetooth = feature.get("Bluetooth", "false").lower() == "true"
+    num_pad = features[i].get("Numeric Keyboard", "false").lower() == "true"
+    backlit = features[i].get("Backlit Keyboard", "false").lower() == "true"
 
     gpu = spec.get("Graphics Card", "")
     if not gpu:
@@ -443,16 +444,16 @@ for i in range(len(products)):
     amount = storage_list[0] if storage_list else 'none'
     storage_type = storage_list[1] if len(storage_list) > 1 else 'none'
 
-    ethernet = ports[i].get("Ethernet (RJ45)", "false") == "true"
-    hdmi = ports[i].get("HDMI", "false") == "true"
-    usb_c = ports[i].get("USB Type-C", "false") == "true"
-    thunderbolt = ports[i].get("Thunderbolt", "false") == "true"
-    display_port = ports[i].get("Display Port", "false") == "true"
+    ethernet = ports[i].get("Ethernet (RJ45)", "false").lower() == "true"
+    hdmi = ports[i].get("HDMI", "false").lower() == "true"
+    usb_c = ports[i].get("USB Type-C", "false").lower() == "true"
+    thunderbolt = ports[i].get("Thunderbolt", "false").lower() == "true"
+    display_port = ports[i].get("Display Port", "false").lower() == "true"
 
     screen_res = screens[i].get("Resolution", "Unknown")
     refresh_rate = screens[i].get("Refresh Rate", "Unknown")
-    touch_screen = screens[i].get("Touchscreen", "false") == "true"
-    matte = screens[i].get("Matte", "false") == "true"
+    touch_screen = screens[i].get("Touchscreen", "false").lower() == "true"
+    matte = screens[i].get("Matte", "false").lower() == "true"
 
     try:
         # Insert into laptop_models (only once per model)
@@ -474,18 +475,18 @@ for i in range(len(products)):
         else:
             model_id = model_id[0]
 
-        # Insert into laptop_configurations
-        print(f"Inserting configuration: {memory_installed}, {screen_size}, {weight}kg")
+        # Insert into laptop_configurations (without screen_size)
+        print(f"Inserting configuration: {memory_installed}, {weight}kg")
         config_query = '''
             INSERT INTO laptop_configurations (
                 model_id, price, weight, battery_life, 
-                memory_installed, screen_size, operating_system
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s)
+                memory_installed, operating_system
+            ) VALUES (%s, %s, %s, %s, %s, %s)
             RETURNING config_id;
         '''
         config_values = (
             model_id, price, weight, battery_life,
-            memory_installed, screen_size, operating_system
+            memory_installed, operating_system
         )
         cur.execute(config_query, config_values)
         config_id = cur.fetchone()[0]
@@ -535,7 +536,7 @@ for i in range(len(products)):
                 WHERE type = %s;
             ''', (config_id, amount, storage_type))
 
-        # Insert screen details
+        # Insert screen details (now includes screen_size)
         cur.execute('''
             INSERT INTO screens (
                 config_id, size, resolution, touchscreen, matte, refresh_rate
