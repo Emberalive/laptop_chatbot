@@ -188,7 +188,7 @@ import pprint
 #         print(f"Laptop: {laptop_name}, Bluetooth: {bluetooth}, Num Pad: {num_pad}, Backlit: {backlit}")
 #
 #         features_query = '''
-#             INSERT INTO features (laptop_screen_size, laptop_memory, laptop_weight, laptop_model, bluetooth, num_pad, backlit_keyboard)
+#             INSERT INTO features (laptop_screen, laptop_memory, laptop_weight, laptop_model, bluetooth, num_pad, backlit_keyboard)
 #             VALUES (%s, %s, %s, %s, %s, %s, %s)
 #         '''
 #         features_values = (*composite_keys, bluetooth, num_pad, backlit)
@@ -205,7 +205,7 @@ import pprint
 #         print(f"Laptop: {laptop_name}, GPU: {gpu}, Brand: {gpu_brand}")
 #
 #         gpu_query = '''
-#             INSERT INTO gpu (laptop_screen_size, laptop_memory, laptop_weight, laptop_model, model, brand)
+#             INSERT INTO gpu (laptop_screen, laptop_memory, laptop_weight, laptop_model, model, brand)
 #             VALUES (%s, %s, %s, %s, %s, %s)
 #         '''
 #         gpu_values = (*composite_keys, gpu, gpu_brand)
@@ -222,7 +222,7 @@ import pprint
 #         print(f"laptop: {laptop_name}, Storage Amount: {amount}, Storage Type: {storage_type}")
 #
 #         storage_query = '''
-#         INSERT INTO storage (laptop_screen_size, laptop_memory, laptop_weight, laptop_model, storage_amount, storage_type)
+#         INSERT INTO storage (laptop_screen, laptop_memory, laptop_weight, laptop_model, storage_amount, storage_type)
 #         VALUES(%s, %s, %s, %s, %s, %s)
 #         '''
 #         storage_values = (*composite_keys, amount, storage_type)
@@ -240,7 +240,7 @@ import pprint
 #             f"laptop: {laptop_name}, Ethernet: {ethernet}, HDMI: {hdmi}, USB Type C: {usb_c}, Thunderbolt: {thunderbolt}")
 #
 #         ports_query = '''
-#         INSERT INTO ports (laptop_screen_size, laptop_memory, laptop_weight, laptop_model, hdmi, ethernet, thunderbolt, type_c, display_port)
+#         INSERT INTO ports (laptop_screen, laptop_memory, laptop_weight, laptop_model, hdmi, ethernet, thunderbolt, type_c, display_port)
 #         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
 #         '''
 #         ports_values = (*composite_keys, hdmi, ethernet, thunderbolt, usb_c, display_port)
@@ -258,7 +258,7 @@ import pprint
 #             f"Laptop: {laptop_name}, Screen Resolution: {screen_res}, Refresh Rate: {refresh_rate}, Touch Screen: {touch_screen}")
 #
 #         screen_query = '''
-#         INSERT INTO screen (laptop_screen_size, laptop_memory, laptop_weight, laptop_model, screen_resolution, refresh_rate, touch_screen)
+#         INSERT INTO screen (laptop_screen, laptop_memory, laptop_weight, laptop_model, screen_resolution, refresh_rate, touch_screen)
 #         VALUES(%s, %s, %s, %s, %s, %s, %s)
 #         '''
 #         screen_values = (*composite_keys, screen_res, refresh_rate, touch_screen)
@@ -275,7 +275,7 @@ import pprint
 #         print(f"Laptop: {laptop_name}, Brand: {cpu_brand}, CPU: {cpu_name}")
 #
 #         cpu_query = '''
-#             INSERT INTO cpu (laptop_screen_size, laptop_memory, laptop_weight, laptop_model, model, brand)
+#             INSERT INTO cpu (laptop_screen, laptop_memory, laptop_weight, laptop_model, model, brand)
 #             VALUES (%s, %s, %s, %s, %s, %s)
 #         '''
 #         cpu_values = (*composite_keys, cpu_name, cpu_brand)
@@ -476,7 +476,7 @@ for i in range(len(products)):
         print(f"Laptop: {laptop_name}, Bluetooth: {bluetooth}, Num Pad: {num_pad}, Backlit: {backlit}")
 
         features_query = '''
-            INSERT INTO features (laptop_screen_size, laptop_memory, laptop_weight, laptop_model, battery_life, bluetooth, num_pad, backlit_keyboard)
+            INSERT INTO features (laptop_screen, laptop_memory, laptop_weight, laptop_model, battery_life, bluetooth, num_pad, backlit_keyboard)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         '''
         features_values = (*composite_keys, bluetooth, num_pad, backlit)
@@ -493,7 +493,7 @@ for i in range(len(products)):
         print(f"Laptop: {laptop_name}, GPU: {gpu}, Brand: {gpu_brand}")
 
         gpu_query = '''
-            INSERT INTO gpu (laptop_screen_size, laptop_memory, laptop_weight, laptop_model, battery_life, model, brand)
+            INSERT INTO gpu (laptop_screen, laptop_memory, laptop_weight, laptop_model, battery_life, model, brand)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
         '''
         gpu_values = (*composite_keys, gpu, gpu_brand)
@@ -510,7 +510,7 @@ for i in range(len(products)):
         print(f"laptop: {laptop_name}, Storage Amount: {amount}, Storage Type: {storage_type}")
 
         storage_query = '''
-        INSERT INTO storage (laptop_screen_size, laptop_memory, laptop_weight, laptop_model, battery_life, storage_amount, storage_type)
+        INSERT INTO storage (laptop_screen, laptop_memory, laptop_weight, laptop_model, battery_life, storage_amount, storage_type)
         VALUES(%s, %s, %s, %s, %s, %s, %s)
         '''
         storage_values = (*composite_keys, amount, storage_type)
@@ -528,7 +528,7 @@ for i in range(len(products)):
             f"laptop: {laptop_name}, Ethernet: {ethernet}, HDMI: {hdmi}, USB Type C: {usb_c}, Thunderbolt: {thunderbolt}")
 
         ports_query = '''
-        INSERT INTO ports (laptop_screen_size, laptop_memory, laptop_weight, laptop_model, battery_life, hdmi, ethernet, thunderbolt, type_c, display_port)
+        INSERT INTO ports (laptop_screen, laptop_memory, laptop_weight, laptop_model, battery_life, hdmi, ethernet, thunderbolt, type_c, display_port)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         '''
         ports_values = (*composite_keys, hdmi, ethernet, thunderbolt, usb_c, display_port)
@@ -546,7 +546,7 @@ for i in range(len(products)):
             f"Laptop: {laptop_name}, Screen Resolution: {screen_res}, Refresh Rate: {refresh_rate}, Touch Screen: {touch_screen}")
 
         screen_query = '''
-        INSERT INTO screen (laptop_screen_size, laptop_memory, laptop_weight, laptop_model, battery_life, screen_resolution, refresh_rate, touch_screen)
+        INSERT INTO screen (laptop_screen, laptop_memory, laptop_weight, laptop_model, battery_life, screen_resolution, refresh_rate, touch_screen)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         '''
         screen_values = (*composite_keys, screen_res, refresh_rate, touch_screen)
