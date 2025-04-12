@@ -391,6 +391,16 @@ except Exception as e:
     print(f"Database error: {e}")
     conn.rollback()
 
+
+def to_boolean(value):
+    """Convert various boolean representations to Python boolean"""
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        return value.lower() in ('true', 'yes', '1', 't')
+    return bool(value)
+
+
 for i in range(len(products)):
     brand = products[i] if i < len(products) else {}
     screen = screens[i] if i < len(screens) else {}
@@ -426,9 +436,10 @@ for i in range(len(products)):
     cpu_brand = spec.get('Processor Brand', '')
     cpu_name = spec.get("Processor Name", "")
 
-    bluetooth = feature.get("Bluetooth", "false").lower() == "true"
-    num_pad = features[i].get("Numeric Keyboard", "false").lower() == "true"
-    backlit = features[i].get("Backlit Keyboard", "false").lower() == "true"
+    # Handle boolean fields properly
+    bluetooth = to_boolean(feature.get("Bluetooth", False))
+    num_pad = to_boolean(features[i].get("Numeric Keyboard", False))
+    backlit = to_boolean(features[i].get("Backlit Keyboard", False))
 
     gpu = spec.get("Graphics Card", "")
     if not gpu:
@@ -444,16 +455,17 @@ for i in range(len(products)):
     amount = storage_list[0] if storage_list else 'none'
     storage_type = storage_list[1] if len(storage_list) > 1 else 'none'
 
-    ethernet = ports[i].get("Ethernet (RJ45)", "false").lower() == "true"
-    hdmi = ports[i].get("HDMI", "false").lower() == "true"
-    usb_c = ports[i].get("USB Type-C", "false").lower() == "true"
-    thunderbolt = ports[i].get("Thunderbolt", "false").lower() == "true"
-    display_port = ports[i].get("Display Port", "false").lower() == "true"
+    # Handle boolean fields properly
+    ethernet = to_boolean(ports[i].get("Ethernet (RJ45)", False))
+    hdmi = to_boolean(ports[i].get("HDMI", False))
+    usb_c = to_boolean(ports[i].get("USB Type-C", False))
+    thunderbolt = to_boolean(ports[i].get("Thunderbolt", False))
+    display_port = to_boolean(ports[i].get("Display Port", False))
 
     screen_res = screens[i].get("Resolution", "Unknown")
     refresh_rate = screens[i].get("Refresh Rate", "Unknown")
-    touch_screen = screens[i].get("Touchscreen", "false").lower() == "true"
-    matte = screens[i].get("Matte", "false").lower() == "true"
+    touch_screen = to_boolean(screens[i].get("Touchscreen", False))
+    matte = to_boolean(screens[i].get("Matte", False))
 
     try:
         # Insert into laptop_models (only once per model)
