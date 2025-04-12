@@ -84,12 +84,13 @@ def scrape_url(url):
             if features_table['data']:
                 tables_data.append(features_table)
 
-        # Process prices
-        prices = []
+        # Process prices and add as a table
+        prices_table = {"title": "Prices", "data": {}}
         prices_div = soup.find('div', id='prices-under')
         if prices_div:
             price_table = prices_div.find('table', id='details-price-table')
             if price_table:
+                price_entries = []
                 for row in price_table.find_all('tr'):
                     columns = row.find_all('td')
                     if len(columns) == 3:
@@ -97,12 +98,16 @@ def scrape_url(url):
                         if shop_link:
                             shop_url = urljoin("https://laptop-finder.co.uk", shop_link.get('href'))
                             price = columns[2].get_text(strip=True).replace('\u00a3', '£')
-                            prices.append({'shop_url': shop_url, 'price': price})
+                            price_entries.append({'shop_url': shop_url, 'price': price})
+                
+                # Add all price entries to the prices table
+                if price_entries:
+                    prices_table['data'] = price_entries
+                    tables_data.append(prices_table)
 
         return {
             'url': url,
-            'tables': tables_data,
-            'Prices': prices
+            'tables': tables_data
         }
 
     except Exception as e:
