@@ -5,17 +5,28 @@ import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from typing import List, Dict, Tuple
 import json
+import sys
+import psycopg2
+from psycopg2.extras import RealDictCursor
+
+# Import database connection from dbAccess
+try:
+    sys.path.append('../Sam/server_side/DBAccess')
+    from dbAccess import db_access
+except ImportError:
+    print("Warning: Could not import db_access module. Using direct connection.")
 
 class LaptopRecommendationBot:
-    def __init__(self, laptop_data: List[Dict]):
+    def __init__(self, laptop_data: List[Dict] = None):
         """
         Initialize the chatbot with laptop data and load the sentence transformer model
         
         Args:
-            laptop_data: List of dictionaries containing laptop information
+            laptop_data: List of dictionaries containing laptop information (optional)
         """
         self.model = SentenceTransformer('all-MiniLM-L6-v2')
-        self.laptops = laptop_data
+        # If laptop_data is provided, use it; otherwise load from database
+        self.laptops = laptop_data if laptop_data else self.load_from_database()
         self.conversation_state = "initial"
         self.user_preferences = {}
         
@@ -30,6 +41,149 @@ class LaptopRecommendationBot:
         
         # Create embeddings for predefined features and use cases
         self.feature_embeddings = self._create_feature_embeddings()
+
+    def load_from_database(self) -> List[Dict]:
+        """
+        Load laptop data from PostgreSQL database
+        
+        Returns:
+            List of dictionaries containing laptop information in the same format as the JSON
+        """
+        try:
+            # Try to use the imported db_access function
+            try:
+                conn, cur = db_access()
+            except NameError:
+                # If import failed, connect directly
+                conn = psycopg2.connect(
+                    database="laptopchatbot",
+                    user="samuel",
+                    host="86.19.219.159",
+                    password="QwErTy1243!",
+                    port=5432
+                )
+                cur = conn.cursor(cursor_factory=RealDictCursor)
+            
+            print("Connected to database successfully!")
+            
+            # Get all laptop models
+            cur.execute("SELECT model FROM laptops")
+            models = cur.fetchall()
+            
+            if not models:
+                print("No laptop models found in database")
+                return []
+                
+            print(f"Found {len(models)} laptop models in database")
+            
+            # Create a list to store all laptop data in the same format as the JSON
+            laptops = []
+            
+            # For each laptop model, fetch all related information
+            for model_row in models:
+                model = model_row['model']
+                laptop_data = {'tables': []}
+                
+                # Get Product Details
+                cur.execute("""
+                    SELECT model as "Name", brand as "Brand", weight as "Weight"
+                    FROM laptops WHERE model = %s
+                """, (model,))
+                product_details = cur.fetchone()
+                if product_details:
+                    laptop_data['tables'].append({
+                        'title': 'Product Details',
+                        'data': dict(product_details)
+                    })
+                
+                # Get Screen Details
+                cur.execute("""
+                    SELECT s.screen_resolution as "Resolution", s.refresh_rate as "Refresh Rate", 
+                           s.touch_screen as "Touchscreen", l.screen_size as "Size"
+                    FROM screen s
+                    JOIN laptops l ON s.laptop_model = l.model
+                    WHERE s.laptop_model = %s
+                """, (model,))
+                screen_details = cur.fetchone()
+                if screen_details:
+                    laptop_data['tables'].append({
+                        'title': 'Screen',
+                        'data': dict(screen_details)
+                    })
+                
+                # Get Processor Details
+                cur.execute("""
+                    SELECT brand as "Brand", model as "Name"
+                    FROM cpu WHERE laptop_model = %s
+                """, (model,))
+                processor_details = cur.fetchone()
+                if processor_details:
+                    laptop_data['tables'].append({
+                        'title': 'Processor',
+                        'data': dict(processor_details)
+                    })
+                
+                # Get Misc Details (GPU, Memory, Storage, OS)
+                cur.execute("""
+                    SELECT 
+                        g.model as "Graphics Card",
+                        l.memory_installed as "Memory Installed",
+                        s.storage_amount || ' ' || s.storage_type as "Storage",
+                        l.operating_system as "Operating System",
+                        l.battery_life as "Battery Life"
+                    FROM laptops l
+                    LEFT JOIN gpu g ON l.model = g.laptop_model
+                    LEFT JOIN storage s ON l.model = s.laptop_model
+                    WHERE l.model = %s
+                """, (model,))
+                misc_details = cur.fetchone()
+                if misc_details:
+                    laptop_data['tables'].append({
+                        'title': 'Misc',
+                        'data': dict(misc_details)
+                    })
+                
+                # Get Features
+                cur.execute("""
+                    SELECT backlit_keyboard as "Backlit Keyboard", 
+                           num_pad as "Numeric Keyboard",
+                           bluetooth as "Bluetooth"
+                    FROM features
+                    WHERE laptop_model = %s
+                """, (model,))
+                features_details = cur.fetchone()
+                if features_details:
+                    laptop_data['tables'].append({
+                        'title': 'Features',
+                        'data': dict(features_details)
+                    })
+                
+                # Get Ports
+                cur.execute("""
+                    SELECT hdmi as "HDMI", ethernet as "Ethernet (RJ45)", 
+                           thunderbolt as "Thunderbolt", type_c as "USB Type-C"
+                    FROM ports
+                    WHERE laptop_model = %s
+                """, (model,))
+                ports_details = cur.fetchone()
+                if ports_details:
+                    laptop_data['tables'].append({
+                        'title': 'Ports',
+                        'data': dict(ports_details)
+                    })
+                
+                # Add this laptop to our list
+                laptops.append(laptop_data)
+            
+            # Close cursor but keep connection for possible future use
+            cur.close()
+            
+            print(f"Successfully loaded {len(laptops)} laptops from database")
+            return laptops
+            
+        except Exception as e:
+            print(f"Error loading data from database: {str(e)}")
+            return []
 
     def _create_feature_embeddings(self) -> Dict[str, np.ndarray]:
         """
@@ -209,43 +363,95 @@ class LaptopRecommendationBot:
                 response["message"] = "I couldn't find any laptops matching all your criteria. Would you like to see other options?"
             
             self.conversation_state = "final"
+        
+        # Final state allows user to ask for different recommendations or restart
+        elif self.conversation_state == "final":
+            # Reset conversation if user wants to start over
+            if any(term in user_input.lower() for term in ["restart", "start over", "new search"]):
+                self.conversation_state = "initial"
+                self.user_preferences = {}
+                response["message"] = "Let's start over. " + self.questions["initial"]
+            else:
+                # Process any other input in final state
+                response["message"] = "Would you like to explore a different type of laptop? Say 'restart' to begin a new search."
 
         return response
 
-#Simulated conversation
-def sample_conversation(laptop_data):
-    chatbot = LaptopRecommendationBot(laptop_data)
+    def reset_conversation(self):
+        """
+        Reset the conversation state and user preferences
+        """
+        self.conversation_state = "initial"
+        self.user_preferences = {}
+
+def converse_with_chatbot():
+    """
+    Main function to run an interactive conversation with the laptop recommendation bot
+    """
+    # Welcome message and instructions
+    print("\n" + "="*50)
+    print("Welcome to the Laptop Recommendation Bot!")
+    print("="*50)
+    print("This bot will help you find the perfect laptop based on your needs.")
+    print("You can exit the conversation at any time by typing 'quit', 'exit', or 'bye'.")
+    print("Type 'restart' to begin a new search.\n")
     
-    # Initial user input
-    print("User: I need a laptop for programming and software development")
-    response = chatbot.process_input("I need a laptop for programming and software development")
-    print("Bot:", response["message"])
-    print("Bot:", response["next_question"])
+    # Initialize the chatbot with database connection
+    try:
+        print("Initializing chatbot and connecting to database...")
+        chatbot = LaptopRecommendationBot()
+        
+        # Check if laptops were loaded
+        if not chatbot.laptops:
+            print("Error: No laptop data available. Please check your database connection.")
+            return
+            
+        print(f"Chatbot initialized with {len(chatbot.laptops)} laptops from database!")
+        
+    except Exception as e:
+        print(f"Error initializing the chatbot: {str(e)}")
+        print("This could be due to issues with the SentenceTransformer model or database connection.")
+        print("Make sure you have the required packages installed and the database is accessible.")
+        return
     
-    # Screen size preference
-    print("\nUser: I prefer a 16-inch screen")
-    response = chatbot.process_input("I prefer a 16-inch screen")
-    print("Bot:", response["message"])
-    if response["recommendations"]:
-        for i, laptop in enumerate(response["recommendations"], 1):
-            print(f"{i}. {laptop['brand']} {laptop['name']}")
-            print(f"   Specs: {laptop['specs']}")
-    print("Bot:", response["next_question"])
+    # Start the conversation with initial question
+    print("\nBot:", chatbot.questions["initial"])
     
-    # Brand preference
-    print("\nUser: I prefer Dell or MSI")
-    response = chatbot.process_input("I prefer Dell or MSI")
-    print("Bot:", response["message"])
-    if response["recommendations"]:
-        for i, laptop in enumerate(response["recommendations"], 1):
-            print(f"{i}. {laptop['brand']} {laptop['name']}")
-            print(f"   Specs: {laptop['specs']}")
-    
-    return chatbot
+    # Main conversation loop
+    while True:
+        try:
+            user_input = input("\nYou: ").strip()
+            
+            # Check if user wants to exit
+            if user_input.lower() in ["quit", "exit", "bye", "goodbye"]:
+                print("\nBot: Thank you for using the Laptop Recommendation Bot. Goodbye!")
+                break
+                
+            # Process user input
+            response = chatbot.process_input(user_input)
+            
+            # Display bot response
+            print("\nBot:", response["message"])
+            
+            # Display recommendations if any
+            if response["recommendations"]:
+                print("\nRecommended Laptops:")
+                for i, laptop in enumerate(response["recommendations"], 1):
+                    print(f"{i}. {laptop['brand']} {laptop['name']}")
+                    print(f"   Specs: {laptop['specs']}")
+                print()
+            
+            # Display next question if any
+            if response["next_question"]:
+                print("Bot:", response["next_question"])
+                
+        except KeyboardInterrupt:
+            print("\n\nBot: Conversation interrupted. Goodbye!")
+            break
+        except Exception as e:
+            print(f"\nBot: I encountered an error processing your request: {str(e)}")
+            print("Bot: Let's try again or type 'restart' to begin a new search.")
 
 if __name__ == "__main__":
-    # Load laptop data from the provided JSON
-    with open('../Sam/python_convert/V2/scraped_data.json', 'r') as f:
-        laptop_data = json.load(f)
-    
-    chatbot = sample_conversation(laptop_data)
+    # Run the interactive conversation directly without loading from JSON
+    converse_with_chatbot()

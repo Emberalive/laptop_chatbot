@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import os
+from urllib.parse import urljoin
 
 def scrape_url(url):
     try:
@@ -13,84 +14,121 @@ def scrape_url(url):
 
         soup = BeautifulSoup(response.text, 'html.parser')
 
-        # Locate the div containing all tables
+        # Get main image
+        gallery_div = soup.find('div', id='details-gallery')
+        first_image = None
+        if gallery_div:
+            first_image_link = gallery_div.find('a', class_='glightbox')
+            if first_image_link:
+                first_image = first_image_link.get('href')
+
+        # Process tables
         details_div = soup.find('div', id='details-under')
-        if not details_div:
-            print(f"No 'details-under' div found in {url}")
-            return None
+        tables_data = []
+        
+        if details_div:
+            product_details = {"title": "Product Details", "data": {}}
+            specs_table = {"title": "Specs", "data": {}}
+            features_table = {"title": "Features", "data": {}}
 
-        # Extract all tables within the div
-        tables = details_div.find_all('div')  # Each table is inside a <div>
-        if not tables:
-            print(f"No tables found in {url}")
-            return None
+            for table_div in details_div.find_all('div'):
+                table_title = table_div.find('span').get_text(strip=True) if table_div.find('span') else None
+                table = table_div.find('table', class_='striped row-hover shadowable')
+                if not table:
+                    continue
 
-        # Store the extracted data
-        table_data = []
+                for row in table.find_all('tr'):
+                    columns = row.find_all('td')
+                    if len(columns) == 2:
+                        title = columns[0].get_text(strip=True)
+                        info = columns[1].get_text(strip=True)
 
-        for table_div in tables:
-            table_title = table_div.find('span').get_text(strip=True) if table_div.find('span') else "Untitled Table"
-            table = table_div.find('table', class_='striped row-hover shadowable')
-            if not table:
-                continue
+                        if columns[1].find('i'):
+                            if 'fa-check' in columns[1].find('i').get('class', []):
+                                info = True
+                            elif 'fa-times' in columns[1].find('i').get('class', []):
+                                info = False
 
-            rows = table.find_all('tr')  # Find all rows in the table
-            table_info = {}
+                        # Organize data
+                        if table_title == "Product Details":
+                            if title not in ["EAN", "MPN"]:
+                                product_details['data'][title] = info
+                        elif table_title == "Processor":
+                            if title in ["Brand", "Name"]:  # Only keep these
+                                specs_table['data'][f"Processor {title}"] = info
+                        elif table_title == "Misc":
+                            if title in ["Operating System", "Battery Life"]:
+                                features_table['data'][title] = info
+                            elif title in ["Graphics Card", "Memory Installed", "Storage"]:
+                                specs_table['data'][title] = info
+                        elif table_title == "Features":
+                            features_table['data'][title] = info
+                        elif table_title == "Screen":
+                            if not any(t['title'] == "Screen" for t in tables_data):
+                                tables_data.append({"title": "Screen", "data": {}})
+                            next(t for t in tables_data if t['title'] == "Screen")['data'][title] = info
+                        elif table_title == "Ports":
+                            if not any(t['title'] == "Ports" for t in tables_data):
+                                tables_data.append({"title": "Ports", "data": {}})
+                            next(t for t in tables_data if t['title'] == "Ports")['data'][title] = info
 
-            for row in rows:
-                columns = row.find_all('td')  # Find all columns in the row
-                if len(columns) == 2:  # Ensure there are exactly two columns
-                    title = columns[0].get_text(strip=True)  # First column is the title
-                    info = columns[1].get_text(strip=True)   # Second column is the info
+            # Add image to product details
+            if first_image:
+                product_details['data']['image'] = first_image
 
-                    # Handle boolean values (check for <i> tags)
-                    if columns[1].find('i'):
-                        if 'fa-check' in columns[1].find('i').get('class', []):
-                            info = True
-                        elif 'fa-times' in columns[1].find('i').get('class', []):
-                            info = False
+            # Add organized tables
+            if product_details['data']:
+                tables_data.insert(0, product_details)
+            if specs_table['data']:
+                tables_data.append(specs_table)
+            if features_table['data']:
+                tables_data.append(features_table)
 
-                    table_info[title] = info
-
-            table_data.append({
-                'title': table_title,
-                'data': table_info
-            })
+        # Process prices
+        prices = []
+        prices_div = soup.find('div', id='prices-under')
+        if prices_div:
+            price_table = prices_div.find('table', id='details-price-table')
+            if price_table:
+                for row in price_table.find_all('tr'):
+                    columns = row.find_all('td')
+                    if len(columns) == 3:
+                        shop_link = columns[0].find('a')
+                        if shop_link:
+                            shop_url = urljoin("https://laptop-finder.co.uk", shop_link.get('href'))
+                            price = columns[2].get_text(strip=True).replace('\u00a3', '£')
+                            prices.append({'shop_url': shop_url, 'price': price})
 
         return {
             'url': url,
-            'tables': table_data
+            'tables': tables_data,
+            'Prices': prices
         }
+
     except Exception as e:
         print(f"Error scraping {url}: {e}")
         return None
 
 def read_urls(file_path):
     with open(file_path, 'r') as file:
-        urls = [line.strip() for line in file if line.strip()]
-    return urls
-
-def load_existing_data(file_path):
-    if os.path.exists(file_path):
-        with open(file_path, 'r') as json_file:
-            return json.load(json_file)
-    return []
-
-def save_to_json(data, file_path):
-    with open(file_path, 'w') as json_file:
-        json.dump(data, json_file, indent=4)
+        return [line.strip() for line in file if line.strip()]
 
 def main():
     input_file = os.path.join("scraped_data", "laptop_links.txt")
     output_file = os.path.join("scraped_data", "scraped_data.json")
 
     urls = read_urls(input_file)
-    print(f"Found {len(urls)} URLs to scrape.")
+    print(f"Found {len(urls)} URLs to scrape")
 
-    # Load existing data to check for duplicates
-    existing_data = load_existing_data(output_file)
-    existing_urls = {item['url'] for item in existing_data}  # Set of already scraped URLs
+    existing_data = []
+    if os.path.exists(output_file):
+        try:
+            with open(output_file, 'r') as f:
+                existing_data = json.load(f)
+        except json.JSONDecodeError:
+            print("Warning: Existing output file contains invalid JSON")
 
+    existing_urls = {item['url'] for item in existing_data if 'url' in item}
     scraped_data = []
 
     for url in urls:
@@ -103,12 +141,10 @@ def main():
         if data:
             scraped_data.append(data)
 
-    # Combine existing data with newly scraped data
-    combined_data = existing_data + scraped_data
+    with open(output_file, 'w', encoding='utf-8') as f:
+        json.dump(existing_data + scraped_data, f, indent=4, ensure_ascii=False)
 
-    # Save the combined data to the JSON file
-    save_to_json(combined_data, output_file)
-    print(f"Scraping completed. Data saved to {output_file}")
+    print(f"Scraping complete. Total laptops scraped: {len(scraped_data)}")
 
 if __name__ == "__main__":
     main()
