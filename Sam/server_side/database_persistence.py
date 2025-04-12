@@ -425,9 +425,9 @@ for i in range(len(products)):
     cpu_brand = spec.get('Processor Brand', '')
     cpu_name = spec.get("Processor Name", "")
 
-    bluetooth = feature.get("Bluetooth", "false").lower() == "true"
-    num_pad = features[i].get("Numeric Keyboard", "false").lower() == "true"
-    backlit = features[i].get("Backlit Keyboard", "false").lower() == "true"
+    bluetooth = feature.get("Bluetooth", "false") == "true"
+    num_pad = features[i].get("Numeric Keyboard", "false") == "true"
+    backlit = features[i].get("Backlit Keyboard", "false") == "true"
 
     gpu = spec.get("Graphics Card", "")
     if not gpu:
@@ -443,16 +443,16 @@ for i in range(len(products)):
     amount = storage_list[0] if storage_list else 'none'
     storage_type = storage_list[1] if len(storage_list) > 1 else 'none'
 
-    ethernet = ports[i].get("Ethernet (RJ45)", "false").lower() == "true"
-    hdmi = ports[i].get("HDMI", "false").lower() == "true"
-    usb_c = ports[i].get("USB Type-C", "false").lower() == "true"
-    thunderbolt = ports[i].get("Thunderbolt", "false").lower() == "true"
-    display_port = ports[i].get("Display Port", "false").lower() == "true"
+    ethernet = ports[i].get("Ethernet (RJ45)", "false") == "true"
+    hdmi = ports[i].get("HDMI", "false") == "true"
+    usb_c = ports[i].get("USB Type-C", "false") == "true"
+    thunderbolt = ports[i].get("Thunderbolt", "false") == "true"
+    display_port = ports[i].get("Display Port", "false") == "true"
 
     screen_res = screens[i].get("Resolution", "Unknown")
     refresh_rate = screens[i].get("Refresh Rate", "Unknown")
-    touch_screen = screens[i].get("Touchscreen", "false").lower() == "true"
-    matte = screens[i].get("Matte", "false").lower() == "true"
+    touch_screen = screens[i].get("Touchscreen", "false") == "true"
+    matte = screens[i].get("Matte", "false") == "true"
 
     try:
         # Insert into laptop_models (only once per model)
