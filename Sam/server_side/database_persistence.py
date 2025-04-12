@@ -468,26 +468,17 @@ for i in range(len(products)):
     matte = to_boolean(screens[i].get("Matte", False))
 
     try:
-        # Insert into laptop_models (only once per model)
+        # Insert into laptop_models
         print(f"\nInserting model: {laptop_brand} {laptop_name}")
         model_query = '''
             INSERT INTO laptop_models (brand, model_name, image_url)
             VALUES (%s, %s, %s)
-            ON CONFLICT (brand, model_name) DO NOTHING
             RETURNING model_id;
         '''
         cur.execute(model_query, (laptop_brand, laptop_name, image_url))
-        model_id = cur.fetchone()
+        model_id = cur.fetchone()[0]
 
-        if not model_id:
-            # Model already exists, get its ID
-            cur.execute("SELECT model_id FROM laptop_models WHERE brand = %s AND model_name = %s",
-                        (laptop_brand, laptop_name))
-            model_id = cur.fetchone()[0]
-        else:
-            model_id = model_id[0]
-
-        # Insert into laptop_configurations (without screen_size)
+        # Insert into laptop_configurations
         print(f"Inserting configuration: {memory_installed}, {weight}kg")
         config_query = '''
             INSERT INTO laptop_configurations (
@@ -503,52 +494,55 @@ for i in range(len(products)):
         cur.execute(config_query, config_values)
         config_id = cur.fetchone()[0]
 
-        # Insert processor if it doesn't exist
+        # Insert processor
         if cpu_name:
-            cur.execute('''
+            processor_query = '''
                 INSERT INTO processors (brand, model)
                 VALUES (%s, %s)
-                ON CONFLICT (brand, model) DO NOTHING;
-            ''', (cpu_brand, cpu_name))
+                RETURNING processor_id;
+            '''
+            cur.execute(processor_query, (cpu_brand, cpu_name))
+            processor_id = cur.fetchone()[0]
 
             # Link processor to configuration
             cur.execute('''
                 INSERT INTO configuration_processors (config_id, processor_id)
-                SELECT %s, processor_id FROM processors 
-                WHERE brand = %s AND model = %s;
-            ''', (config_id, cpu_brand, cpu_name))
+                VALUES (%s, %s);
+            ''', (config_id, processor_id))
 
-        # Insert GPU if it doesn't exist
+        # Insert GPU
         if gpu_model and gpu_model.lower() != "none":
-            cur.execute('''
+            gpu_query = '''
                 INSERT INTO graphics_cards (brand, model)
                 VALUES (%s, %s)
-                ON CONFLICT (brand, model) DO NOTHING;
-            ''', (gpu_brand, gpu_model))
+                RETURNING gpu_id;
+            '''
+            cur.execute(gpu_query, (gpu_brand, gpu_model))
+            gpu_id = cur.fetchone()[0]
 
             # Link GPU to configuration
             cur.execute('''
                 INSERT INTO configuration_gpus (config_id, gpu_id)
-                SELECT %s, gpu_id FROM graphics_cards 
-                WHERE brand = %s AND model = %s;
-            ''', (config_id, gpu_brand, gpu_model))
+                VALUES (%s, %s);
+            ''', (config_id, gpu_id))
 
-        # Insert storage if it doesn't exist
+        # Insert storage
         if storage_type and amount:
-            cur.execute('''
-                INSERT INTO storage (type)
+            storage_query = '''
+                INSERT INTO storage_types (type)
                 VALUES (%s)
-                ON CONFLICT (type) DO NOTHING;
-            ''', (storage_type,))
+                RETURNING storage_id;
+            '''
+            cur.execute(storage_query, (storage_type,))
+            storage_id = cur.fetchone()[0]
 
             # Link storage to configuration
             cur.execute('''
                 INSERT INTO configuration_storage (config_id, storage_id, capacity)
-                SELECT %s, storage_id, %s FROM storage 
-                WHERE type = %s;
-            ''', (config_id, amount, storage_type))
+                VALUES (%s, %s, %s);
+            ''', (config_id, storage_id, amount))
 
-        # Insert screen details (now includes screen_size)
+        # Insert screen details
         cur.execute('''
             INSERT INTO screens (
                 config_id, size, resolution, touchscreen, matte, refresh_rate
