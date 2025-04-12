@@ -536,7 +536,7 @@ for i in range(len(products)):
         # Insert storage if it doesn't exist
         if storage_type and amount:
             cur.execute('''
-                INSERT INTO storage_types (type)
+                INSERT INTO storage (type)
                 VALUES (%s)
                 ON CONFLICT (type) DO NOTHING;
             ''', (storage_type,))
@@ -544,7 +544,7 @@ for i in range(len(products)):
             # Link storage to configuration
             cur.execute('''
                 INSERT INTO configuration_storage (config_id, storage_id, capacity)
-                SELECT %s, storage_id, %s FROM storage_types 
+                SELECT %s, storage_id, %s FROM storage 
                 WHERE type = %s;
             ''', (config_id, amount, storage_type))
 
