@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import json
 import os
 from urllib.parse import urljoin
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 def scrape_url(url):
     try:
@@ -84,8 +85,8 @@ def scrape_url(url):
             if features_table['data']:
                 tables_data.append(features_table)
 
-        # Process prices and add as a table
-        prices_table = {"title": "Prices", "data": {}}
+        # Always add prices table, even if empty
+        prices_table = {"title": "Prices", "data": []}
         prices_div = soup.find('div', id='prices-under')
         if prices_div:
             price_table = prices_div.find('table', id='details-price-table')
@@ -99,11 +100,9 @@ def scrape_url(url):
                             shop_url = urljoin("https://laptop-finder.co.uk", shop_link.get('href'))
                             price = columns[2].get_text(strip=True).replace('\u00a3', '£')
                             price_entries.append({'shop_url': shop_url, 'price': price})
-                
-                # Add all price entries to the prices table
-                if price_entries:
-                    prices_table['data'] = price_entries
-                    tables_data.append(prices_table)
+                prices_table['data'] = price_entries
+
+        tables_data.append(prices_table)
 
         return {
             'url': url,
@@ -134,18 +133,25 @@ def main():
             print("Warning: Existing output file contains invalid JSON")
 
     existing_urls = {item['url'] for item in existing_data if 'url' in item}
+    urls_to_scrape = [url for url in urls if url not in existing_urls]
+
     scraped_data = []
 
-    for url in urls:
-        if url in existing_urls:
-            print(f"Skipping already scraped URL: {url}")
-            continue
+    # Use ThreadPoolExecutor to scrape concurrently
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        future_to_url = {executor.submit(scrape_url, url): url for url in urls_to_scrape}
 
-        print(f"Scraping: {url}")
-        data = scrape_url(url)
-        if data:
-            scraped_data.append(data)
+        for future in as_completed(future_to_url):
+            url = future_to_url[future]
+            try:
+                data = future.result()
+                if data:
+                    scraped_data.append(data)
+                    print(f"Scraped: {url}")
+            except Exception as e:
+                print(f"Error with {url}: {e}")
 
+    # Save the combined data
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(existing_data + scraped_data, f, indent=4, ensure_ascii=False)
 
