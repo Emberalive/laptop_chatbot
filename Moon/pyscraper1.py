@@ -67,7 +67,7 @@ def scrape_laptops(base_url, output_file, max_pages=50, max_workers=5):
 
 if __name__ == "__main__":
     base_url = "https://laptop-finder.co.uk/?showoos=true&price_from=100&price_to=4900&screen_size_from=10&screen_size_to=18.4&memory_from=0&memory_to=128&storage_size_from=0&storage_size_to=6000&battery_life_from=2&battery_life_to=31"
-    output_directory = "Moon"
+    output_directory = "scraped_data"
     output_file = os.path.join(output_directory, "laptop_links.txt")
 
     scrape_laptops(base_url, output_file)

@@ -118,8 +118,8 @@ def read_urls(file_path):
         return [line.strip() for line in file if line.strip()]
 
 def main():
-    input_file = os.path.join("Moon", "laptop_links.txt")
-    output_file = os.path.join("Moon", "scraped_data.json")
+    input_file = os.path.join("/home/samuel/laptop_chatbot/Moon", "laptop_links.txt")
+    output_file = os.path.join("/home/samuel/laptop_chatbot/Moon", "scraped_data.json")
 
     urls = read_urls(input_file)
     print(f"Found {len(urls)} URLs to scrape")
