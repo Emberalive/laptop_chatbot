@@ -3,4 +3,3 @@ python-crontab
 psycopg2
 bs4
 requests
-os
