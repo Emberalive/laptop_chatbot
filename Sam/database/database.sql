@@ -1,127 +1,79 @@
 CREATE TABLE laptops (
-id SERIAL PRIMARY KEY,
-model VARCHAR(80),
-brand VARCHAR(50) NOT NULL,
-operatingSystem VARCHAR default 'none',
-screenSize  VARCHAR (12) NOT NULL,
-price DECIMAL(10, 2) NOT NULL,
-weight VARCHAR(10) NOT NULL,
-batteryLife VARCHAR (30)NOT NULL
+    model character varying(80) NOT NULL,
+    brand character varying(50) NOT NULL,
+    price character varying NOT NULL,
+    weight character varying(10) NOT NULL,
+    battery_life character varying(30) NOT NULL,
+    memory_installed character varying(20) NOT NULL,
+    operating_system character varying(50) DEFAULT 'none'::character varying,
+    screen_size character varying(12) NOT NULL,
+    PRIMARY KEY (model, weight)
 );
 
-ALTER TABLE laptops
-ADD COLUMN memory VARCHAR(20) NOT NULL;
-
-CREATE TABLE CPU (
-laptop_id SERIAL NOT NULL,
-laptop VARCHAR(80) NOT NULL,
-model VARCHAR(50),
-brand VARCHAR(50) NOT NULL,
-speed DECIMAL(3, 1) ,
-FOREIGN KEY (laptop_id) REFERENCES laptops(id),
-PRIMARY KEY (model, laptop_id)
+CREATE TABLE cpu (
+    model character varying(50) NOT NULL,
+    brand character varying(50),
+    laptop_model character varying(80) NOT NULL,
+    laptop_weight character varying(10) NOT NULL, -- Added weight for the composite foreign key
+    FOREIGN KEY (laptop_model, laptop_weight) REFERENCES laptops(model, weight),
+    PRIMARY KEY (model, laptop_model, laptop_weight)
 );
 
-ALTER TABLE cpu 
-DROP COLUMN speed;
-
-CREATE TABLE GPU (
-laptop_id SERIAL NOT NULL,
-laptop VARCHAR(80),
-model VARCHAR(50) default 'none',
-brand VARCHAR(20)  default 'none',
-FOREIGN KEY (laptop_id) REFERENCES laptops(id),
-PRIMARY KEY (laptop_id, model)
-);
-
-CREATE TABLE storage (
-laptop_id SERIAL NOT NULL PRIMARY KEY,
-laptop VARCHAR(80) ,
-storage_amount VARCHAR(15) NOT NULL,
-storage_type VARCHAR(15) NOT NULL,
-FOREIGN KEY (laptop_id) REFERENCES laptops(id)
-);
-
- CREATE TABLE users (
-id int PRIMARY KEY,
-uname VARCHAR(50) NOT NULL,
-phonenum int NOT NULL,
-email VARCHAR(50) NULL,
-password VARCHAR(200) NOT NULL
-);
-
-CREATE TABLE images (
-image BYTEA NOT NULL,  -- creates a binary object to hold the image
-laptop_id SERIAL NOT NULL,
-laptop VARCHAR(80) PRIMARY KEY,
-FOREIGN KEY (laptop_id) REFERENCES laptops(id)
-);
-
-CREATE TABLE screen (
-laptop_id SERIAL PRIMARY KEY,
-laptop VARCHAR(80)  NOT NULL,
-screen_res VARCHAR(20) NOT NULL,
-refresh VARCHAR(20) NOT NULL,
-touch_screen VARCHAR(10) NOT NULL,
-FOREIGN KEY (laptop_id) REFERENCES laptops(id)
+CREATE TABLE gpu (
+    model character varying(50) NOT NULL,
+    brand character varying(50),
+    laptop_model character varying(80) NOT NULL,
+    laptop_weight character varying(10) NOT NULL, -- Added weight for the composite foreign key
+    FOREIGN KEY (laptop_model, laptop_weight) REFERENCES laptops(model, weight),
+    PRIMARY KEY (model, laptop_model, laptop_weight)
 );
 
 CREATE TABLE features (
-laptop_id SERIAL PRIMARY KEY,
-laptop VARCHAR(80),
-bluetooth VARCHAR(5) default 'none',
-num_pad VARCHAR(5) default 'none',
-backlit VARCHAR(5) default 'none'
+    laptop_model character varying(80) NOT NULL,
+    laptop_weight character varying(10) NOT NULL, -- Added weight for the composite foreign key
+    bluetooth character varying(10) NOT NULL,
+    num_pad character varying(10) NOT NULL,
+    backlit_keyboard character varying(10) NOT NULL,
+    FOREIGN KEY (laptop_model, laptop_weight) REFERENCES laptops(model, weight),
+    PRIMARY KEY (laptop_model, laptop_weight)
 );
 
-CREATE TABLE ports(
-laptop_id SERIAL  PRIMARY KEY,
-laptop VARCHAR(80) NOT NULL,
-hdmi VARCHAR(10) NOT NULL,
-ethernet VARCHAR(10) NOT NULL,
-thunderbolt VARCHAR(10) NOT NULL,
-typec VARCHAR(10) NOT NULL,
-display_port VARCHAR(10) NOT NULL,
-FOREIGN KEY (laptop_id) REFERENCES laptops(id)
+CREATE TABLE ports (
+    laptop_model character varying(80) NOT NULL,
+    laptop_weight character varying(10) NOT NULL, -- Added weight for the composite foreign key
+    hdmi character varying(10) NOT NULL,
+    ethernet character varying(10) NOT NULL,
+    thunderbolt character varying(10) NOT NULL,
+    type_c character varying(10) NOT NULL,
+    display_port character varying(10) NOT NULL,
+    FOREIGN KEY (laptop_model, laptop_weight) REFERENCES laptops(model, weight),
+    PRIMARY KEY (laptop_model, laptop_weight)
 );
 
-ALTER TABLE users
-ALTER COLUMN uname TYPE VARCHAR(20);
+CREATE TABLE screen (
+    laptop_model character varying(80) NOT NULL,
+    laptop_weight character varying(10) NOT NULL, -- Added weight for the composite foreign key
+    screen_resolution character varying(20) NOT NULL,
+    refresh_rate character varying(20) NOT NULL,
+    touch_screen character varying(10) NOT NULL,
+    FOREIGN KEY (laptop_model, laptop_weight) REFERENCES laptops(model, weight),
+    PRIMARY KEY (laptop_model, laptop_weight)
+);
 
-ALTER TABLE users
-ALTER COLUMN password TYPE VARCHAR(512);
+CREATE TABLE storage (
+    laptop_model character varying(80) NOT NULL,
+    laptop_weight character varying(10) NOT NULL, -- Added weight for the composite foreign key
+    storage_amount character varying(15) NOT NULL,
+    storage_type character varying(15) NOT NULL,
+    FOREIGN KEY (laptop_model, laptop_weight) REFERENCES laptops(model, weight),
+    PRIMARY KEY (laptop_model, laptop_weight)
+);
 
-ALTER TABLE users DROP COLUMN id;
+CREATE TABLE users (
+    id integer NOT NULL,
+    username character varying(50) PRIMARY KEY,
+    phone_number character varying(20) NOT NULL,
+    email character varying(50),
+    password character varying(512) NOT NULL
+);
 
-ALTER TABLE users 
-ADD COLUMN id SERIAL PRIMARY KEY; 
-
-INSERT INTO users (uname, phonenum, email, password)
-VALUES 
--- password BlueSky$2023!
-    ('quantumpanda', '02079460958', 'quantum.panda@example.com', 'e3d6b4f5a6b1c2e8f9a0d7b8c6d5e4f3a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6'),
-	-- password Tiger@Moon99
-    ('StarlightVoyager', '0131490123', 'starlight.voyager@example.com', 'a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2'),
-	-- password Ocean#Wave123
-    ('NeonFalcon', '01614993456', 'neon.falcon@example.com', 'b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3'),
-	-- password Fire&Ice_456
-    ('MysticGrizzly', '01214967890', 'mystic.grizzly@example.com', 'c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4'),
-	-- password Star^Night789
-    ('CyberPhoenix', '01414962345', 'cyber.phoenix@example.com', 'd4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5');
-
--- this view shows the users information without showing the actual password hash, by making a fake password
-CREATE VIEW user_info AS
-SELECT
-	uname, 
-	phonenum,
-	email,
-	substring(md5(random()::text) FROM 1 FOR 10) AS fake_password
-	FROM users;
-
--- selects the view
-SELECT * FROM user_info;
-
--- created a view for all of the laptops that have no gpu
-CREATE VIEW no_gpu as
-SELECT * FROM gpu
-where model = 'none';
