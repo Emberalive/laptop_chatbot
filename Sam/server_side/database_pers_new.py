@@ -68,46 +68,52 @@ print("Adding the dictionary items to their respective list objects")
 # Establish database connection
 conn, cur = db_access()
 
-# print("\nClearing the database, so that new data can be inserted")
-# try:
-#     print("\nDeleting from features")
-#     delete_features = "DELETE FROM features;"
-#     cur.execute(delete_features)
-#     conn.commit()
-#
-#     print("\nDeleting from gpu")
-#     delete_gpu = "DELETE FROM gpu;"
-#     cur.execute(delete_gpu)
-#     conn.commit()
-#
-#     print("\nDeleting from storage")
-#     delete_storage = "DELETE FROM storage;"
-#     cur.execute(delete_storage)
-#     conn.commit()
-#
-#     print("\nDeleting from ports")
-#     delete_ports = "DELETE FROM ports;"
-#     cur.execute(delete_ports)
-#     conn.commit()
-#
-#     print("\nDeleting from screen")
-#     delete_screen = "DELETE FROM screen;"
-#     cur.execute(delete_screen)
-#     conn.commit()
-#
-#     print("\nDelete from cpu")
-#     delete_cpu = "DELETE FROM cpu;"
-#     cur.execute(delete_cpu)
-#     conn.commit()
-#
-#     print("\nDeleting from laptops")
-#     delete_laptops = "DELETE FROM laptops"
-#     cur.execute(delete_laptops)
-#     conn.commit()
-#
-# except Exception as e:
-#     print(f"Database error: {e}")
-#     conn.rollback()
+print("\nClearing the database, so that new data can be inserted")
+try:
+    print("\nDeleting from table: configuration_storage")
+    storage_config_delete = "DELETE FROM configuration_storage"
+    cur.execute(storage_config_delete)
+
+    print("\nDeleting from table: features")
+    features_delete = "DELETE FROM features"
+    cur.execute(features_delete)
+
+    print("\nDeleting from table: ports")
+    ports_delete = "DELETE FROM ports"
+    cur.execute(ports_delete)
+
+    print("\nDeleting from table: screens")
+    screens_delete = "DELETE FROM screens"
+    cur.execute(screens_delete)
+
+    print("\nDeleting from table: laptop_configurations")
+    laptop_config_delete = "DELETE FROM laptop_configurations"
+    cur.execute(laptop_config_delete)
+
+
+    print("\nDeleting from table: processors")
+    processors_delete = "DELETE FROM processors"
+    cur.execute(processors_delete)
+
+    print("\nDeleting from table: graphics_cards")
+    graphics_cards_delete = "DELETE FROM graphics_cards"
+    cur.execute(graphics_cards_delete)
+
+    print("\nresetting confg_id auto increment value")
+    configuration_laptops_reset = "ALTER SEQUENCE laptop_configurations_config_id_seq RESTART WITH 1"
+    cur.execute(configuration_laptops_reset)
+
+    print("\nDeleting from able laptop_model")
+    laptop_model_delete = "DELETE FROM laptop_models"
+    cur.execute(laptop_model_delete)
+
+    print("\nresetting model_id auto increment value")
+    laptop_model_reset = "ALTER SEQUENCE laptop_models_model_id_seq RESTART WITH 1"
+    cur.execute(laptop_model_reset)
+
+except Exception as e:
+    print(f"Database error: {e}")
+    conn.rollback()
 
 for i in range(len(products)):
     brand = products[i] if i < len(products) else {}
@@ -122,10 +128,10 @@ for i in range(len(products)):
     laptop_brand = brand.get('Brand', '')
     battery_life = feature.get('Battery Life', '')
 
-    price = 1200
-    # price = laptop_price.get('price', '')
-    # if price == '':
-    #     price = 'No Price available'
+    # price = 1200
+    price = laptop_price.get('price', '')
+    if price == '':
+        price = 'No Price available'
 
     if not battery_life:
         battery_life = "Not Specified"
@@ -146,9 +152,7 @@ for i in range(len(products)):
     # print("\nPrice: " + price + " , " + shop)
 
     cpu_brand = spec.get('Processor Brand', '')
-    print(f"CPU BRAND: {cpu_brand}")
     cpu_name = spec.get("Processor Name", "")
-    print(f"CPU NAME: {cpu_name}")
 
     bluetooth = feature.get("Bluetooth", "")
     num_pad = features[i].get("Numeric Keyboard", "")
@@ -187,7 +191,7 @@ for i in range(len(products)):
 
     #Inserting the processor table
     try:
-        print("Inserting into database table processors:")
+        print("\nInserting into database table processors:")
         print(f"Model: {cpu_name}, Brand: {cpu_brand}")
         cpu_querey = ("INSERT INTO processors (brand, model)"
                       "VALUES(%s, %s)")
@@ -200,7 +204,7 @@ for i in range(len(products)):
 
     #Inerting into the table gpu
     try:
-        print("Inserting into database table graphics_cards:")
+        print("\nInserting into database table graphics_cards:")
         print(f"Model: {gpu}, Brand: {gpu_brand}")
         gpu_query = ("INSERT INTO graphics_cards (brand, model)"
                      "VALUES(%s, %s)")
@@ -237,7 +241,7 @@ for i in range(len(products)):
             print(f"Inserted new model with ID: {model_id}")
 
 
-        print("Inserting into table laptop_configurations")
+        print("\nInserting into table laptop_configurations")
         print(
             f"Price: {price}, Weight: {weight}, Battery Life: {battery_life}, Memory: {memory_installed}, OS: {operating_system}, Processor: {cpu_name}, Graphics Card: {gpu}")
         laptop_configuration_query = (
@@ -258,14 +262,14 @@ for i in range(len(products)):
         print("\nInserting into database table configuration_storage")
         print(f"Config ID: {config_id}, Storage Media: {storage_type}, Capacity: {amount}")
         config_id_query = "SELECT type FROM storge_types WHERE type = %s", (storage_type)
-        if cur.fetchone() is None:
-            print(f"Storage type '{storage_type}' not found. Skipping insert.")
-        else:
-            configuration_storage_querey = ("INSERT INTO configuration_storage (config_id, storage_type, capacity)"
-                                        "VALUES(%s, %s, %s)")
-            configuration_storage_values = (config_id, storage_type, amount)
-            cur.execute(configuration_storage_querey, configuration_storage_values)
-            conn.commit()
+        # if cur.fetchone() is None:
+        #     print(f"Storage type '{storage_type}' not found. Skipping insert.")
+        # else:
+        configuration_storage_querey = ("INSERT INTO configuration_storage (config_id, storage_type, capacity)"
+                                    "VALUES(%s, %s, %s)")
+        configuration_storage_values = (config_id, storage_type, amount)
+        cur.execute(configuration_storage_querey, configuration_storage_values)
+        conn.commit()
     except Exception as e:
         conn.rollback()
         print(f"Error inserting storage configuration: {e}")
