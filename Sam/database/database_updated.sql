@@ -24,8 +24,8 @@ CREATE TABLE storge_types (
 CREATE TABLE laptop_configurations (
     config_id SERIAL UNIQUE,
     model_id INTEGER NOT NULL REFERENCES laptop_models(model_id) ON DELETE CASCADE,
-    price NUMERIC(10,2),
-    weight NUMERIC(5,2) CHECK (weight > 0),
+    price VARCHAR(10),
+    weight VARCHAR(10) ,
     battery_life VARCHAR(30),
     memory_installed VARCHAR(20) NOT NULL,
     operating_system VARCHAR(50),

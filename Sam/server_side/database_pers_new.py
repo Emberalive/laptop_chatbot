@@ -1,5 +1,7 @@
 import json
 
+from sympy import false
+
 from DBAccess.dbAccess import db_access
 
 # Initialize lists to store different laptop details
@@ -120,10 +122,10 @@ for i in range(len(products)):
     laptop_brand = brand.get('Brand', '')
     battery_life = feature.get('Battery Life', '')
 
-    # price = 1200
-    price = laptop_price.get('price', '')
-    if price == '':
-        price = 'No Price available'
+    price = 1200
+    # price = laptop_price.get('price', '')
+    # if price == '':
+    #     price = 'No Price available'
 
     if not battery_life:
         battery_life = "Not Specified"
@@ -172,11 +174,11 @@ for i in range(len(products)):
         amount = storage_list[0]
         storage_type = storage_list[1].strip().upper()
 
-    ethernet = ports[i].get("Ethernet (RJ45)", "None")
-    hdmi = ports[i].get("HDMI", "None")
-    usb_c = ports[i].get("USB Type-C", "None")
-    thunderbolt = ports[i].get("Thunderbolt", "None")
-    display_port = ports[i].get("Display Port", "None")
+    ethernet = ports[i].get("Ethernet (RJ45)", False)
+    hdmi = ports[i].get("HDMI", False)
+    usb_c = ports[i].get("USB Type-C", False)
+    thunderbolt = ports[i].get("Thunderbolt", False)
+    display_port = ports[i].get("Display Port", False)
 
     screen_res = screens[i].get("Resolution", "Unknown")
     refresh_rate = screens[i].get("Refresh Rate", "Unknown")
@@ -242,16 +244,14 @@ for i in range(len(products)):
             "INSERT INTO laptop_configurations (model_id, price, weight, battery_life, memory_installed, operating_system, processor, graphics_card)"
             "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
             "RETURNING config_id")
-        laptop_configuration_values = (
-        model_id, price, weight, battery_life, memory_installed, operating_system, cpu_name, gpu)
+        laptop_configuration_values = (model_id, price, weight, battery_life, memory_installed, operating_system, cpu_name, gpu)
         cur.execute(laptop_configuration_query, laptop_configuration_values)
         config_id = cur.fetchone()[0]
         conn.commit()
 
     except Exception as e:
         conn.rollback()
-        print(f"\nThe model: {laptop_name} is not in the database")
-        # print(f"error Inserting into laptop_configurations: {e}")
+        print(f"error Inserting into laptop_configurations: {e}")
 
     #Inserting into the storage tables
     try:
@@ -263,9 +263,9 @@ for i in range(len(products)):
         else:
             configuration_storage_querey = ("INSERT INTO configuration_storage (config_id, storage_type, capacity)"
                                         "VALUES(%s, %s, %s)")
-        configuration_storage_values = (config_id, storage_type, amount)
-        cur.execute(configuration_storage_querey, configuration_storage_values)
-        conn.commit()
+            configuration_storage_values = (config_id, storage_type, amount)
+            cur.execute(configuration_storage_querey, configuration_storage_values)
+            conn.commit()
     except Exception as e:
         conn.rollback()
         print(f"Error inserting storage configuration: {e}")
@@ -277,7 +277,7 @@ for i in range(len(products)):
         features_querey = ("INSERT INTO features (config_id, backlit_keyboard, numeric_keyboard, bluetooth)"
                            "VALUES(%s, %s, %s, %s)")
         features_values = (config_id, backlit, num_pad, bluetooth)
-        cur.execut(features_querey, features_values)
+        cur.execute(features_querey, features_values)
         conn.commit()
     except Exception as e:
         conn.rollback()
@@ -297,12 +297,13 @@ for i in range(len(products)):
         conn.rollback()
         print(f"error with the database and that: {e}")
 
+    #Inserting into the screens table
     try:
         print("\nInserting into database table screens")
         print(f"Config ID: {config_id}, Size: {screen_size}, Resolution: {screen_res}, Touchscreen: {touch_screen}, Refresh Rate: {refresh_rate}")
         screens_querey = ("INSERT INTO screens (config_id, size, resolution, touchscreen, refresh_rate)"
-                          "VALUES(%s, %s, %s, %s, %s, %s)")
-        screen_values = (config_id, screen_size, touch_screen, screen_res, refresh_rate)
+                          "VALUES(%s, %s, %s, %s, %s)")
+        screen_values = (config_id, screen_size, screen_res, touch_screen, refresh_rate)
         cur.execute(screens_querey, screen_values)
         conn.commit()
     except Exception as e:
