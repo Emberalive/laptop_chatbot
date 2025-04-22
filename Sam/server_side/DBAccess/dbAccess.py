@@ -7,7 +7,7 @@ def db_access():
     try:
         print("Attempting connection to the database\n")
         # put this is your name and password until we're at point where we can insert
-        conn = psycopg2.connect(database = "laptopchatbot",
+        conn = psycopg2.connect(database = "laptopchatbot_new",
             user = "samuel",
             host = "86.19.219.159",
             password = "QwErTy1243!",
