@@ -1,5 +1,4 @@
-
-// stores basic information
+-- Base tables with no foreign key dependencies
 CREATE TABLE laptop_models (
     model_id SERIAL PRIMARY KEY,
     brand VARCHAR(50) NOT NULL,
@@ -7,9 +6,23 @@ CREATE TABLE laptop_models (
     image_url TEXT
 );
 
-//stores different hardware configurations for each model
+CREATE TABLE processors (
+    model VARCHAR(100) PRIMARY KEY,
+    brand VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE graphics_cards (
+    model VARCHAR(100) PRIMARY KEY,
+    brand VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE storge_types (
+    type VARCHAR(20) PRIMARY KEY
+);
+
+-- Tables that reference the base tables
 CREATE TABLE laptop_configurations (
-    config_id SERIAL,
+    config_id SERIAL UNIQUE,
     model_id INTEGER NOT NULL REFERENCES laptop_models(model_id) ON DELETE CASCADE,
     price NUMERIC(10,2),
     weight NUMERIC(5,2) CHECK (weight > 0),
@@ -17,63 +30,53 @@ CREATE TABLE laptop_configurations (
     memory_installed VARCHAR(20) NOT NULL,
     operating_system VARCHAR(50),
     processor VARCHAR(50) NOT NULL,
-    graphics_card VARCHAR(50) NOT NULL,AMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (processor) REFERENCES processors (brand),
-    FOREIGN KEY (graphics_card) REFERENCES graphics_cards (brand),
+    graphics_card VARCHAR(50) NOT NULL,
+    "AMP" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (processor) REFERENCES processors (model),
+    FOREIGN KEY (graphics_card) REFERENCES graphics_cards (model),
     PRIMARY KEY(config_id, model_id) 
 );
 
-CREATE TABLE processors (
-    model VARCHAR(100)  PRIMARY KEY,
-    brand NOT NULLVARCHAR(50) NOT NULL ,
-);
+-- Insert data after table exists
+INSERT INTO storge_types (type) VALUES ('SSD');
+INSERT INTO storge_types (type) VALUES ('HDD');
+INSERT INTO storge_types (type) VALUES ('NVMe');
+INSERT INTO storge_types (type) VALUES ('eMMC');
 
-CREATE TABLE graphics_cards (
-    model VARCHAR(100) PRIMARY KEY ,
-    brand NOT NULL NOT NULL,
-);
-
-CREATE TABLE storge_types (
-    type VARCHAR(20) NOT NULL
-);
-
-INSERT INTO storage_types (type) VALUES ('SSD');
-INSERT INTO storage_types (type) VALUES ('HDD');
-INSERT INTO storage_types (type) VALUES ('NVMe');
-INSERT INTO storage_types (type) VALUES ('eMMC');
-
-
+-- Tables that depend on laptop_configurations and storge_types
 CREATE TABLE configuration_storage (
-    config_id INTEGER NOT NULL REFERENCES laptop_configurations(config_id) ON DELETE CASCADE,
-    storage_type VARCHAR(10) NOT NULL REFERENCES storge_types(type) ON DELETE CASCADE,
+    config_id INTEGER NOT NULL,
+    storage_type VARCHAR(10) NOT NULL,
     capacity VARCHAR(15) NOT NULL,
-    PRIMARY KEY (config_id, storage_type)
+    PRIMARY KEY (config_id, storage_type),
+    FOREIGN KEY (config_id) REFERENCES laptop_configurations(config_id),
+    FOREIGN KEY (storage_type) REFERENCES   storge_types(type)
 );
 
 CREATE TABLE features (
-    config_id INTEGER PRIMARY KEY REFERENCES laptop_configurations(config_id) ON DELETE CASCADE,
+    config_id INTEGER PRIMARY KEY,
     backlit_keyboard BOOLEAN DEFAULT FALSE,
     numeric_keyboard BOOLEAN DEFAULT FALSE,
-    bluetooth BOOLEAN DEFAULT FALSE
+    bluetooth BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (config_id) REFERENCES laptop_configurations(config_id)
 );
 
 CREATE TABLE ports (
-    config_id INTEGER PRIMARY KEY REFERENCES laptop_configurations(config_id) ON DELETE CASCADE,
+    config_id INTEGER PRIMARY KEY,
     ethernet BOOLEAN DEFAULT FALSE,
     hdmi BOOLEAN DEFAULT FALSE,
     usb_type_c BOOLEAN DEFAULT FALSE,
     thunderbolt BOOLEAN DEFAULT FALSE,
-    display_port BOOLEAN DEFAULT FALSE
+    display_port BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (config_id) REFERENCES laptop_configurations(config_id)
 );
 
 CREATE TABLE screens (
-    config_id INTEGER PRIMARY KEY REFERENCES laptop_configurations(config_id) ON DELETE CASCADE,
+    config_id INTEGER PRIMARY KEY,
     size VARCHAR(12) NOT NULL,
     resolution VARCHAR(20) NOT NULL,
     touchscreen BOOLEAN DEFAULT FALSE,
-    refresh_rate VARCHAR(20)
+    refresh_rate VARCHAR(20),
+    FOREIGN KEY (config_id) REFERENCES laptop_configurations(config_id)
 );
-
-
-
 

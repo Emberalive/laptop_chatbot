@@ -262,7 +262,6 @@ for i in range(len(products)):
     finally:
         conn.close()
 
-
     #Inserting into the features table
     try:
         features_querey = ("INSERT INTO features (config_id, backlit_keyboard, numeric_keyboard, bluetooth)"
