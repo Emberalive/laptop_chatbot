@@ -1,7 +1,5 @@
 import json
 
-from sympy import false
-
 from DBAccess.dbAccess import get_db_connection
 from DBAccess.dbAccess import release_db_connection
 
