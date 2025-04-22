@@ -5,6 +5,8 @@ from traceback import print_tb
 from DBAccess.dbAccess import db_access
 import pprint
 
+from database_persistence import features_values, ports_values, screen_values
+
 # Initialize lists to store different laptop details
 products = []
 screens = []
@@ -236,7 +238,7 @@ for i in range(len(products)):
             laptop_configuration_values = (model_id, price, weight, battery_life, memory_installed, operating_system, cpu_name, gpu)
             cur.execute(laptop_configuration_query, laptop_configuration_values)
             config_id = cur.fetchone()[0]
-            conn.commit
+            conn.commit()
         else:
             print("there is more than one laptop_model, error")
 
@@ -259,6 +261,47 @@ for i in range(len(products)):
         print(f"error and that: {e}")
     finally:
         conn.close()
+
+
+    #Inserting into the features table
+    try:
+        features_querey = ("INSERT INTO features (config_id, backlit_keyboard, numeric_keyboard, bluetooth)"
+                           "VALUES(%s, %s, %s, %s")
+        features_values = (config_id, backlit, num_pad, bluetooth)
+        conn.execut(features_querey, features_values)
+        conn.commit()
+    except EXception as e:
+        conn.rollback()
+        print(f"error with the insert statement: {e}")
+    finally:
+        conn.close()
+
+
+    #Inserting into the ports table
+    try:
+        ports_querey = ("INSERT INTO ports (config_id, ethernet, hdmi, usb_type_c, thunderbolt, display_port"
+                        "VALUES(%s, %s, %s, %s, %s, %s")
+        ports_values = (config_id, ethernet, hdmi, usb_c, thunderbolt, display_port)
+        conn.execute(ports_querey, ports_values)
+        conn.commit()
+    except EXception as e:
+        conn.rollback()
+        print(f"error with the database and that: {e}")
+    finally:
+        conn.close()
+
+    try:
+        screens_querey = ("INSERT INTO screens (config_id, size, resolution, touchscreen, refresh_rate"
+                          "VALUES(%s, %s, %s, %s, %s, %s)")
+        screen_values = (config_id, screen_size, touch_screen, screen_res, refresh_rate)
+        conn.execute(screens_querey, screen_values)
+        conn.commit()
+    except EXception as e:
+        conn.rollback()
+        print(f"error and that i guess: {e}")
+    finally:
+        conn.close()
+
 
 
 
