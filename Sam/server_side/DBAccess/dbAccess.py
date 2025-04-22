@@ -2,6 +2,44 @@
 # and then using pip install psycopg2-binary
 
 import psycopg2
+from psycopg2 import pool
+
+connection_pool = None
+
+
+def init_db_pool():
+    global connection_pool
+    try:
+        print("Creating PostgreSQL connection pool...")
+        connection_pool = pool.SimpleConnectionPool(
+            minconn = 1,
+            maxconn = 20,
+            database = "laptopchatbot_new",
+            user= "samuel",
+            host = "86.19.219.159",
+            password = "QwErTy1243!",
+            port = 5432
+        )
+        print("Connection pool created successfully")
+    except Exception as e:
+        print(f"Failed to create the connection pool {e}")
+
+def get_db_connection():
+    try:
+        conn = connection_pool.getconn()
+        cur = conn.cursor()
+        return conn, cur
+    except Exception as e:
+        print(f"Failed to get connection {e}")
+
+def release_db_connection(conn, cur):
+    try :
+        if cur:
+            cur.cose()
+        if conn:
+            connection_pool.putconn(conn)  # Return connection to pool
+    except Exception as e:
+        print(f"Error releasing connection: {e}")
 
 def db_access():
     try:
@@ -20,4 +58,5 @@ def db_access():
     except Exception as e:
         print("connection was not made. Error: {e}")
 
-db_access()
+# db_access()
+init_db_pool()

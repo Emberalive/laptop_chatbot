@@ -2,7 +2,8 @@ import json
 
 from sympy import false
 
-from DBAccess.dbAccess import db_access
+from DBAccess.dbAccess import get_db_connection
+from DBAccess.dbAccess import release_db_connection
 
 # Initialize lists to store different laptop details
 products = []
@@ -66,7 +67,7 @@ for laptop in data:
 print("Adding the dictionary items to their respective list objects")
 
 # Establish database connection
-conn, cur = db_access()
+conn, cur = get_db_connection()
 
 print("\nClearing the database, so that new data can be inserted")
 try:
@@ -191,7 +192,7 @@ for i in range(len(products)):
 
     #Inserting the processor table
     try:
-        print(f"Checking if cpu: {cpu_name} is in the database")
+        print(f"\nChecking if cpu: {cpu_name} is in the database")
         check_cpu = "SELECT model FROM processors WHERE model = %s"
         cpu_check_values = (cpu_name,)
         cur.execute(check_cpu, cpu_check_values)
@@ -215,7 +216,7 @@ for i in range(len(products)):
 
     #Inerting into the table gpu
     try:
-        print(f"Checking if gpu: {gpu} is i the database")
+        print(f"\nChecking if gpu: {gpu} is i the database")
         check_gpu = "SELECT model FROM graphics_cards WHERE model = %s"
         gpu_check_values = (gpu,)
         cur.execute(check_gpu, gpu_check_values)
@@ -283,15 +284,11 @@ for i in range(len(products)):
     try:
         print("\nInserting into database table configuration_storage")
         print(f"Config ID: {config_id}, Storage Media: {storage_type}, Capacity: {amount}")
-        config_id_query = "SELECT type FROM storge_types WHERE type = %s", (storage_type,)
-        if cur.fetchone(config_id_query) is None:
-            print("incompatible storage type")
-        else:
-            configuration_storage_querey = ("INSERT INTO configuration_storage (config_id, storage_type, capacity)"
-                                            "VALUES(%s, %s, %s)")
-            configuration_storage_values = (config_id, storage_type, amount)
-            cur.execute(configuration_storage_querey, configuration_storage_values)
-            conn.commit()
+        configuration_storage_querey = ("INSERT INTO configuration_storage (config_id, storage_type, capacity)"
+                                        "VALUES(%s, %s, %s)")
+        configuration_storage_values = (config_id, storage_type, amount)
+        cur.execute(configuration_storage_querey, configuration_storage_values)
+        conn.commit()
 
     except Exception as e:
         conn.rollback()
@@ -336,7 +333,7 @@ for i in range(len(products)):
     except Exception as e:
         conn.rollback()
         print(f"error and that i guess: {e}")
-
+release_db_connection(conn, cur)
 
 
 
