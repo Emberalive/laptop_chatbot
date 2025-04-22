@@ -334,34 +334,3 @@ for i in range(len(products)):
         conn.rollback()
         print(f"error and that i guess: {e}")
 release_db_connection(conn, cur)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

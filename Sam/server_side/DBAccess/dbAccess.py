@@ -58,5 +58,5 @@ def db_access():
     except Exception as e:
         print("connection was not made. Error: {e}")
 
-# db_access()
+db_access()
 init_db_pool()
