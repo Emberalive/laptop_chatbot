@@ -154,14 +154,14 @@ for i in range(len(products)):
     cpu_brand = spec.get('Processor Brand', '')
     cpu_name = spec.get("Processor Name", "")
 
-    bluetooth = feature.get("Bluetooth", "")
-    num_pad = features[i].get("Numeric Keyboard", "")
-    backlit = features[i].get("Backlit Keyboard", "")
+    bluetooth = feature.get("Bluetooth", False)
+    num_pad = features[i].get("Numeric Keyboard", False)
+    backlit = features[i].get("Backlit Keyboard", False)
 
     gpu = spec.get("Graphics Card", "")
 
     if not gpu:
-        print(f"Skipping GPU insertion for laptop: {laptop}, No GPU found")
+        print(f"Skipping GPU insertion for laptop: {laptop_name}, No GPU found")
 
     gpu_list = gpu.split(' ')
     gpu_brand = gpu_list[0] if gpu_list else "Unknown"
@@ -186,31 +186,53 @@ for i in range(len(products)):
 
     screen_res = screens[i].get("Resolution", "Unknown")
     refresh_rate = screens[i].get("Refresh Rate", "Unknown")
-    touch_screen = screens[i].get("Touchscreen", "Unknown")
+    touch_screen = screens[i].get("Touchscreen", False)
 
 
     #Inserting the processor table
     try:
-        print("\nInserting into database table processors:")
-        print(f"Model: {cpu_name}, Brand: {cpu_brand}")
-        cpu_querey = ("INSERT INTO processors (brand, model)"
-                      "VALUES(%s, %s)")
-        cpu_values = (cpu_brand, cpu_name)
-        cur.execute(cpu_querey, cpu_values)
-        conn.commit()
+        print(f"Checking if cpu: {cpu_name} is in the database")
+        check_cpu = "SELECT model FROM processors WHERE model = %s"
+        cpu_check_values = (cpu_name,)
+        cur.execute(check_cpu, cpu_check_values)
+
+        result = cur.fetchone()
+        if result is None:
+            print("\nInserting into database table processors:")
+            print(f"Model: {cpu_name}, Brand: {cpu_brand}")
+            cpu_querey = ("INSERT INTO processors (brand, model)"
+                          "VALUES(%s, %s)")
+            cpu_values = (cpu_brand, cpu_name)
+            cur.execute(cpu_querey, cpu_values)
+            conn.commit()
+        else:
+            cpu_id = result[0]  # Get existing ID
+            print(f"\nCPU already exists (CPU: {cpu_id})")
+
     except Exception as e:
         conn.rollback()
         print(f"There was an error with inserting into processors: {e}")
 
     #Inerting into the table gpu
     try:
-        print("\nInserting into database table graphics_cards:")
-        print(f"Model: {gpu}, Brand: {gpu_brand}")
-        gpu_query = ("INSERT INTO graphics_cards (brand, model)"
-                     "VALUES(%s, %s)")
-        gpu_values = (gpu_brand, gpu)
-        cur.execute(gpu_query, gpu_values)
-        conn.commit()
+        print(f"Checking if gpu: {gpu} is i the database")
+        check_gpu = "SELECT model FROM graphics_cards WHERE model = %s"
+        gpu_check_values = (gpu,)
+        cur.execute(check_gpu, gpu_check_values)
+
+        result = cur.fetchone()
+        if result is None:
+            print("\nInserting into database table graphics_cards:")
+            print(f"Model: {gpu}, Brand: {gpu_brand}")
+            gpu_query = ("INSERT INTO graphics_cards (brand, model)"
+                         "VALUES(%s, %s)")
+            gpu_values = (gpu_brand, gpu)
+            cur.execute(gpu_query, gpu_values)
+            conn.commit()
+        else:
+            gpu_id =result[0]
+            print(f"\nGPU already exists (GPU: {gpu_id})")
+
     except Exception as e:
         conn.rollback()
         print(f"There was an error inserting into graphics cards: {e}")
@@ -261,15 +283,16 @@ for i in range(len(products)):
     try:
         print("\nInserting into database table configuration_storage")
         print(f"Config ID: {config_id}, Storage Media: {storage_type}, Capacity: {amount}")
-        config_id_query = "SELECT type FROM storge_types WHERE type = %s", (storage_type)
-        # if cur.fetchone() is None:
-        #     print(f"Storage type '{storage_type}' not found. Skipping insert.")
-        # else:
-        configuration_storage_querey = ("INSERT INTO configuration_storage (config_id, storage_type, capacity)"
-                                    "VALUES(%s, %s, %s)")
-        configuration_storage_values = (config_id, storage_type, amount)
-        cur.execute(configuration_storage_querey, configuration_storage_values)
-        conn.commit()
+        config_id_query = "SELECT type FROM storge_types WHERE type = %s", (storage_type,)
+        if cur.fetchone(config_id_query) is None:
+            print("incompatible storage type")
+        else:
+            configuration_storage_querey = ("INSERT INTO configuration_storage (config_id, storage_type, capacity)"
+                                            "VALUES(%s, %s, %s)")
+            configuration_storage_values = (config_id, storage_type, amount)
+            cur.execute(configuration_storage_querey, configuration_storage_values)
+            conn.commit()
+
     except Exception as e:
         conn.rollback()
         print(f"Error inserting storage configuration: {e}")
