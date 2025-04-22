@@ -1,79 +1,80 @@
-CREATE TABLE laptops (
-    model character varying(80) NOT NULL,
-    brand character varying(50) NOT NULL,
-    price character varying NOT NULL,
-    weight character varying(10) NOT NULL,
-    battery_life character varying(30) NOT NULL,
-    memory_installed character varying(20) NOT NULL,
-    operating_system character varying(50) DEFAULT 'none'::character varying,
-    screen_size character varying(12) NOT NULL,
-    PRIMARY KEY (model, weight)
+CREATE TABLE laptop_models (
+    model_id SERIAL PRIMARY KEY,
+    brand VARCHAR(50) NOT NULL,
+    model_name VARCHAR(100) NOT NULL,
+    image_url TEXT
 );
 
-CREATE TABLE cpu (
-    model character varying(50) NOT NULL,
-    brand character varying(50),
-    laptop_model character varying(80) NOT NULL,
-    laptop_weight character varying(10) NOT NULL, -- Added weight for the composite foreign key
-    FOREIGN KEY (laptop_model, laptop_weight) REFERENCES laptops(model, weight),
-    PRIMARY KEY (model, laptop_model, laptop_weight)
+CREATE TABLE laptop_configurations (
+    config_id SERIAL PRIMARY KEY,
+    model_id INTEGER NOT NULL REFERENCES laptop_models(model_id) ON DELETE CASCADE,
+    price NUMERIC(10,2),
+    weight NUMERIC(5,2) CHECK (weight > 0),
+    battery_life VARCHAR(30),
+    memory_installed VARCHAR(20) NOT NULL,
+    operating_system VARCHAR(50),
+    last_updated TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE gpu (
-    model character varying(50) NOT NULL,
-    brand character varying(50),
-    laptop_model character varying(80) NOT NULL,
-    laptop_weight character varying(10) NOT NULL, -- Added weight for the composite foreign key
-    FOREIGN KEY (laptop_model, laptop_weight) REFERENCES laptops(model, weight),
-    PRIMARY KEY (model, laptop_model, laptop_weight)
+CREATE TABLE processors (
+    processor_id SERIAL PRIMARY KEY,
+    brand VARCHAR(50) NOT NULL,
+    model VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE features (
-    laptop_model character varying(80) NOT NULL,
-    laptop_weight character varying(10) NOT NULL, -- Added weight for the composite foreign key
-    bluetooth character varying(10) NOT NULL,
-    num_pad character varying(10) NOT NULL,
-    backlit_keyboard character varying(10) NOT NULL,
-    FOREIGN KEY (laptop_model, laptop_weight) REFERENCES laptops(model, weight),
-    PRIMARY KEY (laptop_model, laptop_weight)
-);
-
-CREATE TABLE ports (
-    laptop_model character varying(80) NOT NULL,
-    laptop_weight character varying(10) NOT NULL, -- Added weight for the composite foreign key
-    hdmi character varying(10) NOT NULL,
-    ethernet character varying(10) NOT NULL,
-    thunderbolt character varying(10) NOT NULL,
-    type_c character varying(10) NOT NULL,
-    display_port character varying(10) NOT NULL,
-    FOREIGN KEY (laptop_model, laptop_weight) REFERENCES laptops(model, weight),
-    PRIMARY KEY (laptop_model, laptop_weight)
-);
-
-CREATE TABLE screen (
-    laptop_model character varying(80) NOT NULL,
-    laptop_weight character varying(10) NOT NULL, -- Added weight for the composite foreign key
-    screen_resolution character varying(20) NOT NULL,
-    refresh_rate character varying(20) NOT NULL,
-    touch_screen character varying(10) NOT NULL,
-    FOREIGN KEY (laptop_model, laptop_weight) REFERENCES laptops(model, weight),
-    PRIMARY KEY (laptop_model, laptop_weight)
+CREATE TABLE graphics_cards (
+    gpu_id SERIAL PRIMARY KEY,
+    brand VARCHAR(50),
+    model VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE storage (
-    laptop_model character varying(80) NOT NULL,
-    laptop_weight character varying(10) NOT NULL, -- Added weight for the composite foreign key
-    storage_amount character varying(15) NOT NULL,
-    storage_type character varying(15) NOT NULL,
-    FOREIGN KEY (laptop_model, laptop_weight) REFERENCES laptops(model, weight),
-    PRIMARY KEY (laptop_model, laptop_weight)
+    storage_id SERIAL PRIMARY KEY,
+    type VARCHAR(20) NOT NULL CHECK (type IN ('SSD', 'HDD', 'NVMe', 'eMMC'))
 );
 
-CREATE TABLE users (
-    id integer NOT NULL,
-    username character varying(50) PRIMARY KEY,
-    phone_number character varying(20) NOT NULL,
-    email character varying(50),
-    password character varying(512) NOT NULL
+CREATE TABLE configuration_processors (
+    config_id INTEGER NOT NULL REFERENCES laptop_configurations(config_id) ON DELETE CASCADE,
+    processor_id INTEGER NOT NULL REFERENCES processors(processor_id),
+    PRIMARY KEY (config_id, processor_id)
 );
+
+CREATE TABLE configuration_gpus (
+    config_id INTEGER NOT NULL REFERENCES laptop_configurations(config_id) ON DELETE CASCADE,
+    gpu_id INTEGER NOT NULL REFERENCES graphics_cards(gpu_id),
+    PRIMARY KEY (config_id, gpu_id)
+);
+
+CREATE TABLE configuration_storage (
+    config_id INTEGER NOT NULL REFERENCES laptop_configurations(config_id) ON DELETE CASCADE,
+    storage_id INTEGER NOT NULL REFERENCES storage_types(storage_id),
+    capacity VARCHAR(15) NOT NULL,
+    PRIMARY KEY (config_id, storage_id, capacity)
+);
+
+CREATE TABLE features (
+    config_id INTEGER PRIMARY KEY REFERENCES laptop_configurations(config_id) ON DELETE CASCADE,
+    backlit_keyboard BOOLEAN DEFAULT FALSE,
+    numeric_keyboard BOOLEAN DEFAULT FALSE,
+    bluetooth BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE ports (
+    config_id INTEGER PRIMARY KEY REFERENCES laptop_configurations(config_id) ON DELETE CASCADE,
+    ethernet BOOLEAN DEFAULT FALSE,
+    hdmi BOOLEAN DEFAULT FALSE,
+    usb_type_c BOOLEAN DEFAULT FALSE,
+    thunderbolt BOOLEAN DEFAULT FALSE,
+    display_port BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE screens (
+    config_id INTEGER PRIMARY KEY REFERENCES laptop_configurations(config_id) ON DELETE CASCADE,
+    size VARCHAR(12) NOT NULL,
+    resolution VARCHAR(20) NOT NULL,
+    touchscreen BOOLEAN DEFAULT FALSE,
+    matte BOOLEAN DEFAULT FALSE,
+    refresh_rate VARCHAR(20)
+);
+
 
