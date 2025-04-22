@@ -1,11 +1,6 @@
 import json
-from traceback import print_tb
 
-# from distutils.util import execute
 from DBAccess.dbAccess import db_access
-import pprint
-
-from database_persistence import features_values, ports_values, screen_values
 
 # Initialize lists to store different laptop details
 products = []
@@ -17,7 +12,11 @@ prices = []
 
 # Load the JSON data from the file
 print("Opening the scraped data\n")
-with open('/home/samuel/laptop_chat_bot/server_side/scrapers/scraped_data/scraped_data.json', 'r') as file:
+# with open('/home/samuel/laptop_chat_bot/server_side/scrapers/scraped_data/scraped_data.json', 'r') as file:
+#     data = json.load(file)
+
+# desktop path
+with open('/home/sammy/Documents/2_brighton/sem2/groupProject-laptopChatBox/laptop_chatbot/Sam/server_side/scrapers/scraped_data/scraped_data.json', 'r') as file:
     data = json.load(file)
 
 # Loop through each laptop in the JSON data
@@ -67,46 +66,46 @@ print("Adding the dictionary items to their respective list objects")
 # Establish database connection
 conn, cur = db_access()
 
-print("\nClearing the database, so that new data can be inserted")
-try:
-    print("\nDeleting from features")
-    delete_features = "DELETE FROM features;"
-    cur.execute(delete_features)
-    conn.commit()
-
-    print("\nDeleting from gpu")
-    delete_gpu = "DELETE FROM gpu;"
-    cur.execute(delete_gpu)
-    conn.commit()
-
-    print("\nDeleting from storage")
-    delete_storage = "DELETE FROM storage;"
-    cur.execute(delete_storage)
-    conn.commit()
-
-    print("\nDeleting from ports")
-    delete_ports = "DELETE FROM ports;"
-    cur.execute(delete_ports)
-    conn.commit()
-
-    print("\nDeleting from screen")
-    delete_screen = "DELETE FROM screen;"
-    cur.execute(delete_screen)
-    conn.commit()
-
-    print("\nDelete from cpu")
-    delete_cpu = "DELETE FROM cpu;"
-    cur.execute(delete_cpu)
-    conn.commit()
-
-    print("\nDeleting from laptops")
-    delete_laptops = "DELETE FROM laptops"
-    cur.execute(delete_laptops)
-    conn.commit()
-
-except Exception as e:
-    print(f"Database error: {e}")
-    conn.rollback()
+# print("\nClearing the database, so that new data can be inserted")
+# try:
+#     print("\nDeleting from features")
+#     delete_features = "DELETE FROM features;"
+#     cur.execute(delete_features)
+#     conn.commit()
+#
+#     print("\nDeleting from gpu")
+#     delete_gpu = "DELETE FROM gpu;"
+#     cur.execute(delete_gpu)
+#     conn.commit()
+#
+#     print("\nDeleting from storage")
+#     delete_storage = "DELETE FROM storage;"
+#     cur.execute(delete_storage)
+#     conn.commit()
+#
+#     print("\nDeleting from ports")
+#     delete_ports = "DELETE FROM ports;"
+#     cur.execute(delete_ports)
+#     conn.commit()
+#
+#     print("\nDeleting from screen")
+#     delete_screen = "DELETE FROM screen;"
+#     cur.execute(delete_screen)
+#     conn.commit()
+#
+#     print("\nDelete from cpu")
+#     delete_cpu = "DELETE FROM cpu;"
+#     cur.execute(delete_cpu)
+#     conn.commit()
+#
+#     print("\nDeleting from laptops")
+#     delete_laptops = "DELETE FROM laptops"
+#     cur.execute(delete_laptops)
+#     conn.commit()
+#
+# except Exception as e:
+#     print(f"Database error: {e}")
+#     conn.rollback()
 
 for i in range(len(products)):
     brand = products[i] if i < len(products) else {}
@@ -145,7 +144,9 @@ for i in range(len(products)):
     # print("\nPrice: " + price + " , " + shop)
 
     cpu_brand = spec.get('Processor Brand', '')
+    print(f"CPU BRAND: {cpu_brand}")
     cpu_name = spec.get("Processor Name", "")
+    print(f"CPU NAME: {cpu_name}")
 
     bluetooth = feature.get("Bluetooth", "")
     num_pad = features[i].get("Numeric Keyboard", "")
@@ -171,11 +172,6 @@ for i in range(len(products)):
         amount = storage_list[0]
         storage_type = storage_list[1].strip().upper()
 
-    # storage = spec.get("Storage", "")
-    # storage_list = storage.split(" ")
-    # amount = storage_list[0]
-    # storage_type = storage_list[1]
-
     ethernet = ports[i].get("Ethernet (RJ45)", "None")
     hdmi = ports[i].get("HDMI", "None")
     usb_c = ports[i].get("USB Type-C", "None")
@@ -189,117 +185,130 @@ for i in range(len(products)):
 
     #Inserting the processor table
     try:
+        print("Inserting into database table processors:")
+        print(f"Model: {cpu_name}, Brand: {cpu_brand}")
         cpu_querey = ("INSERT INTO processors (brand, model)"
                       "VALUES(%s, %s)")
         cpu_values = (cpu_brand, cpu_name)
-        conn.execute(cpu_querey, cpu_values)
+        cur.execute(cpu_querey, cpu_values)
         conn.commit()
     except Exception as e:
         conn.rollback()
-        print("There was an error")
-    finally:
-        conn.close()
+        print(f"There was an error with inserting into processors: {e}")
 
     #Inerting into the table gpu
     try:
-        gpu_query = ("INSERT INTO graphics_cards (brand, model"
+        print("Inserting into database table graphics_cards:")
+        print(f"Model: {gpu}, Brand: {gpu_brand}")
+        gpu_query = ("INSERT INTO graphics_cards (brand, model)"
                      "VALUES(%s, %s)")
         gpu_values = (gpu_brand, gpu)
-        conn.execute(gpu_query, gpu_values)
+        cur.execute(gpu_query, gpu_values)
         conn.commit()
     except Exception as e:
         conn.rollback()
-        print(f"There was an error: {e}")
-    finally:
-        conn.close()
+        print(f"There was an error inserting into graphics cards: {e}")
+
+    config_id = None
 
     #Inserting into the laptop model and laptop configurations
     try:
+        print(f"Checking if there is already {laptop_name} in the database")
         laptop_querey = "SELECT * FROM laptop_models WHERE model_name = %s"
-        laptop_Values = (laptop_name)
-        print(f"Inserting into laptop_models")
+        laptop_Values = (laptop_name,)
+        cur.execute(laptop_querey, laptop_Values)
 
-        results = cur.fetchall()
-
-        if results == 0:
-            laptop_model_query = ("INSERT INTO laptop_models (brand, model_name)"
-                                  "VALUES (%s, %s)")
-            laptop_model_values = (brand, laptop_name)
-
-
-
-        if results == 1:
-            for row in results:
-                model_id = row[0]
-
-            laptop_configuration_query = ("INSERT INTO laptop_configurations (model_id, price, weight, battery_life, memory_installed, operating_system, processor, graphics_card)"
-                                          "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-                                          "RETURNING config_id")
-            laptop_configuration_values = (model_id, price, weight, battery_life, memory_installed, operating_system, cpu_name, gpu)
-            cur.execute(laptop_configuration_query, laptop_configuration_values)
-            config_id = cur.fetchone()[0]
-            conn.commit()
+        results = cur.fetchone()
+        if (model_row := cur.fetchone()):
+            print(f"\nThe Model: {laptop_name} already exists")
+            model_id = results[0]
         else:
-            print("there is more than one laptop_model, error")
+            print(f"\nThe model: {laptop_name} is not in the database")
+
+            print("\nInserting into database table laptop_models")
+            cur.execute(
+                "INSERT INTO laptop_models (brand, model_name) VALUES (%s, %s) RETURNING model_id",
+                (laptop_brand, laptop_name)
+            )
+            model_id = cur.fetchone()[0]
+            conn.commit()
+            print(f"Inserted new model with ID: {model_id}")
+
+
+        print("Inserting into table laptop_configurations")
+        print(
+            f"Price: {price}, Weight: {weight}, Battery Life: {battery_life}, Memory: {memory_installed}, OS: {operating_system}, Processor: {cpu_name}, Graphics Card: {gpu}")
+        laptop_configuration_query = (
+            "INSERT INTO laptop_configurations (model_id, price, weight, battery_life, memory_installed, operating_system, processor, graphics_card)"
+            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+            "RETURNING config_id")
+        laptop_configuration_values = (
+        model_id, price, weight, battery_life, memory_installed, operating_system, cpu_name, gpu)
+        cur.execute(laptop_configuration_query, laptop_configuration_values)
+        config_id = cur.fetchone()[0]
+        conn.commit()
 
     except Exception as e:
-        print(f"error lol: {e}")
+        conn.rollback()
+        print(f"\nThe model: {laptop_name} is not in the database")
+        # print(f"error Inserting into laptop_configurations: {e}")
 
     #Inserting into the storage tables
     try:
+        print("\nInserting into database table configuration_storage")
+        print(f"Config ID: {config_id}, Storage Media: {storage_type}, Capacity: {amount}")
         config_id_query = "SELECT type FROM storge_types WHERE type = %s", (storage_type)
         if cur.fetchone() is None:
             print(f"Storage type '{storage_type}' not found. Skipping insert.")
         else:
             configuration_storage_querey = ("INSERT INTO configuration_storage (config_id, storage_type, capacity)"
-                                        "VALUES(%s, %s, %s")
+                                        "VALUES(%s, %s, %s)")
         configuration_storage_values = (config_id, storage_type, amount)
-        conn.execute(configuration_storage_querey, configuration_storage_values)
+        cur.execute(configuration_storage_querey, configuration_storage_values)
         conn.commit()
     except Exception as e:
         conn.rollback()
-        print(f"error and that: {e}")
-    finally:
-        conn.close()
+        print(f"Error inserting storage configuration: {e}")
 
     #Inserting into the features table
     try:
+        print("\nInserting into database table features")
+        print(f"Config ID: {config_id}, Backlit Keyboard: {backlit}, Num Pad: {num_pad}, Bluetooth: {bluetooth}")
         features_querey = ("INSERT INTO features (config_id, backlit_keyboard, numeric_keyboard, bluetooth)"
-                           "VALUES(%s, %s, %s, %s")
+                           "VALUES(%s, %s, %s, %s)")
         features_values = (config_id, backlit, num_pad, bluetooth)
-        conn.execut(features_querey, features_values)
+        cur.execut(features_querey, features_values)
         conn.commit()
-    except EXception as e:
+    except Exception as e:
         conn.rollback()
-        print(f"error with the insert statement: {e}")
-    finally:
-        conn.close()
+        print(f"error inserting into features: {e}")
 
 
     #Inserting into the ports table
     try:
-        ports_querey = ("INSERT INTO ports (config_id, ethernet, hdmi, usb_type_c, thunderbolt, display_port"
-                        "VALUES(%s, %s, %s, %s, %s, %s")
+        print("\nInserting into database table ports")
+        print(f"Config ID: {config_id} Ethernet: {ethernet}, HDMI: {hdmi}, USB - C: {usb_c}, Thunderbolt: {thunderbolt}, Display Port: {display_port}")
+        ports_querey = ("INSERT INTO ports (config_id, ethernet, hdmi, usb_type_c, thunderbolt, display_port)"
+                        "VALUES(%s, %s, %s, %s, %s, %s)")
         ports_values = (config_id, ethernet, hdmi, usb_c, thunderbolt, display_port)
-        conn.execute(ports_querey, ports_values)
+        cur.execute(ports_querey, ports_values)
         conn.commit()
-    except EXception as e:
+    except Exception as e:
         conn.rollback()
         print(f"error with the database and that: {e}")
-    finally:
-        conn.close()
 
     try:
-        screens_querey = ("INSERT INTO screens (config_id, size, resolution, touchscreen, refresh_rate"
+        print("\nInserting into database table screens")
+        print(f"Config ID: {config_id}, Size: {screen_size}, Resolution: {screen_res}, Touchscreen: {touch_screen}, Refresh Rate: {refresh_rate}")
+        screens_querey = ("INSERT INTO screens (config_id, size, resolution, touchscreen, refresh_rate)"
                           "VALUES(%s, %s, %s, %s, %s, %s)")
         screen_values = (config_id, screen_size, touch_screen, screen_res, refresh_rate)
-        conn.execute(screens_querey, screen_values)
+        cur.execute(screens_querey, screen_values)
         conn.commit()
-    except EXception as e:
+    except Exception as e:
         conn.rollback()
         print(f"error and that i guess: {e}")
-    finally:
-        conn.close()
+
 
 
 
