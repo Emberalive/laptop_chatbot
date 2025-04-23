@@ -21,7 +21,11 @@ print("Opening the scraped data\n")
 #     data = json.load(file)
 
 # desktop path
-with open('/home/sammy/Documents/2_brighton/sem2/groupProject-laptopChatBox/laptop_chatbot/Sam/server_side/scrapers/scraped_data/scraped_data.json', 'r') as file:
+# with open('/home/sammy/Documents/2_brighton/sem2/groupProject-laptopChatBox/laptop_chatbot/Sam/server_side/scrapers/scraped_data/scraped_data.json', 'r') as file:
+#     data = json.load(file)
+
+#laptop path
+with open('/home/samuel/Documents/2_Brighton/sem2/GroupProject/laptop_chatbot/Sam/server_side/scrapers/scraped_data/scraped_data.json', 'r') as file:
     data = json.load(file)
 
 # Loop through each laptop in the JSON data
@@ -69,54 +73,56 @@ for laptop in data:
 print("Adding the dictionary items to their respective list objects")
 
 # Establish database connection
-conn, cur = get_db_connection()
-
-print("\nClearing the database, so that new data can be inserted")
-try:
-    print("\nDeleting from table: configuration_storage")
-    storage_config_delete = "DELETE FROM configuration_storage"
-    cur.execute(storage_config_delete)
-
-    print("\nDeleting from table: features")
-    features_delete = "DELETE FROM features"
-    cur.execute(features_delete)
-
-    print("\nDeleting from table: ports")
-    ports_delete = "DELETE FROM ports"
-    cur.execute(ports_delete)
-
-    print("\nDeleting from table: screens")
-    screens_delete = "DELETE FROM screens"
-    cur.execute(screens_delete)
-
-    print("\nDeleting from table: laptop_configurations")
-    laptop_config_delete = "DELETE FROM laptop_configurations"
-    cur.execute(laptop_config_delete)
-
-
-    print("\nDeleting from table: processors")
-    processors_delete = "DELETE FROM processors"
-    cur.execute(processors_delete)
-
-    print("\nDeleting from table: graphics_cards")
-    graphics_cards_delete = "DELETE FROM graphics_cards"
-    cur.execute(graphics_cards_delete)
-
-    print("\nresetting confg_id auto increment value")
-    configuration_laptops_reset = "ALTER SEQUENCE laptop_configurations_config_id_seq RESTART WITH 1"
-    cur.execute(configuration_laptops_reset)
-
-    print("\nDeleting from able laptop_model")
-    laptop_model_delete = "DELETE FROM laptop_models"
-    cur.execute(laptop_model_delete)
-
-    print("\nresetting model_id auto increment value")
-    laptop_model_reset = "ALTER SEQUENCE laptop_models_model_id_seq RESTART WITH 1"
-    cur.execute(laptop_model_reset)
-
-except Exception as e:
-    print(f"Database error: {e}")
-    conn.rollback()
+# conn, cur = get_db_connection()
+#
+# print("\nClearing the database, so that new data can be inserted")
+# try:
+#     print("\nDeleting from table: configuration_storage")
+#     storage_config_delete = "DELETE FROM configuration_storage"
+#     cur.execute(storage_config_delete)
+#
+#     print("\nDeleting from table: features")
+#     features_delete = "DELETE FROM features"
+#     cur.execute(features_delete)
+#
+#     print("\nDeleting from table: ports")
+#     ports_delete = "DELETE FROM ports"
+#     cur.execute(ports_delete)
+#
+#     print("\nDeleting from table: screens")
+#     screens_delete = "DELETE FROM screens"
+#     cur.execute(screens_delete)
+#
+#     print("\nDeleting from table: laptop_configurations")
+#     laptop_config_delete = "DELETE FROM laptop_configurations"
+#     cur.execute(laptop_config_delete)
+#
+#
+#     print("\nDeleting from table: processors")
+#     processors_delete = "DELETE FROM processors"
+#     cur.execute(processors_delete)
+#
+#     print("\nDeleting from table: graphics_cards")
+#     graphics_cards_delete = "DELETE FROM graphics_cards"
+#     cur.execute(graphics_cards_delete)
+#
+#     print("\nresetting confg_id auto increment value")
+#     configuration_laptops_reset = "ALTER SEQUENCE laptop_configurations_config_id_seq RESTART WITH 1"
+#     cur.execute(configuration_laptops_reset)
+#
+#     print("\nDeleting from able laptop_model")
+#     laptop_model_delete = "DELETE FROM laptop_models"
+#     cur.execute(laptop_model_delete)
+#
+#     print("\nresetting model_id auto increment value")
+#     laptop_model_reset = "ALTER SEQUENCE laptop_models_model_id_seq RESTART WITH 1"
+#     cur.execute(laptop_model_reset)
+#
+# except Exception as e:
+#     print(f"Database error: {e}")
+#     conn.rollback()
+# finally:
+#     release_db_connection(conn, cur)
 
 
 def check_cpu(cpu):
@@ -128,7 +134,9 @@ def check_cpu(cpu):
         cur.execute(check_cpu_query, cpu_check_values)
         result = cur.fetchone()
         if result is None:
+            print(f"\nCPU: {cpu} is not in the database")
             return False
+        print(f"\nCPU: {cpu} is already in the database")
         return True
     except Exception as e:
         print(f"failed to check the cpu: {e}")
@@ -161,7 +169,9 @@ def check_gpu (gpu_name):
 
         result = cur.fetchone()
         if result is None:
+            print(f"\nGPU: {gpu_name} is not in the database")
             return False
+        print(f"\nGPU: {gpu_name} is already in the database")
         return True
     except Exception as e:
         print(f"Error checking if {gpu_name} is in the database: {e}")
@@ -184,21 +194,25 @@ def insert_gpu (gpu_name, brand):
     finally:
         release_db_connection(conn, cur)
 
-def check_laptop_model(name):
+
+def check_laptop_model(name: str) -> tuple[bool, int | None]:
     conn, cur = get_db_connection()
     try:
         print(f"Checking if there is already {name} in the database")
-        check_laptop_querey = "SELECT * FROM laptop_models WHERE model_name = %s"
-        check_laptop_values = (laptop_name,)
-        cur.execute(check_laptop_querey, check_laptop_values)
+        check_laptop_query = "SELECT model_id FROM laptop_models WHERE model_name = %s"
+        cur.execute(check_laptop_query, (name,))
 
         result = cur.fetchone()
         if result is None:
-            return False
+            print(f"Laptop model '{name}' not found in database")
+            return False, None
+
         model_id = result[0]
+        print(f"Laptop model '{name}' found with ID {model_id}")
         return True, model_id
     except Exception as e:
-        print(f"Error checking for the laptop in the database: {e}")
+        print(f"Error checking for laptop '{name}' in the database: {e}")
+        return False, None
     finally:
         release_db_connection(conn, cur)
 
@@ -207,8 +221,11 @@ def insert_laptop_model(brand, model)-> int| None:
     try:
         print("\nInserting into laptop_model")
         print(f"Brand: {brand}, Model: {model}")
-        laptop_model_query = ("INSERT INTO laptop_models (brand, model_name)"
-                              "VALUES(%s, %s)")
+        laptop_model_query = (
+            "INSERT INTO laptop_models (brand, model_name) "
+            "VALUES(%s, %s) "
+            "RETURNING model_id"
+        )
         laptop_model_values = (brand, model)
         cur.execute(laptop_model_query, laptop_model_values)
         conn.commit()
@@ -258,6 +275,8 @@ def insert_storage(config_id, storagetype, capacity):
     except Exception as e:
         conn.rollback()
         print(f"Error inserting storage configuration: {e}")
+    finally:
+        release_db_connection(conn, cur)
 
 def insert_features(config_id, backlit_keyb, number_pad, blue_tooth):
     conn, cur = get_db_connection()
@@ -272,6 +291,8 @@ def insert_features(config_id, backlit_keyb, number_pad, blue_tooth):
     except Exception as e:
         conn.rollback()
         print(f"error inserting into features: {e}")
+    finally:
+        release_db_connection(conn, cur)
 
 def insert_ports(config_id, eth, hdmi_port, usb_type_c, thunder, d_p):
     conn, cur = get_db_connection()
@@ -286,6 +307,8 @@ def insert_ports(config_id, eth, hdmi_port, usb_type_c, thunder, d_p):
     except Exception as e:
         conn.rollback()
         print(f"error with the database and that: {e}")
+    finally:
+        release_db_connection(conn, cur)
 
 def insert_screens(config_id, size, resolution, touch, ref_rate):
     conn, cur = get_db_connection()
@@ -300,7 +323,8 @@ def insert_screens(config_id, size, resolution, touch, ref_rate):
     except Exception as e:
         conn.rollback()
         print(f"error and that i guess: {e}")
-
+    finally:
+        release_db_connection(conn, cur)
 
 
 
@@ -379,25 +403,35 @@ for i in range(len(products)):
     refresh_rate = screens[i].get("Refresh Rate", "Unknown")
     touch_screen = screens[i].get("Touchscreen", False)
 
-    model_id = None
-    config_id = None
+    # model_id = None
+    # config_id = None
     if check_cpu(cpu_name) is False:
         insert_cpu(cpu_name, cpu_brand)
     if check_gpu(gpu) is False:
         insert_gpu(gpu, gpu_brand)
 
-    if check_laptop_model(laptop_name) is False:
+    success, model_id = check_laptop_model(laptop_name)
+
+    if not success:  # Laptop doesn't exist
         model_id = insert_laptop_model(laptop_brand, laptop_name)
+        if model_id is None:
+            print(f"Failed to insert laptop: {laptop_name}")
+            # Handle error (retry, exit, etc.)
+        else:
+            print(f"Inserted new laptop with ID: {model_id}")
+    else:
+        print(f"Laptop already exists with ID: {model_id}")
     config_id = insert_laptop_configuration(model_id, price, weight, battery_life, memory_installed, operating_system, cpu_name, gpu)
 
-    if model_id is None or config_id is None:
-        print("Error getting model_id skipping inserts")
-        continue
-    else:
-        with ThreadPoolExecutor(max_workers=4) as executor:
-            executor.submit(insert_ports, config_id, ethernet, hdmi, usb_c, thunderbolt, display_port)
-            executor.submit(insert_features, config_id, backlit, num_pad, bluetooth)
-            executor.submit(insert_screens, config_id, screen_size, screen_res, touch_screen, refresh_rate)
-            executor.submit(insert_storage, config_id, storage_type, amount)
-
-release_db_connection(conn, cur)
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        futures = [
+        executor.submit(insert_ports, config_id, ethernet, hdmi, usb_c, thunderbolt, display_port),
+        executor.submit(insert_features, config_id, backlit, num_pad, bluetooth),
+        executor.submit(insert_screens, config_id, screen_size, screen_res, touch_screen, refresh_rate),
+        executor.submit(insert_storage, config_id, storage_type, amount)
+        ]
+    for future in as_completed(futures):
+        try:
+            future.result()  # Raises exceptions if any occurred
+        except Exception as e:
+            print(f"Error in worker: {e}")

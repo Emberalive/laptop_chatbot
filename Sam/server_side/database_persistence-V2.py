@@ -1,6 +1,3 @@
-however, I have one concern, the these queries are inside of a for loop? this wouldnt, mess anything up would it by creating methods?
-
-for example this is the rest of my script
 import json
 
 from DBAccess.dbAccess import get_db_connection

@@ -10,7 +10,7 @@ def init_db_pool():
         print("Creating PostgreSQL connection pool...")
         connection_pool = pool.SimpleConnectionPool(
             minconn = 1,
-            maxconn = 20,
+            maxconn = 400,
             database = "laptopchatbot_new",
             user= "samuel",
             host = "86.19.219.159",
