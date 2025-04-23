@@ -1,5 +1,5 @@
 
 python-crontab
-psycopg2
+psycopg2-binary
 bs4
 requests

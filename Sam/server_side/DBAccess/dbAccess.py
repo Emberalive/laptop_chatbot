@@ -57,3 +57,5 @@ def db_access():
         print("connection was not made. Error: {e}")
 
 init_db_pool()
+conn, cur = get_db_connection()
+release_db_connection(conn, cur)
