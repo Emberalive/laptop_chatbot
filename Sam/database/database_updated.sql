@@ -24,7 +24,7 @@ CREATE TABLE storge_types (
 CREATE TABLE laptop_configurations (
     config_id SERIAL UNIQUE,
     model_id INTEGER NOT NULL REFERENCES laptop_models(model_id) ON DELETE CASCADE,
-    price VARCHAR(10),
+    price VARCHAR(25),
     weight VARCHAR(10) ,
     battery_life VARCHAR(30),
     memory_installed VARCHAR(20) NOT NULL,
@@ -40,8 +40,8 @@ CREATE TABLE laptop_configurations (
 -- Insert data after table exists
 INSERT INTO storge_types (type) VALUES ('SSD');
 INSERT INTO storge_types (type) VALUES ('HDD');
-INSERT INTO storge_types (type) VALUES ('NVMe');
-INSERT INTO storge_types (type) VALUES ('eMMC');
+INSERT INTO storge_types (type) VALUES ('NVME');
+INSERT INTO storge_types (type) VALUES ('EMMC');
 
 -- Tables that depend on laptop_configurations and storge_types
 CREATE TABLE configuration_storage (
