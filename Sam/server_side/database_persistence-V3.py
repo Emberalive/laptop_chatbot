@@ -2,8 +2,6 @@ import json
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from samba import fault_setup
-
 from DBAccess.dbAccess import get_db_connection
 from DBAccess.dbAccess import release_db_connection
 
@@ -17,16 +15,16 @@ prices = []
 
 # Load the JSON data from the file
 print("Opening the scraped data\n")
-# with open('/home/samuel/laptop_chat_bot/server_side/scrapers/scraped_data/scraped_data.json', 'r') as file:
-#     data = json.load(file)
+with open('/home/samuel/laptop_chat_bot/server_side/scrapers/scraped_data/scraped_data.json', 'r') as file:
+    data = json.load(file)
 
 # desktop path
 # with open('/home/sammy/Documents/2_brighton/sem2/groupProject-laptopChatBox/laptop_chatbot/Sam/server_side/scrapers/scraped_data/scraped_data.json', 'r') as file:
 #     data = json.load(file)
 
 #laptop path
-with open('/home/samuel/Documents/2_Brighton/sem2/GroupProject/laptop_chatbot/Sam/server_side/scrapers/scraped_data/scraped_data.json', 'r') as file:
-    data = json.load(file)
+# with open('/home/samuel/Documents/2_Brighton/sem2/GroupProject/laptop_chatbot/Sam/server_side/scrapers/scraped_data/scraped_data.json', 'r') as file:
+#     data = json.load(file)
 
 # Loop through each laptop in the JSON data
 print("Sorting through the JSON object lists\n")
