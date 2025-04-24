@@ -1,5 +1,8 @@
 import json
 
+#this version takes a whopping 14:49:77
+
+
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from DBAccess.dbAccess import get_db_connection
