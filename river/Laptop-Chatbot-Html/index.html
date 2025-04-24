@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Laptop Recommendation Chatbot</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+    <div class="fixed-theme-toggle">
+      <div class="theme-toggle">
+        <input type="checkbox" id="theme-toggle-checkbox" class="theme-toggle-checkbox">
+        <label for="theme-toggle-checkbox" class="theme-toggle-label">
+            <span class="theme-toggle-icons">
+                <span class="sun">☀️</span>
+                <span class="moon">🌙</span>
+            </span>
+        </label>
+      </div>
+    </div>
+
+        <div class="splash-container" id="splash-screen">
+            <div class="splash-content">
+                <h1>Welcome to LaptopAdvisor</h1>
+                <div class="laptop-icon">💻</div>
+                <p>Your AI-powered assistant for finding the perfect laptop.</p>
+                <p class="splash-description">I can help you discover the best laptop options based on your specific needs, budget, and preferences. Whether you're a gamer, student, professional, or casual user, I've got recommendations just for you.</p>
+                <button id="start-chat-btn" class="start-chat-btn">Start Chat</button>
+            </div>
+        </div>
+
+        <div class="chat-container" id="chat-container" style="display: none;">
+            <div class="chat-header">
+                <h1>Laptop Recommendation Assistant</h1>
+                <p>Ask me about laptop recommendations based on your needs!</p>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="message bot">
+                    <div class="message-content">
+                        Hello! I'm your laptop recommendation assistant. Tell me what you're looking for in a laptop, your budget, or any specific requirements you have.
+                    </div>
+                </div>
+            </div>
+            <div class="chat-input-container">
+                <input type="text" id="user-input" placeholder="Ask about laptop recommendations...">
+                <button id="send-btn">Send</button>
+            </div>
+        </div>
+        <script src="index.js"></script>
+    </body>
+    </html>
