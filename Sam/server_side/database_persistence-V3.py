@@ -402,16 +402,10 @@ for i in range(len(products)):
             insert_cpu(cpu_name, cpu_brand, cur)
         if check_gpu(gpu, cur) is False:
             insert_gpu(gpu, gpu_brand, cur)
-        conn.commit()
-    except Exception as e:
-        conn.rollback()
-        print(f"Error inserting into the database for the GPU, or CPU {e}")
-    finally:
-        release_db_connection(conn, cur)
 
-    success, model_id = check_laptop_model(laptop_name, cur)
-    try:
-        conn, cur = get_db_connection()
+
+        success, model_id = check_laptop_model(laptop_name, cur)
+
         if not success:  # Laptop doesn't exist
             model_id = insert_laptop_model(laptop_brand, laptop_name, cur)
             if model_id is None:
@@ -421,15 +415,7 @@ for i in range(len(products)):
         else:
             print(f"Laptop already exists with ID: {model_id}")
         config_id = insert_laptop_configuration(model_id, price, weight, battery_life, memory_installed, operating_system, cpu_name, gpu, cur)
-        conn.commit()
-    except Exception as e:
-        conn.rollback()
-        print(f"Error inserting laptop config and  or model: {e}")
-    finally:
-        release_db_connection(conn, cur)
 
-    try:
-        conn, cur = get_db_connection()
         insert_ports(config_id, ethernet, hdmi, usb_c, thunderbolt, display_port, cur)
         insert_features(config_id, backlit, num_pad, bluetooth, cur)
         insert_screens(config_id, screen_size, screen_res, touch_screen, refresh_rate, cur)
