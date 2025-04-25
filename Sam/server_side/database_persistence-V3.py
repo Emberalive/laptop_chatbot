@@ -230,8 +230,8 @@ def insert_laptop_model(brand, model, cur)-> int| None:
         laptop_model_query = (
             "INSERT INTO laptop_models (brand, model_name) "
             "VALUES(%s, %s) "
-            "RETURNING model_id"
             "ON CONFLICT (model) DO NOTHING"
+            "RETURNING model_id"
         )
         laptop_model_values = (brand, model)
         cur.execute(laptop_model_query, laptop_model_values)
