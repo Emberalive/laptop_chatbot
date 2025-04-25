@@ -228,9 +228,9 @@ def insert_laptop_model(brand, model, cur)-> int| None:
         print("\nInserting into laptop_model")
         print(f"Brand: {brand}, Model: {model}")
         laptop_model_query = (
-            "INSERT INTO laptop_models (brand, model_id) "
+            "INSERT INTO laptop_models (brand, model_name) "
             "VALUES(%s, %s) "
-            "ON CONFLICT (model_id) DO NOTHING "
+            "ON CONFLICT (model_name) DO NOTHING "
             "RETURNING model_id"
         )
         laptop_model_values = (brand, model)
