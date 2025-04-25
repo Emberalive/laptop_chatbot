@@ -2,7 +2,7 @@ import json
 
 #this version takes a whopping 14:49:77
 # with new improvements it is now 7:15
-
+# latest speed is 6:10
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -194,9 +194,9 @@ def insert_gpu (gpu_name, brand, cur):
         cur.execute(gpu_query, gpu_values)
 
         if cur.rowcount >0:
-            print(f"CPU: {name} is not in the database, it has been inserted")
+            print(f"CPU: {gpu_name} is not in the database, it has been inserted")
         else:
-            print(f"CPU: {name}, Already exists, skipping insertion")
+            print(f"CPU: {gpu_name}, Already exists, skipping insertion")
 
     except Exception as e:
         print(f"Error inserting {gpu_name} into database: {e}")
