@@ -397,10 +397,11 @@ for i in range(len(products)):
     touch_screen = screens[i].get("Touchscreen", False)
 
     try:
-        if check_cpu(cpu_name) is False:
-            insert_cpu(cpu_name, cpu_brand)
-        if check_gpu(gpu) is False:
-            insert_gpu(gpu, gpu_brand)
+        conn, cur = get_db_connection()
+        if check_cpu(cpu_name, cur) is False:
+            insert_cpu(cpu_name, cpu_brand, cur)
+        if check_gpu(gpu, cur) is False:
+            insert_gpu(gpu, gpu_brand, cur)
         conn.commit()
     except Exception as e:
         conn.rollback()
@@ -410,6 +411,7 @@ for i in range(len(products)):
 
     success, model_id = check_laptop_model(laptop_name)
     try:
+        conn, cur = get_db_connection()
         if not success:  # Laptop doesn't exist
             model_id = insert_laptop_model(laptop_brand, laptop_name)
             if model_id is None:
