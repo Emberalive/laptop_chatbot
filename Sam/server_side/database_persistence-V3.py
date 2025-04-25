@@ -409,18 +409,18 @@ for i in range(len(products)):
     finally:
         release_db_connection(conn, cur)
 
-    success, model_id = check_laptop_model(laptop_name)
+    success, model_id = check_laptop_model(laptop_name, cur)
     try:
         conn, cur = get_db_connection()
         if not success:  # Laptop doesn't exist
-            model_id = insert_laptop_model(laptop_brand, laptop_name)
+            model_id = insert_laptop_model(laptop_brand, laptop_name, cur)
             if model_id is None:
                 print(f"Failed to insert laptop: {laptop_name}")
             else:
                 print(f"Inserted new laptop with ID: {model_id}")
         else:
             print(f"Laptop already exists with ID: {model_id}")
-        config_id = insert_laptop_configuration(model_id, price, weight, battery_life, memory_installed, operating_system, cpu_name, gpu)
+        config_id = insert_laptop_configuration(model_id, price, weight, battery_life, memory_installed, operating_system, cpu_name, gpu, cur)
         conn.commit()
     except Exception as e:
         conn.rollback()
