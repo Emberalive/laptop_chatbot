@@ -1,6 +1,7 @@
 import json
 
 #this version takes a whopping 14:49:77
+# with new improvements it is now 7:15
 
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -126,23 +127,22 @@ print("Adding the dictionary items to their respective list objects")
 #     release_db_connection(conn, cur)
 
 
-def check_cpu(cpu, cur):
-    # conn, cur = get_db_connection()
-    try:
-        print(f"\nChecking if cpu: {cpu} is in the database")
-        check_cpu_query = "SELECT model FROM processors WHERE model = %s"
-        cpu_check_values = (cpu,)
-        cur.execute(check_cpu_query, cpu_check_values)
-        result = cur.fetchone()
-        if result is None:
-            print(f"\nCPU: {cpu} is not in the database")
-            return False
-        print(f"\nCPU: {cpu} is already in the database")
-        return True
-    except Exception as e:
-        print(f"failed to check the cpu: {e}")
-    # finally:
-    #     # release_db_connection(conn, cur)
+# def check_cpu(cpu, cur):
+#     # conn, cur = get_db_connection()
+#     try:
+#         print(f"\nChecking if cpu: {cpu} is in the database")
+#         check_cpu_query = "SELECT model FROM processors WHERE model = %s"
+#         cpu_check_values = (cpu,)
+#         cur.execute(check_cpu_query, cpu_check_values)
+#         result = cur.fetchone()
+#         if result is None:
+#             print(f"\nCPU: {cpu} is not in the database")
+#             return False
+#         print(f"\nCPU: {cpu} is already in the database")
+#         return True
+#     except Exception as e:
+#         print(f"failed to check the cpu: {e}")
+
 
 def insert_cpu (name, brand, cur):
     # conn, cur = get_db_connection()
@@ -150,33 +150,37 @@ def insert_cpu (name, brand, cur):
         print("\nInserting into database table processors:")
         print(f"Model: {name}, Brand: {brand}")
         cpu_querey = ("INSERT INTO processors (brand, model)"
-                      "VALUES(%s, %s)")
+                      "VALUES(%s, %s)"
+                      "ON CONFLICT (model) DO NOTHING;")
         cpu_values = (brand, name)
         cur.execute(cpu_querey, cpu_values)
+
+        if cur.rowcount >0:
+            print(f"CPU: {name} is not in the database, it has been inserted")
+        else:
+            print(f"CPU: {name}, Already exists, skipping insertion")
+
     except Exception as e:
         print(f"Error with inserting {name}: {e}")
         raise #this reRaises the error to be caught by the global error handler
-    # finally:
-    #     # release_db_connection(conn, cur)
 
-def check_gpu (gpu_name, cur):
-    # conn, cur = get_db_connection()
-    try:
-        print(f"\nChecking if gpu: {gpu_name} is i the database")
-        check_gpu_query = "SELECT model FROM graphics_cards WHERE model = %s"
-        gpu_check_values = (gpu_name,)
-        cur.execute(check_gpu_query, gpu_check_values)
+# def check_gpu (gpu_name, cur):
+#     # conn, cur = get_db_connection()
+#     try:
+#         print(f"\nChecking if gpu: {gpu_name} is i the database")
+#         check_gpu_query = "SELECT model FROM graphics_cards WHERE model = %s"
+#         gpu_check_values = (gpu_name,)
+#         cur.execute(check_gpu_query, gpu_check_values)
+#
+#         result = cur.fetchone()
+#         if result is None:
+#             print(f"\nGPU: {gpu_name} is not in the database")
+#             return False
+#         print(f"\nGPU: {gpu_name} is already in the database")
+#         return True
+#     except Exception as e:
+#         print(f"Error checking if {gpu_name} is in the database: {e}")
 
-        result = cur.fetchone()
-        if result is None:
-            print(f"\nGPU: {gpu_name} is not in the database")
-            return False
-        print(f"\nGPU: {gpu_name} is already in the database")
-        return True
-    except Exception as e:
-        print(f"Error checking if {gpu_name} is in the database: {e}")
-    # finally:
-    #     release_db_connection(conn, cur)
 
 def insert_gpu (gpu_name, brand, cur):
     # conn, cur = get_db_connection()
@@ -184,36 +188,39 @@ def insert_gpu (gpu_name, brand, cur):
         print("\nInserting into database table graphics_cards:")
         print(f"Model: {gpu_name}, Brand: {brand}")
         gpu_query = ("INSERT INTO graphics_cards (brand, model)"
-                     "VALUES(%s, %s)")
+                     "VALUES(%s, %s)"
+                     "ON CONFLICT (model) DO NOTHING;")
         gpu_values = (brand, gpu_name)
         cur.execute(gpu_query, gpu_values)
+
+        if cur.rowcount >0:
+            print(f"CPU: {name} is not in the database, it has been inserted")
+        else:
+            print(f"CPU: {name}, Already exists, skipping insertion")
+
     except Exception as e:
         print(f"Error inserting {gpu_name} into database: {e}")
         raise #this reRaises the error to be caught by the global error handler
-    # finally:
-    #     release_db_connection(conn, cur)
 
 
-def check_laptop_model(name: str, cur) -> tuple[bool, int | None]:
-    # conn, cur = get_db_connection()
-    try:
-        print(f"Checking if there is already {name} in the database")
-        check_laptop_query = "SELECT model_id FROM laptop_models WHERE model_name = %s"
-        cur.execute(check_laptop_query, (name,))
-
-        result = cur.fetchone()
-        if result is None:
-            print(f"Laptop model '{name}' not found in database")
-            return False, None
-
-        model_id = result[0]
-        print(f"Laptop model '{name}' found with ID {model_id}")
-        return True, model_id
-    except Exception as e:
-        print(f"Error checking for laptop '{name}' in the database: {e}")
-        return False, None
-    # finally:
-    #     release_db_connection(conn, cur)
+# def check_laptop_model(name: str, cur) -> tuple[bool, int | None]:
+#     # conn, cur = get_db_connection()
+#     try:
+#         print(f"Checking if there is already {name} in the database")
+#         check_laptop_query = "SELECT model_id FROM laptop_models WHERE model_name = %s"
+#         cur.execute(check_laptop_query, (name,))
+#
+#         result = cur.fetchone()
+#         if result is None:
+#             print(f"Laptop model '{name}' not found in database")
+#             return False, None
+#
+#         model_id = result[0]
+#         print(f"Laptop model '{name}' found with ID {model_id}")
+#         return True, model_id
+#     except Exception as e:
+#         print(f"Error checking for laptop '{name}' in the database: {e}")
+#         return False, None
 
 def insert_laptop_model(brand, model, cur)-> int| None:
     # conn, cur = get_db_connection()
@@ -224,16 +231,20 @@ def insert_laptop_model(brand, model, cur)-> int| None:
             "INSERT INTO laptop_models (brand, model_name) "
             "VALUES(%s, %s) "
             "RETURNING model_id"
+            "ON CONFLICT (model) DO NOTHING"
         )
         laptop_model_values = (brand, model)
         cur.execute(laptop_model_query, laptop_model_values)
+
+        if cur.rowcount > 0:
+            print(f"laptop model: {model} has been added to the database")
+        else:
+            print(f"laptop model: {model} was not in thee database, has now been inserted")
+
         return cur.fetchone()[0] # model_id
     except Exception as e:
         print(f"Error inserting into laptop model: {e}")
         return None
-    # finally:
-    #     release_db_connection(conn, cur)
-    #     raise #this reRaises the error to be caught by the global error handler
 
 
 def insert_laptop_configuration(model_id, laptop_price, laptop_weight, laptop_battery_life, laptop_memory, os, cpu,
@@ -398,22 +409,22 @@ for i in range(len(products)):
 
     try:
         conn, cur = get_db_connection()
-        if check_cpu(cpu_name, cur) is False:
-            insert_cpu(cpu_name, cpu_brand, cur)
-        if check_gpu(gpu, cur) is False:
-            insert_gpu(gpu, gpu_brand, cur)
+        # if check_cpu(cpu_name, cur) is False:
+        insert_cpu(cpu_name, cpu_brand, cur)
+        # if check_gpu(gpu, cur) is False:
+        insert_gpu(gpu, gpu_brand, cur)
 
 
-        success, model_id = check_laptop_model(laptop_name, cur)
+        # success, model_id = check_laptop_model(laptop_name, cur)
 
-        if not success:  # Laptop doesn't exist
-            model_id = insert_laptop_model(laptop_brand, laptop_name, cur)
-            if model_id is None:
-                print(f"Failed to insert laptop: {laptop_name}")
-            else:
-                print(f"Inserted new laptop with ID: {model_id}")
+        # if not success:  # Laptop doesn't exist
+        model_id = insert_laptop_model(laptop_brand, laptop_name, cur)
+        if model_id is None:
+            print(f"Failed to insert laptop: {laptop_name}")
         else:
-            print(f"Laptop already exists with ID: {model_id}")
+            print(f"Inserted new laptop with ID: {model_id}")
+        # else:
+        #     print(f"Laptop already exists with ID: {model_id}")
         config_id = insert_laptop_configuration(model_id, price, weight, battery_life, memory_installed, operating_system, cpu_name, gpu, cur)
 
         insert_ports(config_id, ethernet, hdmi, usb_c, thunderbolt, display_port, cur)
