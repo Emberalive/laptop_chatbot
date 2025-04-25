@@ -227,12 +227,12 @@ def insert_laptop_model(brand, model, cur)-> int| None:
     try:
         print("\nInserting into laptop_model")
         print(f"Brand: {brand}, Model: {model}")
-        laptop_model_query = """
-            INSERT INTO processors (brand, model)
-            VALUES (%s, %s)
-            ON CONFLICT (model) DO NOTHING
-            RETURNING model_id;
-            """
+        laptop_model_query = (
+            "INSERT INTO laptop_models (brand, model_name) "
+            "VALUES(%s, %s) "
+            "ON CONFLICT (model_name) DO NOTHING"
+            "RETURNING model_id"
+        )
         laptop_model_values = (brand, model)
         cur.execute(laptop_model_query, laptop_model_values)
 
