@@ -20,12 +20,12 @@ prices = []
 # Load the JSON data from the file
 #server path
 print("Opening the scraped data\n")
-with open('/home/samuel/laptop_chat_bot/server_side/scrapers/scraped_data/scraped_data.json', 'r') as file:
-    data = json.load(file)
+# with open('/home/samuel/laptop_chat_bot/server_side/scrapers/scraped_data/scraped_data.json', 'r') as file:
+#     data = json.load(file)
 
 # desktop path
-# with open('/home/sammy/Documents/2_brighton/sem2/groupProject-laptopChatBox/laptop_chatbot/Sam/server_side/scrapers/scraped_data/scraped_data.json', 'r') as file:
-#     data = json.load(file)
+with open('/home/sammy/Documents/2_brighton/sem2/groupProject-laptopChatBox/laptop_chatbot/Sam/server_side/scrapers/scraped_data/scraped_data.json', 'r') as file:
+    data = json.load(file)
 
 #laptop path
 # with open('/home/samuel/Documents/2_Brighton/sem2/GroupProject/laptop_chatbot/Sam/server_side/scrapers/scraped_data/scraped_data.json', 'r') as file:
@@ -161,18 +161,19 @@ def insert_laptop_model(brand, model, cur)-> int| None:
         laptop_model_query = (
             "INSERT INTO laptop_models (brand, model_name) "
             "VALUES(%s, %s) "
-            "ON CONFLICT (model_name) DO NOTHING "
+            "ON CONFLICT (model_name) "
+            "DO UPDATE SET model_name = EXCLUDED.model_name " #this updates the row that has the model name in,to the same value, allowing me to return model_id
             "RETURNING model_id"
         )
         laptop_model_values = (brand, model)
         cur.execute(laptop_model_query, laptop_model_values)
 
         if cur.rowcount > 0:
-            print(f"laptop model: {model} has been added to the database")
+            print(f"laptop model: {model} already exists in the database")
         else:
-            print(f"laptop model: {model} was not in thee database, has now been inserted")
+            print(f"laptop model: {model} was not in the database, has now been inserted")
 
-        return cur.fetchone()
+        return cur.fetchone()[0]
 
     except Exception as e:
         print(f"Error inserting into laptop model: {e}")
