@@ -4,6 +4,8 @@ import json
 # with new improvements it is now 7:15
 # latest speed is 6:10
 #newest speed 5:28
+#many pool executors = 5:23:21
+#however i am not inserting all of them, i don't know why
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -252,6 +254,15 @@ def insert_screens(config_id, size, resolution, touch, ref_rate, cur):
         raise #this reRaises the error to be caught by the global error handler
 
 conn, cur = get_db_connection()
+
+
+#Notes
+#I can put all the insert data into a list and use the .executemany() function instead of doing them all separate
+#I could also add more workers to each worker pool while there is a wait for database read and write
+#Also I could reduce my prints as each print has a very small hang as the print to console is happening
+#pass create mny own cursor per method as cursors are not thread safe
+
+
 
 
 for i in range(len(products)):
