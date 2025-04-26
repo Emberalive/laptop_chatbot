@@ -359,7 +359,7 @@ for i in range(len(products)):
         else:
             print(f"Inserted new laptop with ID: {model_id}")
 
-        insert_laptop_configuration(model_id, price, weight, battery_life, memory_installed, operating_system, cpu_name, gpu, cur)
+        # insert_laptop_configuration(model_id, price, weight, battery_life, memory_installed, operating_system, cpu_name, gpu, cur)
         with ThreadPoolExecutor(max_workers=5) as executor:
             config_future = executor.submit(
                 insert_laptop_configuration, model_id, price, weight, battery_life, memory_installed, operating_system, cpu_name, gpu, cur)
