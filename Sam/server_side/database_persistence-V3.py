@@ -81,7 +81,6 @@ for laptop in data:
 print("Adding the dictionary items to their respective list objects")
 
 def insert_cpu (name, brand, cur):
-    # conn, cur = get_db_connection()
     try:
         print("\nInserting into database table processors:")
         print(f"Model: {name}, Brand: {brand}")
@@ -119,7 +118,6 @@ def insert_cpu (name, brand, cur):
 
 
 def insert_gpu (gpu_name, brand, cur):
-    # conn, cur = get_db_connection()
     try:
         print("\nInserting into database table graphics_cards:")
         print(f"Model: {gpu_name}, Brand: {brand}")
@@ -159,7 +157,6 @@ def insert_gpu (gpu_name, brand, cur):
 #         return False, None
 
 def insert_laptop_model(brand, model, cur)-> int| None:
-    # conn, cur = get_db_connection()
     try:
         print("\nInserting into laptop_model")
         print(f"Brand: {brand}, Model: {model}")
@@ -186,7 +183,6 @@ def insert_laptop_model(brand, model, cur)-> int| None:
 
 def insert_laptop_configuration(model_id, laptop_price, laptop_weight, laptop_battery_life, laptop_memory, os, cpu,
                                 gpu_name, cur)-> int| None:
-    # conn, cur = get_db_connection()
     try:
         print("\nInserting into table laptop_configurations")
         print(
@@ -207,7 +203,6 @@ def insert_laptop_configuration(model_id, laptop_price, laptop_weight, laptop_ba
 
 
 def insert_storage(config_id, storagetype, capacity, cur):
-    # conn, cur = get_db_connection()
     try:
         print("\nInserting into database table configuration_storage")
         print(f"Config ID: {config_id}, Storage Media: {storagetype}, Capacity: {capacity}")
@@ -220,7 +215,6 @@ def insert_storage(config_id, storagetype, capacity, cur):
         raise #this reRaises the error to be caught by the global error handler
 
 def insert_features(config_id, backlit_keyb, number_pad, blue_tooth, cur):
-    # conn, cur = get_db_connection()
     try:
         print("\nInserting into database table features")
         print(f"Config ID: {config_id}, Backlit Keyboard: {backlit_keyb}, Num Pad: {number_pad}, Bluetooth: {blue_tooth}")
@@ -233,7 +227,6 @@ def insert_features(config_id, backlit_keyb, number_pad, blue_tooth, cur):
         raise #this reRaises the error to be caught by the global error handler
 
 def insert_ports(config_id, eth, hdmi_port, usb_type_c, thunder, d_p, cur):
-    # conn, cur = get_db_connection()
     try:
         print("\nInserting into database table ports")
         print(f"Config ID: {config_id} Ethernet: {eth}, HDMI: {hdmi_port}, USB - C: {usb_type_c}, Thunderbolt: {thunder}, Display Port: {d_p}")
@@ -246,7 +239,6 @@ def insert_ports(config_id, eth, hdmi_port, usb_type_c, thunder, d_p, cur):
         raise #this reRaises the error to be caught by the global error handler
 
 def insert_screens(config_id, size, resolution, touch, ref_rate, cur):
-    # conn, cur = get_db_connection()
     try:
         print("\nInserting into database table screens")
         print(f"Config ID: {config_id}, Size: {size}, Resolution: {resolution}, Touchscreen: {touch}, Refresh Rate: {ref_rate}")
@@ -258,6 +250,7 @@ def insert_screens(config_id, size, resolution, touch, ref_rate, cur):
         print(f"error and that i guess: {e}")
         raise #this reRaises the error to be caught by the global error handler
 
+conn, cur = get_db_connection()
 
 
 for i in range(len(products)):
@@ -334,7 +327,6 @@ for i in range(len(products)):
     touch_screen = screens[i].get("Touchscreen", False)
 
     try:
-        conn, cur = get_db_connection()
         # if check_cpu(cpu_name, cur) is False:
         insert_cpu(cpu_name, cpu_brand, cur)
         # if check_gpu(gpu, cur) is False:
@@ -372,18 +364,4 @@ for i in range(len(products)):
     except Exception as e:
         conn.rollback()
         print(f"failed to insert the details for the laptop could be 'ports, features, screen, storage' ERROR: {e}")
-    finally:
-        release_db_connection(conn, cur)
-
-    # with ThreadPoolExecutor(max_workers=5) as executor:
-    #     futures = [
-    #     executor.submit(insert_ports, config_id, ethernet, hdmi, usb_c, thunderbolt, display_port),
-    #     executor.submit(insert_features, config_id, backlit, num_pad, bluetooth),
-    #     executor.submit(insert_screens, config_id, screen_size, screen_res, touch_screen, refresh_rate),
-    #     executor.submit(insert_storage, config_id, storage_type, amount)
-    #     ]
-    # for future in as_completed(futures):
-    #     try:
-    #         future.result()  # Raises exceptions if any occurred
-    #     except Exception as e:
-    #         print(f"Error in worker: {e}")
+release_db_connection(conn, cur)
