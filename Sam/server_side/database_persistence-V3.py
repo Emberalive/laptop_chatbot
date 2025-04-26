@@ -3,6 +3,7 @@ import json
 #this version takes a whopping 14:49:77
 # with new improvements it is now 7:15
 # latest speed is 6:10
+#newest speed 5:28
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -327,24 +328,48 @@ for i in range(len(products)):
     touch_screen = screens[i].get("Touchscreen", False)
 
     try:
-        # if check_cpu(cpu_name, cur) is False:
-        insert_cpu(cpu_name, cpu_brand, cur)
-        # if check_gpu(gpu, cur) is False:
-        insert_gpu(gpu, gpu_brand, cur)
+
+        with ThreadPoolExecutor(max_workers=3) as executor:
+            futures = [
+            executor.submit(insert_cpu, cpu_name, cpu_brand, cur),
+            executor.submit(insert_gpu, gpu, gpu_brand, cur),
+            ]
+            model_future = executor.submit(insert_laptop_model, laptop_brand, laptop_name, cur)
+
+            try:
+                model_id = model_future.result()
+            except Exception as we:
+                print(f"error inserting model id, ERROR: {e}")
+                model_id = None
+
+            for future in as_completed(futures):
+                try:
+                    future.result()  # Raises exceptions if any occurred
+                except Exception as e:
+                    print(f"Error in worker: {e}")
+
+            # insert_cpu(cpu_name, cpu_brand, cur)
+            # insert_gpu(gpu, gpu_brand, cur)
 
 
-        # success, model_id = check_laptop_model(laptop_name, cur)
 
-        # if not success:  # Laptop doesn't exist
-        model_id = insert_laptop_model(laptop_brand, laptop_name, cur)
+        # model_id = insert_laptop_model(laptop_brand, laptop_name, cur)
         if model_id is None:
             print(f"Failed to insert laptop: {laptop_name}")
         else:
             print(f"Inserted new laptop with ID: {model_id}")
-        # else:
-        #     print(f"Laptop already exists with ID: {model_id}")
-        config_id = insert_laptop_configuration(model_id, price, weight, battery_life, memory_installed, operating_system, cpu_name, gpu, cur)
+
+        insert_laptop_configuration(model_id, price, weight, battery_life, memory_installed, operating_system, cpu_name, gpu, cur)
         with ThreadPoolExecutor(max_workers=5) as executor:
+            config_future = executor.submit(
+                insert_laptop_configuration, model_id, price, weight, battery_life, memory_installed, operating_system, cpu_name, gpu, cur)
+
+            try:
+                config_id = config_future.result()
+            except Exception as e:
+                print(f"Error insetring laptop configuration, ERROR: {e}")
+                config_id = None
+
             futures = [
             executor.submit(insert_ports, config_id, ethernet, hdmi, usb_c, thunderbolt, display_port, cur),
             executor.submit(insert_features, config_id, backlit, num_pad, bluetooth, cur),
@@ -356,10 +381,6 @@ for i in range(len(products)):
                     future.result()  # Raises exceptions if any occurred
                 except Exception as e:
                     print(f"Error in worker: {e}")
-        # insert_ports(config_id, ethernet, hdmi, usb_c, thunderbolt, display_port, cur)
-        # insert_features(config_id, backlit, num_pad, bluetooth, cur)
-        # insert_screens(config_id, screen_size, screen_res, touch_screen, refresh_rate, cur)
-        # insert_storage(config_id, storage_type, amount, cur)
         conn.commit()
     except Exception as e:
         conn.rollback()
