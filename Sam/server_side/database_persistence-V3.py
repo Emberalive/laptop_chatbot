@@ -19,12 +19,12 @@ prices = []
 
 # Load the JSON data from the file
 print("Opening the scraped data\n")
-with open('/home/samuel/laptop_chat_bot/server_side/scrapers/scraped_data/scraped_data.json', 'r') as file:
-    data = json.load(file)
+# with open('/home/samuel/laptop_chat_bot/server_side/scrapers/scraped_data/scraped_data.json', 'r') as file:
+#     data = json.load(file)
 
 # desktop path
-# with open('/home/sammy/Documents/2_brighton/sem2/groupProject-laptopChatBox/laptop_chatbot/Sam/server_side/scrapers/scraped_data/scraped_data.json', 'r') as file:
-#     data = json.load(file)
+with open('/home/sammy/Documents/2_brighton/sem2/groupProject-laptopChatBox/laptop_chatbot/Sam/server_side/scrapers/scraped_data/scraped_data.json', 'r') as file:
+    data = json.load(file)
 
 #laptop path
 # with open('/home/samuel/Documents/2_Brighton/sem2/GroupProject/laptop_chatbot/Sam/server_side/scrapers/scraped_data/scraped_data.json', 'r') as file:
@@ -73,76 +73,6 @@ for laptop in data:
     prices.append(price_details)
 
 print("Adding the dictionary items to their respective list objects")
-
-# Establish database connection
-# conn, cur = get_db_connection()
-#
-# print("\nClearing the database, so that new data can be inserted")
-# try:
-#     print("\nDeleting from table: configuration_storage")
-#     storage_config_delete = "DELETE FROM configuration_storage"
-#     cur.execute(storage_config_delete)
-#
-#     print("\nDeleting from table: features")
-#     features_delete = "DELETE FROM features"
-#     cur.execute(features_delete)
-#
-#     print("\nDeleting from table: ports")
-#     ports_delete = "DELETE FROM ports"
-#     cur.execute(ports_delete)
-#
-#     print("\nDeleting from table: screens")
-#     screens_delete = "DELETE FROM screens"
-#     cur.execute(screens_delete)
-#
-#     print("\nDeleting from table: laptop_configurations")
-#     laptop_config_delete = "DELETE FROM laptop_configurations"
-#     cur.execute(laptop_config_delete)
-#
-#
-#     print("\nDeleting from table: processors")
-#     processors_delete = "DELETE FROM processors"
-#     cur.execute(processors_delete)
-#
-#     print("\nDeleting from table: graphics_cards")
-#     graphics_cards_delete = "DELETE FROM graphics_cards"
-#     cur.execute(graphics_cards_delete)
-#
-#     print("\nresetting confg_id auto increment value")
-#     configuration_laptops_reset = "ALTER SEQUENCE laptop_configurations_config_id_seq RESTART WITH 1"
-#     cur.execute(configuration_laptops_reset)
-#
-#     print("\nDeleting from able laptop_model")
-#     laptop_model_delete = "DELETE FROM laptop_models"
-#     cur.execute(laptop_model_delete)
-#
-#     print("\nresetting model_id auto increment value")
-#     laptop_model_reset = "ALTER SEQUENCE laptop_models_model_id_seq RESTART WITH 1"
-#     cur.execute(laptop_model_reset)
-#
-# except Exception as e:
-#     print(f"Database error: {e}")
-#     conn.rollback()
-# finally:
-#     release_db_connection(conn, cur)
-
-
-# def check_cpu(cpu, cur):
-#     # conn, cur = get_db_connection()
-#     try:
-#         print(f"\nChecking if cpu: {cpu} is in the database")
-#         check_cpu_query = "SELECT model FROM processors WHERE model = %s"
-#         cpu_check_values = (cpu,)
-#         cur.execute(check_cpu_query, cpu_check_values)
-#         result = cur.fetchone()
-#         if result is None:
-#             print(f"\nCPU: {cpu} is not in the database")
-#             return False
-#         print(f"\nCPU: {cpu} is already in the database")
-#         return True
-#     except Exception as e:
-#         print(f"failed to check the cpu: {e}")
-
 
 def insert_cpu (name, brand, cur):
     # conn, cur = get_db_connection()
@@ -241,11 +171,11 @@ def insert_laptop_model(brand, model, cur)-> int| None:
         else:
             print(f"laptop model: {model} was not in thee database, has now been inserted")
 
-        return cur.fetchone()[0] # model_id
+        return cur.fetchone()
+
     except Exception as e:
         print(f"Error inserting into laptop model: {e}")
-        return None
-
+        raise
 
 def insert_laptop_configuration(model_id, laptop_price, laptop_weight, laptop_battery_life, laptop_memory, os, cpu,
                                 gpu_name, cur)-> int| None:
@@ -261,13 +191,12 @@ def insert_laptop_configuration(model_id, laptop_price, laptop_weight, laptop_ba
         laptop_configuration_values = (
         model_id, laptop_price, laptop_weight, laptop_battery_life, laptop_memory, os, cpu, gpu_name)
         cur.execute(laptop_configuration_query, laptop_configuration_values)
+
         return cur.fetchone()[0]  # config_id
+
     except Exception as e:
         print(f"Error inserting laptop_configuration: {e}")
-        return None
-    # finally:
-    #     # release_db_connection(conn, cur)
-    #     raise #this reRaises the error to be caught by the global error handler
+        raise
 
 
 def insert_storage(config_id, storagetype, capacity, cur):
@@ -282,8 +211,6 @@ def insert_storage(config_id, storagetype, capacity, cur):
     except Exception as e:
         print(f"Error inserting storage configuration: {e}")
         raise #this reRaises the error to be caught by the global error handler
-    # finally:
-    #     release_db_connection(conn, cur)
 
 def insert_features(config_id, backlit_keyb, number_pad, blue_tooth, cur):
     # conn, cur = get_db_connection()
@@ -297,8 +224,6 @@ def insert_features(config_id, backlit_keyb, number_pad, blue_tooth, cur):
     except Exception as e:
         print(f"error inserting into features: {e}")
         raise #this reRaises the error to be caught by the global error handler
-    # finally:
-    #     release_db_connection(conn, cur)
 
 def insert_ports(config_id, eth, hdmi_port, usb_type_c, thunder, d_p, cur):
     # conn, cur = get_db_connection()
@@ -312,8 +237,6 @@ def insert_ports(config_id, eth, hdmi_port, usb_type_c, thunder, d_p, cur):
     except Exception as e:
         print(f"error with the database and that: {e}")
         raise #this reRaises the error to be caught by the global error handler
-    # finally:
-    #     release_db_connection(conn, cur)
 
 def insert_screens(config_id, size, resolution, touch, ref_rate, cur):
     # conn, cur = get_db_connection()
@@ -327,10 +250,6 @@ def insert_screens(config_id, size, resolution, touch, ref_rate, cur):
     except Exception as e:
         print(f"error and that i guess: {e}")
         raise #this reRaises the error to be caught by the global error handler
-    # finally:
-    #     release_db_connection(conn, cur)
-
-
 
 
 
@@ -426,11 +345,22 @@ for i in range(len(products)):
         # else:
         #     print(f"Laptop already exists with ID: {model_id}")
         config_id = insert_laptop_configuration(model_id, price, weight, battery_life, memory_installed, operating_system, cpu_name, gpu, cur)
-
-        insert_ports(config_id, ethernet, hdmi, usb_c, thunderbolt, display_port, cur)
-        insert_features(config_id, backlit, num_pad, bluetooth, cur)
-        insert_screens(config_id, screen_size, screen_res, touch_screen, refresh_rate, cur)
-        insert_storage(config_id, storage_type, amount, cur)
+        with ThreadPoolExecutor(max_workers=5) as executor:
+            futures = [
+            executor.submit(insert_ports, config_id, ethernet, hdmi, usb_c, thunderbolt, display_port, cur),
+            executor.submit(insert_features, config_id, backlit, num_pad, bluetooth, cur),
+            executor.submit(insert_screens, config_id, screen_size, screen_res, touch_screen, refresh_rate, cur),
+            executor.submit(insert_storage, config_id, storage_type, amount, cur)
+            ]
+            for future in as_completed(futures):
+                try:
+                    future.result()  # Raises exceptions if any occurred
+                except Exception as e:
+                    print(f"Error in worker: {e}")
+        # insert_ports(config_id, ethernet, hdmi, usb_c, thunderbolt, display_port, cur)
+        # insert_features(config_id, backlit, num_pad, bluetooth, cur)
+        # insert_screens(config_id, screen_size, screen_res, touch_screen, refresh_rate, cur)
+        # insert_storage(config_id, storage_type, amount, cur)
         conn.commit()
     except Exception as e:
         conn.rollback()
