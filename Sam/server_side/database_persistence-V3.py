@@ -83,7 +83,8 @@ for laptop in data:
 
 print("Adding the dictionary items to their respective list objects")
 
-def insert_cpu (name, brand, cur):
+def insert_cpu (name, brand, conn):
+    cur = conn.cursor()
     try:
         print("\nInserting into database table processors:")
         print(f"Model: {name}, Brand: {brand}")
@@ -101,27 +102,12 @@ def insert_cpu (name, brand, cur):
     except Exception as e:
         print(f"Error with inserting {name}: {e}")
         raise #this reRaises the error to be caught by the global error handler
+    finally:
+        cur.close()
 
-# def check_gpu (gpu_name, cur):
-#     # conn, cur = get_db_connection()
-#     try:
-#         print(f"\nChecking if gpu: {gpu_name} is i the database")
-#         check_gpu_query = "SELECT model FROM graphics_cards WHERE model = %s"
-#         gpu_check_values = (gpu_name,)
-#         cur.execute(check_gpu_query, gpu_check_values)
-#
-#         result = cur.fetchone()
-#         if result is None:
-#             print(f"\nGPU: {gpu_name} is not in the database")
-#             return False
-#         print(f"\nGPU: {gpu_name} is already in the database")
-#         return True
-#     except Exception as e:
-#         print(f"Error checking if {gpu_name} is in the database: {e}")
-
-
-def insert_gpu (gpu_name, brand, cur):
+def insert_gpu (gpu_name, brand, conn):
     try:
+        cur = conn.cursor()
         print("\nInserting into database table graphics_cards:")
         print(f"Model: {gpu_name}, Brand: {brand}")
         gpu_query = ("INSERT INTO graphics_cards (brand, model)"
@@ -138,29 +124,12 @@ def insert_gpu (gpu_name, brand, cur):
     except Exception as e:
         print(f"Error inserting {gpu_name} into database: {e}")
         raise #this reRaises the error to be caught by the global error handler
+    finally:
+        cur.close()
 
-
-# def check_laptop_model(name: str, cur) -> tuple[bool, int | None]:
-#     # conn, cur = get_db_connection()
-#     try:
-#         print(f"Checking if there is already {name} in the database")
-#         check_laptop_query = "SELECT model_id FROM laptop_models WHERE model_name = %s"
-#         cur.execute(check_laptop_query, (name,))
-#
-#         result = cur.fetchone()
-#         if result is None:
-#             print(f"Laptop model '{name}' not found in database")
-#             return False, None
-#
-#         model_id = result[0]
-#         print(f"Laptop model '{name}' found with ID {model_id}")
-#         return True, model_id
-#     except Exception as e:
-#         print(f"Error checking for laptop '{name}' in the database: {e}")
-#         return False, None
-
-def insert_laptop_model(brand, model, cur)-> int| None:
+def insert_laptop_model(brand, model, conn)-> int| None:
     try:
+        cur = conn.cursor()
         print("\nInserting into laptop_model")
         print(f"Brand: {brand}, Model: {model}")
         laptop_model_query = (
@@ -183,10 +152,13 @@ def insert_laptop_model(brand, model, cur)-> int| None:
     except Exception as e:
         print(f"Error inserting into laptop model: {e}")
         raise
+    finally:
+        cur.close()
 
 def insert_laptop_configuration(model_id, laptop_price, laptop_weight, laptop_battery_life, laptop_memory, os, cpu,
-                                gpu_name, cur)-> int| None:
+                                gpu_name, conn)-> int| None:
     try:
+        cur = conn.cursor()
         print("\nInserting into table laptop_configurations")
         print(
             f"Price: {laptop_price}, Weight: {laptop_weight}, Battery Life: {laptop_battery_life}, Memory: {laptop_memory}, OS: {os}, Processor: {cpu}, Graphics Card: {gpu_name}")
@@ -203,10 +175,13 @@ def insert_laptop_configuration(model_id, laptop_price, laptop_weight, laptop_ba
     except Exception as e:
         print(f"Error inserting laptop_configuration: {e}")
         raise
+    finally:
+        cur.close()
 
 
-def insert_storage(config_id, storagetype, capacity, cur):
+def insert_storage(config_id, storagetype, capacity, conn):
     try:
+        cur = conn.cursor()
         print("\nInserting into database table configuration_storage")
         print(f"Config ID: {config_id}, Storage Media: {storagetype}, Capacity: {capacity}")
         configuration_storage_querey = ("INSERT INTO configuration_storage (config_id, storage_type, capacity)"
@@ -216,9 +191,12 @@ def insert_storage(config_id, storagetype, capacity, cur):
     except Exception as e:
         print(f"Error inserting storage configuration: {e}")
         raise #this reRaises the error to be caught by the global error handler
+    finally:
+        cur.close()
 
-def insert_features(config_id, backlit_keyb, number_pad, blue_tooth, cur):
+def insert_features(config_id, backlit_keyb, number_pad, blue_tooth, conn):
     try:
+        cur = conn.cursor()
         print("\nInserting into database table features")
         print(f"Config ID: {config_id}, Backlit Keyboard: {backlit_keyb}, Num Pad: {number_pad}, Bluetooth: {blue_tooth}")
         features_querey = ("INSERT INTO features (config_id, backlit_keyboard, numeric_keyboard, bluetooth)"
@@ -228,9 +206,12 @@ def insert_features(config_id, backlit_keyb, number_pad, blue_tooth, cur):
     except Exception as e:
         print(f"error inserting into features: {e}")
         raise #this reRaises the error to be caught by the global error handler
+    finally:
+        cur.close()
 
-def insert_ports(config_id, eth, hdmi_port, usb_type_c, thunder, d_p, cur):
+def insert_ports(config_id, eth, hdmi_port, usb_type_c, thunder, d_p, conn):
     try:
+        cur = conn.cursor()
         print("\nInserting into database table ports")
         print(f"Config ID: {config_id} Ethernet: {eth}, HDMI: {hdmi_port}, USB - C: {usb_type_c}, Thunderbolt: {thunder}, Display Port: {d_p}")
         ports_querey = ("INSERT INTO ports (config_id, ethernet, hdmi, usb_type_c, thunderbolt, display_port)"
@@ -240,9 +221,11 @@ def insert_ports(config_id, eth, hdmi_port, usb_type_c, thunder, d_p, cur):
     except Exception as e:
         print(f"error with the database and that: {e}")
         raise #this reRaises the error to be caught by the global error handler
+    cur.close()
 
-def insert_screens(config_id, size, resolution, touch, ref_rate, cur):
+def insert_screens(config_id, size, resolution, touch, ref_rate, conn):
     try:
+        cur = conn.cursor()
         print("\nInserting into database table screens")
         print(f"Config ID: {config_id}, Size: {size}, Resolution: {resolution}, Touchscreen: {touch}, Refresh Rate: {ref_rate}")
         screens_querey = ("INSERT INTO screens (config_id, size, resolution, touchscreen, refresh_rate)"
@@ -252,17 +235,20 @@ def insert_screens(config_id, size, resolution, touch, ref_rate, cur):
     except Exception as e:
         print(f"error and that i guess: {e}")
         raise #this reRaises the error to be caught by the global error handler
+    finally:
+        cur.close()
 
-conn, cur = get_db_connection()
 
+try:
+    conn, cur = get_db_connection()
+except Exception as e:
+    print(f"We had an error connecting to the database ERROR: {e}")
 
 #Notes
 #I can put all the insert data into a list and use the .executemany() function instead of doing them all separate
-#I could also add more workers to each worker pool while there is a wait for database read and write
+#I could also add more workers to each worker pool while there is a wait for database read and write: DONE
 #Also I could reduce my prints as each print has a very small hang as the print to console is happening
-#pass create mny own cursor per method as cursors are not thread safe
-
-
+#pass create mny own cursor per method as cursors are not thread safe: DONE
 
 
 for i in range(len(products)):
@@ -340,12 +326,12 @@ for i in range(len(products)):
 
     try:
 
-        with ThreadPoolExecutor(max_workers=3) as executor:
+        with ThreadPoolExecutor(max_workers=10) as executor:
             futures = [
             executor.submit(insert_cpu, cpu_name, cpu_brand, cur),
             executor.submit(insert_gpu, gpu, gpu_brand, cur),
             ]
-            model_future = executor.submit(insert_laptop_model, laptop_brand, laptop_name, cur)
+            model_future = executor.submit(insert_laptop_model, laptop_brand, laptop_name, conn)
 
             try:
                 model_id = model_future.result()
@@ -359,21 +345,15 @@ for i in range(len(products)):
                 except Exception as e:
                     print(f"Error in worker: {e}")
 
-            # insert_cpu(cpu_name, cpu_brand, cur)
-            # insert_gpu(gpu, gpu_brand, cur)
-
-
-
-        # model_id = insert_laptop_model(laptop_brand, laptop_name, cur)
         if model_id is None:
             print(f"Failed to insert laptop: {laptop_name}")
         else:
             print(f"Inserted new laptop with ID: {model_id}")
 
-        # insert_laptop_configuration(model_id, price, weight, battery_life, memory_installed, operating_system, cpu_name, gpu, cur)
-        with ThreadPoolExecutor(max_workers=5) as executor:
+        # insert_laptop_configuration(model_id, price, weight, battery_life, memory_installed, operating_system, cpu_name, gpu, conn)
+        with ThreadPoolExecutor(max_workers=10) as executor:
             config_future = executor.submit(
-                insert_laptop_configuration, model_id, price, weight, battery_life, memory_installed, operating_system, cpu_name, gpu, cur)
+                insert_laptop_configuration, model_id, price, weight, battery_life, memory_installed, operating_system, cpu_name, gpu, conn)
 
             try:
                 config_id = config_future.result()
@@ -382,10 +362,10 @@ for i in range(len(products)):
                 config_id = None
 
             futures = [
-            executor.submit(insert_ports, config_id, ethernet, hdmi, usb_c, thunderbolt, display_port, cur),
-            executor.submit(insert_features, config_id, backlit, num_pad, bluetooth, cur),
-            executor.submit(insert_screens, config_id, screen_size, screen_res, touch_screen, refresh_rate, cur),
-            executor.submit(insert_storage, config_id, storage_type, amount, cur)
+            executor.submit(insert_ports, config_id, ethernet, hdmi, usb_c, thunderbolt, display_port, conn),
+            executor.submit(insert_features, config_id, backlit, num_pad, bluetooth, conn),
+            executor.submit(insert_screens, config_id, screen_size, screen_res, touch_screen, refresh_rate, conn),
+            executor.submit(insert_storage, config_id, storage_type, amount, conn)
             ]
             for future in as_completed(futures):
                 try:
@@ -396,4 +376,4 @@ for i in range(len(products)):
     except Exception as e:
         conn.rollback()
         print(f"failed to insert the details for the laptop could be 'ports, features, screen, storage' ERROR: {e}")
-release_db_connection(conn, cur)
+release_db_connection(conn, conn)

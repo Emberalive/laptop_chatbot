@@ -1,5 +1,7 @@
 import json
 
+#Some how this fucker is faster time: 12:44:28
+
 from DBAccess.dbAccess import get_db_connection
 from DBAccess.dbAccess import release_db_connection
 
