@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize elements
     const splashScreen = document.getElementById('splash-screen');
     const chatContainer = document.getElementById('chat-container');
     const startChatBtn = document.getElementById('start-chat-btn');
@@ -6,6 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const userInput = document.getElementById('user-input');
     const sendBtn = document.getElementById('send-btn');
     const themeToggleCheckbox = document.getElementById('theme-toggle-checkbox');
+    const profileContainer = document.getElementById('profile-container');
+    const closeProfileBtn = document.getElementById('close-profile-btn');
 
     // Check for saved theme preference or use preferred color scheme
     const currentTheme = localStorage.getItem('theme') ||
@@ -31,129 +34,175 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add theme toggle event listener
     themeToggleCheckbox.addEventListener('change', toggleTheme);
 
-    // Show chat interface when start button is clicked
+    // Start chat button click handler
     startChatBtn.addEventListener('click', () => {
-        // Add fade-out class to splash screen
         splashScreen.classList.add('fade-out');
-
-        // Display chat container but keep it invisible for animation
         chatContainer.style.display = 'flex';
-
-        // Small delay before starting the fade-in animation
         setTimeout(() => {
             chatContainer.classList.add('fade-in');
-        }, 100);
-
-        // Hide splash screen after transition completes
-        setTimeout(() => {
             splashScreen.style.display = 'none';
-            userInput.focus();
         }, 800);
     });
 
-    // Function to add a new message to the chat
-    function addMessage(content, isUser = false) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
+    // Send message function
+    function sendMessage() {
+        const message = userInput.value.trim();
+        if (message === '') return;
 
-        const messageContent = document.createElement('div');
-        messageContent.className = 'message-content';
-        messageContent.textContent = content;
+        // Add user's message
+        const userMessageDiv = document.createElement('div');
+        userMessageDiv.className = 'message user';
+        userMessageDiv.innerHTML = `<div class="message-content">${message}</div>`;
+        chatMessages.appendChild(userMessageDiv);
 
-        messageDiv.appendChild(messageContent);
-        chatMessages.appendChild(messageDiv);
+        // Clear input
+        userInput.value = '';
 
-        // Scroll to bottom
+        // Scroll to bottom of chat
         chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
 
-    // Function to show typing indicator
-    function showTypingIndicator() {
+        // Show typing indicator
         const typingDiv = document.createElement('div');
         typingDiv.className = 'message bot';
-        typingDiv.id = 'typing-indicator';
-
-        const typingContent = document.createElement('div');
-        typingContent.className = 'typing-indicator';
-
-        for (let i = 0; i < 3; i++) {
-            const dot = document.createElement('span');
-            dot.className = 'typing-dot';
-            typingContent.appendChild(dot);
-        }
-
-        typingDiv.appendChild(typingContent);
+        typingDiv.innerHTML = `
+            <div class="typing-indicator">
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+            </div>
+        `;
         chatMessages.appendChild(typingDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
 
-        return typingDiv;
-    }
+        // Simulate response (replace this with actual API call)
+        setTimeout(() => {
+            // Remove typing indicator
+            chatMessages.removeChild(typingDiv);
 
-    // Function to remove typing indicator
-    function removeTypingIndicator() {
-        const indicator = document.getElementById('typing-indicator');
-        if (indicator) {
-            indicator.remove();
-        }
-    }
-
-    // Function to send a message to backend
-    async function sendToLLM(message) {
-        // Here you would make an API call to your Python LLM backend
-        // For now, we'll simulate a response
-
-        const typingIndicator = showTypingIndicator();
-
-        try {
-            // Simulating API call delay - replace with actual fetch to your Python backend
-            await new Promise(resolve => setTimeout(resolve, 1500));
-
-            // Mock responses for demonstration
+            // Sample responses
             const responses = [
-                "Based on your requirements, I'd recommend a laptop with at least 16GB RAM and an i7 processor.",
+                "Based on your requirements, I'd recommend laptops with at least 16GB RAM and an i7 processor.",
                 "For your budget range, consider the Dell XPS 13 or MacBook Air M1.",
-                "If you need a laptop for gaming, look for models with dedicated graphics like NVIDIA GTX or RTX series.",
-                "For programming and development, I recommend laptops with SSD storage and at least 16GB RAM.",
-                "If portability is important, ultrabooks like the LG Gram or Microsoft Surface might be good options."
+                "If you need a laptop for gaming, look for models with dedicated NVIDIA RTX graphics.",
+                "For programming and development, I suggest laptops with SSD storage and at least 16GB RAM.",
+                "If portability is your priority, ultrabooks like the LG Gram or Microsoft Surface are great options."
             ];
 
-            const response = responses[Math.floor(Math.random() * responses.length)];
+            const botResponse = responses[Math.floor(Math.random() * responses.length)];
 
-            // In a real implementation, replace with:
-            // const response = await fetch('/api/llm', {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify({ message })
-            // }).then(res => res.json()).then(data => data.response);
+            // Add bot's response
+            const botMessageDiv = document.createElement('div');
+            botMessageDiv.className = 'message bot';
+            botMessageDiv.innerHTML = `<div class="message-content">${botResponse}</div>`;
+            chatMessages.appendChild(botMessageDiv);
 
-            removeTypingIndicator();
-            addMessage(response);
-
-        } catch (error) {
-            console.error('Error:', error);
-            removeTypingIndicator();
-            addMessage("Sorry, I'm having trouble connecting to the recommendation service. Please try again later.");
-        }
+            // Scroll to bottom of chat
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, 1500);
     }
 
-    // Event handler for sending messages
-    function handleSendMessage() {
-        const message = userInput.value.trim();
-
-        if (message) {
-            addMessage(message, true);
-            userInput.value = '';
-
-            sendToLLM(message);
-        }
-    }
-
-    // Event listeners
-    sendBtn.addEventListener('click', handleSendMessage);
-
+    // Event listeners for sending message
+    sendBtn.addEventListener('click', sendMessage);
     userInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
-            handleSendMessage();
+            sendMessage();
         }
     });
+
+    // Sidebar functionality
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const sidebarClose = document.getElementById('sidebar-close');
+    const overlay = document.getElementById('overlay');
+
+    function openSidebar() {
+        sidebar.classList.add('open');
+        overlay.classList.add('active');
+    }
+
+    function closeSidebar() {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('active');
+    }
+
+    sidebarToggle.addEventListener('click', openSidebar);
+    sidebarClose.addEventListener('click', closeSidebar);
+    overlay.addEventListener('click', closeSidebar);
+
+    // Close sidebar when pressing escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeSidebar();
+        }
+    });
+
+    // Profile page functionality
+    const profileLink = document.querySelector('.sidebar-nav li');
+
+    // Make sure profileLink exists before adding event listener
+    if (profileLink && profileContainer && closeProfileBtn) {
+        // Open profile page when clicked in sidebar
+        profileLink.addEventListener('click', () => {
+            closeSidebar();
+
+            // Hide other containers first
+            if (chatContainer.style.display !== 'none') {
+                chatContainer.classList.remove('fade-in');
+                setTimeout(() => {
+                    chatContainer.style.display = 'none';
+                }, 400);
+            }
+
+            if (splashScreen.style.display !== 'none') {
+                splashScreen.classList.add('fade-out');
+                setTimeout(() => {
+                    splashScreen.style.display = 'none';
+                }, 400);
+            }
+
+            // Show profile with fade-in effect
+            setTimeout(() => {
+                profileContainer.style.display = 'flex';
+                setTimeout(() => {
+                    profileContainer.classList.add('fade-in');
+                }, 50);
+            }, 500);
+        });
+
+        // Close profile when clicking close button
+        closeProfileBtn.addEventListener('click', () => {
+            profileContainer.classList.remove('fade-in');
+
+            setTimeout(() => {
+                profileContainer.style.display = 'none';
+
+                // Return to chat if splash was already dismissed
+                if (splashScreen.style.display === 'none') {
+                    chatContainer.style.display = 'flex';
+                    setTimeout(() => {
+                        chatContainer.classList.add('fade-in');
+                    }, 50);
+                } else {
+                    // Otherwise show splash
+                    splashScreen.style.display = 'flex';
+                    splashScreen.classList.remove('fade-out');
+                }
+            }, 800);
+        });
+    }
+
+    // Save profile changes button (if exists)
+    const profileSaveBtn = document.querySelector('.profile-save-btn');
+    if (profileSaveBtn) {
+        profileSaveBtn.addEventListener('click', () => {
+            const originalText = profileSaveBtn.textContent;
+            profileSaveBtn.textContent = 'Saved!';
+            profileSaveBtn.disabled = true;
+
+            setTimeout(() => {
+                profileSaveBtn.textContent = originalText;
+                profileSaveBtn.disabled = false;
+            }, 2000);
+        });
+    }
 });
