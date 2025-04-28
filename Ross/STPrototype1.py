@@ -9,10 +9,12 @@ import sys
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
+
 # Import database connection from dbAccess
 try:
     sys.path.append('../Sam/server_side/DBAccess')
-    from dbAccess import db_access
+    from DBAccess.dbAccess import get_db_connection
+    from DBAccess.dbAccess import release_db_connection
 except ImportError:
     print("Warning: Could not import db_access module. Using direct connection.")
 
@@ -52,7 +54,7 @@ class LaptopRecommendationBot:
         try:
             # Try to use the imported db_access function
             try:
-                conn, cur = db_access()
+                conn, cur = get_db_connection()
             except NameError:
                 # If import failed, connect directly
                 conn = psycopg2.connect(
@@ -62,7 +64,6 @@ class LaptopRecommendationBot:
                     password="QwErTy1243!",
                     port=5432
                 )
-                cur = conn.cursor(cursor_factory=RealDictCursor)
             
             print("Connected to database successfully!")
             
@@ -451,6 +452,8 @@ def converse_with_chatbot():
         except Exception as e:
             print(f"\nBot: I encountered an error processing your request: {str(e)}")
             print("Bot: Let's try again or type 'restart' to begin a new search.")
+#put the connection back into the connection pool
+#call this method "release_db_connection(conn, cur)" passed variables are the connection and the cursor that you have open
 
 if __name__ == "__main__":
     # Run the interactive conversation directly without loading from JSON
