@@ -5,7 +5,6 @@ import json
 # latest speed is 6:10
 #newest speed 5:28
 #many pool executors = 5:23:21
-#however i am not inserting all of them, i don't know why
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -43,7 +42,6 @@ except Exception as e:
 print("Sorting through the JSON object lists\n")
 for laptop in data:
     tables = laptop.get('tables', [])  # Extract tables from each laptop
-    prices = laptop.get('Prices', [])
 
     # Initialize dictionaries for each category
     product_details = {}
@@ -52,10 +50,6 @@ for laptop in data:
     spec_details = {}
     features_details = {}
     price_details = {}
-
-    # loop through all the prices and add them to the dictionary
-    for price in prices:
-        price_details.update(price)
 
     # Loop through each table and store data in respective dictionaries
     for table in tables:
@@ -72,6 +66,8 @@ for laptop in data:
             spec_details.update(table_data)
         elif title == 'Features':
             features_details.update(table_data)
+        elif title == 'Prices':
+            price_details = table_data  # store the list directly
 
     # Append extracted details to their respective lists
     products.append(product_details)
@@ -256,7 +252,6 @@ for i in range(len(products)):
     screen = screens[i] if i < len(screens) else {}
     feature = features[i] if i < len(features) else {}
     spec = specs[i] if i < len(specs) else {}
-    price_shop = prices[i] if i < len(prices) else {}
     laptop_price = prices[i] if i < len(prices) else {}
 
     laptop_name = brand.get('Name', '')
@@ -264,13 +259,27 @@ for i in range(len(products)):
     laptop_brand = brand.get('Brand', '')
     battery_life = feature.get('Battery Life', '')
 
-    # price = 1200
-    price = laptop_price.get('price', '')
-    if price == '':
-        price = 'No Price available'
+    price = 1200
 
-    if not battery_life:
-        battery_life = "Not Specified"
+    laptop_shops = []
+    laptop_prices = []
+    for details in laptop_price:
+        if not laptop_price:
+            shop = 'No Shop available'
+            Price = 'No Price available'
+
+            laptop_prices.append(Price)
+            laptop_shops.append(Shop)
+        else:
+            Price = details.get('price', 'No Price available')
+            Shop = details.get('shop_url', 'No Shop available')
+
+            laptop_prices.append(Price)
+            laptop_shops.append(Shop)
+
+    print(laptop_shops)
+    print(laptop_prices)
+
 
     memory_installed = spec.get('Memory Installed', '')
     operating_system = feature.get('Operating System', '')
@@ -328,8 +337,8 @@ for i in range(len(products)):
 
         with ThreadPoolExecutor(max_workers=10) as executor:
             futures = [
-            executor.submit(insert_cpu, cpu_name, cpu_brand, cur),
-            executor.submit(insert_gpu, gpu, gpu_brand, cur),
+            executor.submit(insert_cpu, cpu_name, cpu_brand, conn),
+            executor.submit(insert_gpu, gpu, gpu_brand, conn),
             ]
             model_future = executor.submit(insert_laptop_model, laptop_brand, laptop_name, conn)
 
@@ -350,7 +359,6 @@ for i in range(len(products)):
         else:
             print(f"Inserted new laptop with ID: {model_id}")
 
-        # insert_laptop_configuration(model_id, price, weight, battery_life, memory_installed, operating_system, cpu_name, gpu, conn)
         with ThreadPoolExecutor(max_workers=10) as executor:
             config_future = executor.submit(
                 insert_laptop_configuration, model_id, price, weight, battery_life, memory_installed, operating_system, cpu_name, gpu, conn)

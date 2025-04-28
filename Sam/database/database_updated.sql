@@ -79,4 +79,26 @@ CREATE TABLE screens (
     refresh_rate VARCHAR(20),
     FOREIGN KEY (config_id) REFERENCES laptop_configurations(config_id)
 );
-
+CREATE TABLE users (
+username VARCHAR(50) PRIMARY KEY,
+password VARCHAR(255),
+email VARCHAR(70),
+pref_laptop VARCHAR(100),
+budget VARCHAR(13)
+);
+CREATE TABLE pref_laptop (
+    username VARCHAR(50),
+    config_id SERIAL UNIQUE,
+    price VARCHAR(25),
+    weight VARCHAR(10) ,
+    battery_life VARCHAR(30),
+    memory_installed VARCHAR(20) NOT NULL,
+    operating_system VARCHAR(50),
+    processor VARCHAR(50) NOT NULL,
+    graphics_card VARCHAR(50) NOT NULL,
+    "AMP" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (processor) REFERENCES processors (model),
+    FOREIGN KEY (graphics_card) REFERENCES graphics_cards (model),
+    FOREIGN KEY (username) REFERENCES users (username),
+    PRIMARY KEY(config_id, username) 
+);
