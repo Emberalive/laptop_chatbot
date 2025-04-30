@@ -5,6 +5,7 @@ import json
 # latest speed is 6:10
 #newest speed 5:28
 #many pool executors = 5:23:21
+#execute many for gpu and cpu 4:38:06
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from os.path import split
