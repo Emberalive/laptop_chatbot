@@ -51,10 +51,14 @@ class LaptopRecommendationBot:
         Returns:
             List of dictionaries containing laptop information in the same format as the JSON
         """
+
+        conn = None
+        cur = None
         try:
             # Try to use the imported db_access function
             try:
                 conn, cur = get_db_connection()
+                print("Connected to the database using the database persistence 3 DBAccess module")
             except NameError:
                 # If import failed, connect directly
                 conn = psycopg2.connect(
@@ -65,6 +69,9 @@ class LaptopRecommendationBot:
                     port=5432
                 )
             
+                cur = conn.cursor(cursor_factory=RealDictCursor)
+                print("Connected to database directly")
+
             print("Connected to database successfully!")
             
             # Get all laptop models
@@ -185,6 +192,19 @@ class LaptopRecommendationBot:
         except Exception as e:
             print(f"Error loading data from database: {str(e)}")
             return []
+
+        finally: 
+            # Put the connection back into the imported release function first
+            if conn and cur:
+                try:
+                    # try to use the imported release function first
+                    release_db_connection(conn,curr)
+                    print("Database connection released using DBAccess module.")
+                except NameError:
+                    # if import failed close directly
+                    cur.close()
+                    conn.close()
+                    print("Database connection closed directly")
 
     def _create_feature_embeddings(self) -> Dict[str, np.ndarray]:
         """
