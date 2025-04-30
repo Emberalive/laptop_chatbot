@@ -7,6 +7,7 @@ import json
 #many pool executors = 5:23:21
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from os.path import split
 
 from DBAccess.dbAccess import get_db_connection
 from DBAccess.dbAccess import release_db_connection
@@ -18,6 +19,10 @@ ports = []
 specs = []
 features = []
 prices = []
+
+insert_cpu_data = []
+insert_gpu_data = []
+
 
 # Load the JSON data from the file
 try:
@@ -64,6 +69,21 @@ for laptop in data:
             port_details.update(table_data)
         elif title == 'Specs':
             spec_details.update(table_data)
+
+            cpu_name = table_data.get("Processor Name", "")
+            cpu_brand = table_data.get("Processor Brand", "")
+            gpu_data = table_data.get("Graphics Card", "")
+
+
+            if cpu_brand and cpu_name:
+               insert_cpu_data.append((cpu_brand, cpu_name))
+
+            if gpu_data:
+                gpu_list = gpu_data.split(" ")
+                gpu_brand = gpu_list[0] if gpu_list else "Unknown"
+                gpu_name = " ".join(gpu_list[1:]) if len(gpu_list) > 1 else "Unknown"
+                insert_gpu_data.append((gpu_brand, gpu_name))
+
         elif title == 'Features':
             features_details.update(table_data)
         elif title == 'Prices':
@@ -77,48 +97,44 @@ for laptop in data:
     features.append(features_details)
     prices.append(price_details)
 
+
+
 print("Adding the dictionary items to their respective list objects")
 
-def insert_cpu (name, brand, conn):
+def insert_cpu (cpu_data: list[tuple], conn):
     cur = conn.cursor()
     try:
         print("\nInserting into database table processors:")
-        print(f"Model: {name}, Brand: {brand}")
         cpu_querey = ("INSERT INTO processors (brand, model)"
                       "VALUES(%s, %s)"
                       "ON CONFLICT (model) DO NOTHING;")
-        cpu_values = (brand, name)
-        cur.execute(cpu_querey, cpu_values)
 
-        if cur.rowcount >0:
-            print(f"CPU: {name} is not in the database, it has been inserted")
-        else:
-            print(f"CPU: {name}, Already exists, skipping insertion")
+        cur.executemany(cpu_querey, cpu_data)
+
+        if cur.rowcount > 0:
+            print(f"Inserted {len(cpu_data)} CPUs")
 
     except Exception as e:
-        print(f"Error with inserting {name}: {e}")
+        print(f"Failed to bulk insert CPUs: {e}")
         raise #this reRaises the error to be caught by the global error handler
     finally:
         cur.close()
 
-def insert_gpu (gpu_name, brand, conn):
+def insert_gpu (gpu_data: list[tuple], conn):
     try:
         cur = conn.cursor()
         print("\nInserting into database table graphics_cards:")
-        print(f"Model: {gpu_name}, Brand: {brand}")
         gpu_query = ("INSERT INTO graphics_cards (brand, model)"
                      "VALUES(%s, %s)"
                      "ON CONFLICT (model) DO NOTHING;")
-        gpu_values = (brand, gpu_name)
-        cur.execute(gpu_query, gpu_values)
 
-        if cur.rowcount >0:
-            print(f"CPU: {gpu_name} is not in the database, it has been inserted")
-        else:
-            print(f"CPU: {gpu_name}, Already exists, skipping insertion")
+        cur.executemany(gpu_query, gpu_data)
+
+        if cur.rowcount > 0:
+            print(f"Inserted {len(gpu_data)} CPUs")
 
     except Exception as e:
-        print(f"Error inserting {gpu_name} into database: {e}")
+        print(f"Failed to bulk insert GPUs: {e}")
         raise #this reRaises the error to be caught by the global error handler
     finally:
         cur.close()
@@ -247,7 +263,19 @@ except Exception as e:
 #pass create mny own cursor per method as cursors are not thread safe: DONE
 
 
+insert_cpu_list = list(set(insert_cpu_data))
+insert_gpu_list = list(set(insert_gpu_data))
+
+try:
+    insert_gpu(insert_gpu_list, conn)
+except Exception as e:
+    print(f"error inserting gpu's in bulk: {e}")
+try:
+    insert_cpu(insert_cpu_list, conn)
+except Exception as e:
+    print(f"Error inserting gpu's in bulk: {e}")
 for i in range(len(products)):
+    counter = 0
     brand = products[i] if i < len(products) else {}
     screen = screens[i] if i < len(screens) else {}
     feature = features[i] if i < len(features) else {}
@@ -308,9 +336,9 @@ for i in range(len(products)):
     if not gpu:
         print(f"Skipping GPU insertion for laptop: {laptop_name}, No GPU found")
 
-    gpu_list = gpu.split(' ')
+    gpu_list = gpu.split(" ")
     gpu_brand = gpu_list[0] if gpu_list else "Unknown"
-    gpu = gpu if gpu.lower() != "unknown" else "None"
+    gpu_name = " ".join(gpu_list[1:]) if len(gpu_list) > 1 else "Unknown"
 
     storage = spec.get("Storage", "")
 
@@ -333,26 +361,11 @@ for i in range(len(products)):
     refresh_rate = screens[i].get("Refresh Rate", "Unknown")
     touch_screen = screens[i].get("Touchscreen", False)
 
+
+
+
     try:
-
-        with ThreadPoolExecutor(max_workers=10) as executor:
-            futures = [
-            executor.submit(insert_cpu, cpu_name, cpu_brand, conn),
-            executor.submit(insert_gpu, gpu, gpu_brand, conn),
-            ]
-            model_future = executor.submit(insert_laptop_model, laptop_brand, laptop_name, conn)
-
-            try:
-                model_id = model_future.result()
-            except Exception as we:
-                print(f"error inserting model id, ERROR: {e}")
-                model_id = None
-
-            for future in as_completed(futures):
-                try:
-                    future.result()  # Raises exceptions if any occurred
-                except Exception as e:
-                    print(f"Error in worker: {e}")
+        model_id = insert_laptop_model(laptop_brand, laptop_name, conn)
 
         if model_id is None:
             print(f"Failed to insert laptop: {laptop_name}")
@@ -361,7 +374,7 @@ for i in range(len(products)):
 
         with ThreadPoolExecutor(max_workers=10) as executor:
             config_future = executor.submit(
-                insert_laptop_configuration, model_id, price, weight, battery_life, memory_installed, operating_system, cpu_name, gpu, conn)
+                insert_laptop_configuration, model_id, price, weight, battery_life, memory_installed, operating_system, cpu_name, gpu_name, conn)
 
             try:
                 config_id = config_future.result()
@@ -384,4 +397,6 @@ for i in range(len(products)):
     except Exception as e:
         conn.rollback()
         print(f"failed to insert the details for the laptop could be 'ports, features, screen, storage' ERROR: {e}")
+
+#bulk inserting into cpu and gpu
 release_db_connection(conn, conn)
