@@ -2,7 +2,7 @@
 CREATE TABLE laptop_models (
     model_id SERIAL PRIMARY KEY,
     brand VARCHAR(50) NOT NULL,
-    model_name VARCHAR(100) NOT NULL,
+    model_name VARCHAR(100) UNIQUE NOT NULL,
     image_url TEXT
 );
 
