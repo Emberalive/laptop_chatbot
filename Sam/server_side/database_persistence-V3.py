@@ -28,7 +28,7 @@ insert_gpu_data = []
 
 #Initialise the logger
 logger.add(sys.stdout, format="{time} {level} {message}")
-logger.add("logs/output.log", rotation="10 MB", retention="35 days", compression="zip")
+logger.add("logs/output.log", rotation="40 MB", retention="35 days", compression="zip")
 logger_server = logger.bind(user = "server")
 
 # Load the JSON data from the file
