@@ -44,147 +44,260 @@ class LaptopRecommendationBot:
         # Create embeddings for predefined features and use cases
         self.feature_embeddings = self._create_feature_embeddings()
 
-    def load_from_database(self) -> List[Dict]:
+    def load_from_database(self, limit=100) -> List[Dict]:
         """
-        Load laptop data from PostgreSQL database
+        Load laptop data from PostgreSQL database with optimizations
+        
+        Args:
+            limit: Maximum number of laptops to load (default: 100)
         
         Returns:
             List of dictionaries containing laptop information in the same format as the JSON
         """
-
         conn = None
         cur = None
         try:
             # Try to use the imported db_access function
             try:
                 conn, cur = get_db_connection()
-                print("Connected to the database using the database persistence 3 DBAccess module")
+                print("Connected to database using DBAccess module!")
             except NameError:
                 # If import failed, connect directly
-                conn = psycopg2.connect(
-                    database="laptopchatbot",
-                    user="samuel",
-                    host="86.19.219.159",
-                    password="QwErTy1243!",
-                    port=5432
-                )
+                # Try connecting to laptopchatbot database first (original one)
+                try:
+                    conn = psycopg2.connect(
+                        database="laptopchatbot",  # Original database name
+                        user="samuel",
+                        host="86.19.219.159",
+                        password="QwErTy1243!",
+                        port=5432
+                    )
+                    cur = conn.cursor(cursor_factory=RealDictCursor)
+                    print("Connected to 'laptopchatbot' database directly!")
+                except Exception as db_err:
+                    print(f"Could not connect to 'laptopchatbot': {str(db_err)}")
+                    # Try persistence database as fallback
+                    try:
+                        conn = psycopg2.connect(
+                            database="persistence",  # Try another database name
+                            user="samuel",
+                            host="86.19.219.159",
+                            password="QwErTy1243!",
+                            port=5432
+                        )
+                        cur = conn.cursor(cursor_factory=RealDictCursor)
+                        print("Connected to 'persistence' database directly!")
+                    except Exception as db_err2:
+                        # Last attempt with postgres default database to list available databases
+                        try:
+                            conn_temp = psycopg2.connect(
+                                database="postgres",  # Default postgres database
+                                user="samuel",
+                                host="86.19.219.159",
+                                password="QwErTy1243!",
+                                port=5432
+                            )
+                            cur_temp = conn_temp.cursor()
+                            cur_temp.execute("SELECT datname FROM pg_database;")
+                            available_dbs = [row[0] for row in cur_temp.fetchall()]
+                            cur_temp.close()
+                            conn_temp.close()
+                            
+                            # Try connecting to the first available database that might be related
+                            laptop_related_dbs = [db for db in available_dbs if 'laptop' in db.lower() or 'persistence' in db.lower()]
+                            
+                            if laptop_related_dbs:
+                                db_to_try = laptop_related_dbs[0]
+                                conn = psycopg2.connect(
+                                    database=db_to_try,
+                                    user="samuel",
+                                    host="86.19.219.159",
+                                    password="QwErTy1243!",
+                                    port=5432
+                                )
+                                cur = conn.cursor(cursor_factory=RealDictCursor)
+                                print(f"Connected to '{db_to_try}' database directly!")
+                            else:
+                                print(f"Available databases: {', '.join(available_dbs)}")
+                                raise Exception("No suitable database found. Please specify the correct database name.")
+                        except Exception as list_err:
+                            print(f"Could not list available databases: {str(list_err)}")
+                            raise
             
-                cur = conn.cursor(cursor_factory=RealDictCursor)
-                print("Connected to database directly")
-
             print("Connected to database successfully!")
             
-            # Get all laptop models
-            cur.execute("SELECT model FROM laptops")
+            # Check if tables exist in this database
+            cur.execute("""
+                SELECT table_name FROM information_schema.tables 
+                WHERE table_schema = 'public'
+            """)
+            available_tables = [row['table_name'] for row in cur.fetchall()]
+            print(f"Available tables: {', '.join(available_tables)}")
+            
+            if 'laptops' not in available_tables:
+                raise Exception("The 'laptops' table does not exist in this database!")
+            
+            # Get limited number of laptop models - add LIMIT clause
+            cur.execute(f"SELECT model FROM laptops LIMIT {limit}")
             models = cur.fetchall()
             
             if not models:
                 print("No laptop models found in database")
                 return []
                 
-            print(f"Found {len(models)} laptop models in database")
+            print(f"Loading {len(models)} laptop models (limited from total)")
             
             # Create a list to store all laptop data in the same format as the JSON
             laptops = []
+            total_models = len(models)
             
-            # For each laptop model, fetch all related information
-            for model_row in models:
-                model = model_row['model']
-                laptop_data = {'tables': []}
-                
-                # Get Product Details
-                cur.execute("""
-                    SELECT model as "Name", brand as "Brand", weight as "Weight"
-                    FROM laptops WHERE model = %s
-                """, (model,))
-                product_details = cur.fetchone()
-                if product_details:
-                    laptop_data['tables'].append({
+            # Use a more efficient approach with batch processing
+            models_list = [model_row['model'] for model_row in models]
+            
+            # Create a mapping of models for faster lookups
+            laptops_dict = {model: {'tables': []} for model in models_list}
+            
+            # Batch query for Product Details
+            print("Loading product details...")
+            placeholders = ','.join(['%s'] * len(models_list))
+            cur.execute(f"""
+                SELECT model as "Name", brand as "Brand", weight as "Weight"
+                FROM laptops WHERE model IN ({placeholders})
+            """, tuple(models_list))
+            
+            for row in cur.fetchall():
+                model = row["Name"]
+                if model in laptops_dict:
+                    laptops_dict[model]['tables'].append({
                         'title': 'Product Details',
-                        'data': dict(product_details)
+                        'data': dict(row)
                     })
-                
-                # Get Screen Details
-                cur.execute("""
-                    SELECT s.screen_resolution as "Resolution", s.refresh_rate as "Refresh Rate", 
-                           s.touch_screen as "Touchscreen", l.screen_size as "Size"
+            
+            # Check if the screen table exists
+            if 'screen' in available_tables:
+                # Batch query for Screen Details
+                print("Loading screen details...")
+                cur.execute(f"""
+                    SELECT s.laptop_model, s.screen_resolution as "Resolution", 
+                           s.refresh_rate as "Refresh Rate", s.touch_screen as "Touchscreen", 
+                           l.screen_size as "Size"
                     FROM screen s
                     JOIN laptops l ON s.laptop_model = l.model
-                    WHERE s.laptop_model = %s
-                """, (model,))
-                screen_details = cur.fetchone()
-                if screen_details:
-                    laptop_data['tables'].append({
-                        'title': 'Screen',
-                        'data': dict(screen_details)
-                    })
+                    WHERE s.laptop_model IN ({placeholders})
+                """, tuple(models_list))
                 
-                # Get Processor Details
-                cur.execute("""
-                    SELECT brand as "Brand", model as "Name"
-                    FROM cpu WHERE laptop_model = %s
-                """, (model,))
-                processor_details = cur.fetchone()
-                if processor_details:
-                    laptop_data['tables'].append({
-                        'title': 'Processor',
-                        'data': dict(processor_details)
-                    })
+                for row in cur.fetchall():
+                    model = row.pop('laptop_model')
+                    if model in laptops_dict:
+                        laptops_dict[model]['tables'].append({
+                            'title': 'Screen',
+                            'data': dict(row)
+                        })
+            else:
+                print("Screen table not found, skipping...")
+            
+            # Check if the cpu table exists
+            if 'cpu' in available_tables:
+                # Batch query for Processor Details
+                print("Loading processor details...")
+                cur.execute(f"""
+                    SELECT laptop_model, brand as "Brand", model as "Name"
+                    FROM cpu WHERE laptop_model IN ({placeholders})
+                """, tuple(models_list))
                 
-                # Get Misc Details (GPU, Memory, Storage, OS)
-                cur.execute("""
-                    SELECT 
-                        g.model as "Graphics Card",
-                        l.memory_installed as "Memory Installed",
-                        s.storage_amount || ' ' || s.storage_type as "Storage",
-                        l.operating_system as "Operating System",
-                        l.battery_life as "Battery Life"
-                    FROM laptops l
-                    LEFT JOIN gpu g ON l.model = g.laptop_model
-                    LEFT JOIN storage s ON l.model = s.laptop_model
-                    WHERE l.model = %s
-                """, (model,))
-                misc_details = cur.fetchone()
-                if misc_details:
-                    laptop_data['tables'].append({
+                for row in cur.fetchall():
+                    model = row.pop('laptop_model')
+                    if model in laptops_dict:
+                        laptops_dict[model]['tables'].append({
+                            'title': 'Processor',
+                            'data': dict(row)
+                        })
+            else:
+                print("CPU table not found, skipping...")
+            
+            # Check if required tables exist for misc details
+            gpu_exists = 'gpu' in available_tables
+            storage_exists = 'storage' in available_tables
+            
+            # Batch query for Misc Details (conditionally based on table existence)
+            print("Loading misc details...")
+            query_parts = [
+                "SELECT l.model as laptop_model",
+                "l.memory_installed as \"Memory Installed\"",
+                "l.operating_system as \"Operating System\"",
+                "l.battery_life as \"Battery Life\""
+            ]
+            
+            join_parts = ["FROM laptops l"]
+            
+            if gpu_exists:
+                query_parts.insert(1, "g.model as \"Graphics Card\"")
+                join_parts.append("LEFT JOIN gpu g ON l.model = g.laptop_model")
+            
+            if storage_exists:
+                query_parts.insert(-1, "s.storage_amount || ' ' || s.storage_type as \"Storage\"")
+                join_parts.append("LEFT JOIN storage s ON l.model = s.laptop_model")
+            
+            misc_query = f"""
+                {', '.join(query_parts)}
+                {' '.join(join_parts)}
+                WHERE l.model IN ({placeholders})
+            """
+            
+            cur.execute(misc_query, tuple(models_list))
+            
+            for row in cur.fetchall():
+                model = row.pop('laptop_model')
+                if model in laptops_dict:
+                    laptops_dict[model]['tables'].append({
                         'title': 'Misc',
-                        'data': dict(misc_details)
+                        'data': dict(row)
                     })
-                
-                # Get Features
-                cur.execute("""
-                    SELECT backlit_keyboard as "Backlit Keyboard", 
-                           num_pad as "Numeric Keyboard",
-                           bluetooth as "Bluetooth"
+            
+            # Check if the features table exists
+            if 'features' in available_tables:
+                # Batch query for Features
+                print("Loading features...")
+                cur.execute(f"""
+                    SELECT laptop_model, backlit_keyboard as "Backlit Keyboard", 
+                           num_pad as "Numeric Keyboard", bluetooth as "Bluetooth"
                     FROM features
-                    WHERE laptop_model = %s
-                """, (model,))
-                features_details = cur.fetchone()
-                if features_details:
-                    laptop_data['tables'].append({
-                        'title': 'Features',
-                        'data': dict(features_details)
-                    })
+                    WHERE laptop_model IN ({placeholders})
+                """, tuple(models_list))
                 
-                # Get Ports
-                cur.execute("""
-                    SELECT hdmi as "HDMI", ethernet as "Ethernet (RJ45)", 
+                for row in cur.fetchall():
+                    model = row.pop('laptop_model')
+                    if model in laptops_dict:
+                        laptops_dict[model]['tables'].append({
+                            'title': 'Features',
+                            'data': dict(row)
+                        })
+            else:
+                print("Features table not found, skipping...")
+            
+            # Check if the ports table exists
+            if 'ports' in available_tables:
+                # Batch query for Ports
+                print("Loading ports...")
+                cur.execute(f"""
+                    SELECT laptop_model, hdmi as "HDMI", ethernet as "Ethernet (RJ45)", 
                            thunderbolt as "Thunderbolt", type_c as "USB Type-C"
                     FROM ports
-                    WHERE laptop_model = %s
-                """, (model,))
-                ports_details = cur.fetchone()
-                if ports_details:
-                    laptop_data['tables'].append({
-                        'title': 'Ports',
-                        'data': dict(ports_details)
-                    })
+                    WHERE laptop_model IN ({placeholders})
+                """, tuple(models_list))
                 
-                # Add this laptop to our list
-                laptops.append(laptop_data)
+                for row in cur.fetchall():
+                    model = row.pop('laptop_model')
+                    if model in laptops_dict:
+                        laptops_dict[model]['tables'].append({
+                            'title': 'Ports',
+                            'data': dict(row)
+                        })
+            else:
+                print("Ports table not found, skipping...")
             
-            # Close cursor but keep connection for possible future use
-            cur.close()
+            # Convert dictionary back to list
+            laptops = list(laptops_dict.values())
             
             print(f"Successfully loaded {len(laptops)} laptops from database")
             return laptops
@@ -192,19 +305,18 @@ class LaptopRecommendationBot:
         except Exception as e:
             print(f"Error loading data from database: {str(e)}")
             return []
-
-        finally: 
-            # Put the connection back into the imported release function first
+        finally:
+            # Put the connection back into the connection pool as noted in the comments
             if conn and cur:
                 try:
-                    # try to use the imported release function first
-                    release_db_connection(conn,curr)
+                    # Try to use the imported release function first
+                    release_db_connection(conn, cur)
                     print("Database connection released using DBAccess module.")
                 except NameError:
-                    # if import failed close directly
+                    # If import failed, close directly
                     cur.close()
                     conn.close()
-                    print("Database connection closed directly")
+                    print("Database connection closed directly.")
 
     def _create_feature_embeddings(self) -> Dict[str, np.ndarray]:
         """
@@ -405,9 +517,12 @@ class LaptopRecommendationBot:
         self.conversation_state = "initial"
         self.user_preferences = {}
 
-def converse_with_chatbot():
+def converse_with_chatbot(limit=100):
     """
     Main function to run an interactive conversation with the laptop recommendation bot
+    
+    Args:
+        limit: Maximum number of laptops to load (default: 100)
     """
     # Welcome message and instructions
     print("\n" + "="*50)
@@ -416,6 +531,7 @@ def converse_with_chatbot():
     print("This bot will help you find the perfect laptop based on your needs.")
     print("You can exit the conversation at any time by typing 'quit', 'exit', or 'bye'.")
     print("Type 'restart' to begin a new search.\n")
+    print(f"Note: Loading limited to {limit} laptops for performance reasons.")
     
     # Initialize the chatbot with database connection
     try:
@@ -472,9 +588,7 @@ def converse_with_chatbot():
         except Exception as e:
             print(f"\nBot: I encountered an error processing your request: {str(e)}")
             print("Bot: Let's try again or type 'restart' to begin a new search.")
-#put the connection back into the connection pool
-#call this method "release_db_connection(conn, cur)" passed variables are the connection and the cursor that you have open
 
 if __name__ == "__main__":
-    # Run the interactive conversation directly without loading from JSON
-    converse_with_chatbot()
+    # Run the interactive conversation with a limit of 100 laptops for performance
+    converse_with_chatbot(limit=100)
