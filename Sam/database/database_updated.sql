@@ -42,6 +42,7 @@ INSERT INTO storge_types (type) VALUES ('SSD');
 INSERT INTO storge_types (type) VALUES ('HDD');
 INSERT INTO storge_types (type) VALUES ('NVME');
 INSERT INTO storge_types (type) VALUES ('EMMC');
+INSERT INTO storge_types (type) VALUES ('none');
 
 -- Tables that depend on laptop_configurations and storge_types
 CREATE TABLE configuration_storage (
