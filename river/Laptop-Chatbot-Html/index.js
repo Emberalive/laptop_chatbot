@@ -10,6 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const profileContainer = document.getElementById('profile-container');
     const closeProfileBtn = document.getElementById('close-profile-btn');
 
+
+    //API Config
+    const API_URL = 'http://localhost:8000'; // Change this to your API URL
+
+    let sessionId = crypto.randomUUID(); // To track conversation state
+
     // Check for saved theme preference or use preferred color scheme
     const currentTheme = localStorage.getItem('theme') ||
         (window.matchMedia("(prefers-color-scheme: dark)").matches ? 'dark' : 'light');
@@ -45,6 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Send message function
+// Send message function
     function sendMessage() {
         const message = userInput.value.trim();
         if (message === '') return;
@@ -65,40 +72,118 @@ document.addEventListener('DOMContentLoaded', () => {
         const typingDiv = document.createElement('div');
         typingDiv.className = 'message bot';
         typingDiv.innerHTML = `
-            <div class="typing-indicator">
-                <span class="typing-dot"></span>
-                <span class="typing-dot"></span>
-                <span class="typing-dot"></span>
-            </div>
-        `;
+        <div class="typing-indicator">
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+        </div>
+    `;
         chatMessages.appendChild(typingDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
 
-        // Simulate response (replace this with actual API call)
-        setTimeout(() => {
-            // Remove typing indicator
-            chatMessages.removeChild(typingDiv);
+        // Call the API
+        fetch(`${API_URL}/api/chat`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                message: message,
+                session_id: sessionId
+            })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Remove typing indicator
+                chatMessages.removeChild(typingDiv);
 
-            // Sample responses
-            const responses = [
-                "Based on your requirements, I'd recommend laptops with at least 16GB RAM and an i7 processor.",
-                "For your budget range, consider the Dell XPS 13 or MacBook Air M1.",
-                "If you need a laptop for gaming, look for models with dedicated NVIDIA RTX graphics.",
-                "For programming and development, I suggest laptops with SSD storage and at least 16GB RAM.",
-                "If portability is your priority, ultrabooks like the LG Gram or Microsoft Surface are great options."
-            ];
+                // Save the session ID
+                if (data.session_id) {
+                    sessionId = data.session_id;
+                }
 
-            const botResponse = responses[Math.floor(Math.random() * responses.length)];
+                // Add bot's response
+                const botMessageDiv = document.createElement('div');
+                botMessageDiv.className = 'message bot';
+                botMessageDiv.innerHTML = `<div class="message-content">${data.message}</div>`;
+                chatMessages.appendChild(botMessageDiv);
 
-            // Add bot's response
-            const botMessageDiv = document.createElement('div');
-            botMessageDiv.className = 'message bot';
-            botMessageDiv.innerHTML = `<div class="message-content">${botResponse}</div>`;
-            chatMessages.appendChild(botMessageDiv);
+                // Display recommendations if present
+                if (data.recommendations && data.recommendations.length > 0) {
+                    const recsDiv = document.createElement('div');
+                    recsDiv.className = 'recommendations';
 
-            // Scroll to bottom of chat
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }, 1500);
+                    let recsHTML = '<h4>Recommended Laptops:</h4><ul>';
+                    data.recommendations.forEach(laptop => {
+                        recsHTML += `<li><strong>${laptop.brand} ${laptop.name}</strong><br>Specs: ${laptop.specs}</li>`;
+                    });
+                    recsHTML += '</ul>';
+
+                    recsDiv.innerHTML = recsHTML;
+                    chatMessages.appendChild(recsDiv);
+                }
+
+                // Display next question if present
+                if (data.next_question) {
+                    const nextQuestionDiv = document.createElement('div');
+                    nextQuestionDiv.className = 'message bot';
+                    nextQuestionDiv.innerHTML = `<div class="message-content">${data.next_question}</div>`;
+                    chatMessages.appendChild(nextQuestionDiv);
+                }
+
+                // Scroll to bottom of chat
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            })
+            .catch(error => {
+                // Remove typing indicator
+                chatMessages.removeChild(typingDiv);
+
+                // Show error message
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'message bot error';
+                errorDiv.innerHTML = `
+            <div class="message-content">
+                Sorry, I encountered an error connecting to the service. Please try again later.
+            </div>
+        `;
+                chatMessages.appendChild(errorDiv);
+                console.error('Error:', error);
+
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            });
+    }
+
+    function resetConversation() {
+        fetch(`${API_URL}/api/reset`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                session_id: sessionId
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Clear chat messages
+                    chatMessages.innerHTML = '';
+
+                    // Add a system message indicating reset
+                    const systemMessage = document.createElement('div');
+                    systemMessage.className = 'message system';
+                    systemMessage.innerHTML = `<div class="message-content">${data.message}</div>`;
+                    chatMessages.appendChild(systemMessage);
+                }
+            })
+            .catch(error => {
+                console.error('Error resetting conversation:', error);
+            });
     }
 
     // Event listeners for sending message
