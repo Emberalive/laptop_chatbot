@@ -3,6 +3,7 @@ import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from DBAccess.dbAccess import get_db_connection, release_db_connection
 from loguru import logger
+from collections import defaultdict
 
 # Global database connection variables
 global global_db_connection
@@ -162,9 +163,16 @@ def bulk_insert_laptop_model(model_records: list[tuple], db_connection):
             "DO UPDATE SET model_name = EXCLUDED.model_name "
             "RETURNING model_id, model_name"
         )
-        cursor.executemany(laptop_model_query, model_records)
+        results = {}
+        counter = 0
+        for record in model_records:
+            counter + 1
+            logger_server.info(f"inserting laptop model NO: {counter}")
+            cursor.execute(laptop_model_query, record)
+            model_id, model_name = cursor.fetchone()
+            results[model_name] = model_id
 
-        return {model_name: model_id for model_id, model_name in cursor.fetchall()}
+        return results
     except Exception as model_insert_error:
         logger.error(f"Bulk model insertion failed: {model_insert_error}")
         raise
@@ -182,9 +190,16 @@ def bulk_insert_configuration(configuration_records: list[tuple], db_connection)
             "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
             "RETURNING config_id")
 
-        cursor.executemany(config_query, configuration_records)
 
-        return {(model_id, config_id) for config_id, model_id in cursor.fetchall()}
+        results = defaultdict(list)
+        for record in configuration_records:
+            cursor.execute(config_query, record)
+            config_id = cursor.fetchone()[0]
+            model_id = record[0]  # Extract model_id from the input
+            results[model_id].append(config_id)
+
+        return dict(results)
+
     except Exception as config_insert_error:
         logger_server.error(f"Error inserting laptop_configuration: {config_insert_error}")
         raise
@@ -456,7 +471,9 @@ for laptop_index in range(len(product_details_list)):
 try:
     config_mappings = bulk_insert_configuration(configurations, global_db_connection)
     global_db_connection.commit()
-    config_lookup = {model_id: config_id for model_id, config_id in config_mappings}
+    config_lookup = defaultdict(list)
+    for model_id, config_id in config_mappings:
+        config_lookup[model_id].append(config_id)
 except Exception as e:
     global_db_connection.rollback()
     logger_server.error(f"Failed to bulk insert configurations: {e}")
