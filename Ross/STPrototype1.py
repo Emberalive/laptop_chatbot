@@ -10,14 +10,6 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 import re
 
-'''# Import database connection from dbAccess
-try:
-    sys.path.append('../Sam/server_side/DBAccess')
-    from DBAccess.dbAccess import get_db_connection
-    from DBAccess.dbAccess import release_db_connection
-except ImportError:
-    print("Warning: Could not import db_access module. Using direct connection.")
-'''
 class LaptopRecommendationBot:
     def __init__(self, laptop_data: List[Dict] = None):
         """
@@ -44,7 +36,7 @@ class LaptopRecommendationBot:
         # Create embeddings for predefined features and use cases
         self.feature_embeddings = self._create_feature_embeddings()
 
-    def load_from_database(self, limit=100) -> List[Dict]:
+    def load_from_database(self, limit=10000) -> List[Dict]:
         """
         Load laptop data from PostgreSQL database with optimizations
         
