@@ -474,7 +474,8 @@ try:
     config_mappings = bulk_insert_configuration(configurations, global_db_connection)
     global_db_connection.commit()
     config_lookup = defaultdict(list)
-    for model_id, config_id in config_mappings:
+
+    for model_id, config_id in config_mappings.items():
         config_lookup[model_id].append(config_id)
 except Exception as e:
     global_db_connection.rollback()
