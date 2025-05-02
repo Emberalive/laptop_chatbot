@@ -8,16 +8,16 @@ import json
 import sys
 import psycopg2
 from psycopg2.extras import RealDictCursor
+import re
 
-
-# Import database connection from dbAccess
+'''# Import database connection from dbAccess
 try:
     sys.path.append('../Sam/server_side/DBAccess')
     from DBAccess.dbAccess import get_db_connection
     from DBAccess.dbAccess import release_db_connection
 except ImportError:
     print("Warning: Could not import db_access module. Using direct connection.")
-
+'''
 class LaptopRecommendationBot:
     def __init__(self, laptop_data: List[Dict] = None):
         """
@@ -320,21 +320,29 @@ class LaptopRecommendationBot:
 
     def _create_feature_embeddings(self) -> Dict[str, np.ndarray]:
         """
-        Create embeddings for predefined features and use cases
+        Create embeddings for predefined features and use cases with enhanced descriptions
         """
         features = {
-            "gaming": """high-performance laptop with dedicated graphics card, 
-                     high refresh rate display, powerful processor""",
+            "gaming": """high-performance gaming laptop with dedicated graphics card for AAA games, 
+                     high refresh rate display, powerful processor, gaming aesthetics, RGB lighting,
+                     excellent cooling, high-end GPU for modern games, gaming laptop""",
             "business": """professional laptop with good battery life, 
-                       portable design, windows professional""",
-            "student": """affordable laptop with good battery life, 
-                      portable, sufficient storage for documents""",
-            "design": """laptop with high-resolution display, color accuracy, 
-                     powerful graphics capabilities""",
-            "programming": """laptop with good processor, sufficient RAM, 
-                         comfortable keyboard and display""",
+                       portable design, windows professional, business laptop, work laptop,
+                       productivity features, professional appearance, office work""",
+            "student": """affordable laptop for students with good battery life, 
+                      portable, sufficient storage for documents, budget-friendly,
+                      college laptop, university laptop, school laptop, student laptop,
+                      education laptop, studying, homework, assignments""",
+            "design": """laptop for designers with high-resolution display, color accuracy, 
+                     powerful graphics capabilities, creative work, graphic design,
+                     photo editing, video editing, art creation, design laptop, creative laptop""",
+            "programming": """laptop for coding with good processor, sufficient RAM, 
+                         comfortable keyboard and display, development laptop, coding laptop,
+                         software engineering, programming laptop, computer science,
+                         software development, web development, app development""",
             "portable": """lightweight laptop with long battery life, 
-                       compact size, good build quality"""
+                       compact size, good build quality, travel laptop, thin and light,
+                       ultraportable, mobility, on-the-go, commuting, travel""",
         }
         
         return {key: self.model.encode(desc) for key, desc in features.items()}
@@ -348,14 +356,61 @@ class LaptopRecommendationBot:
         
         # Extract relevant information from nested structure
         for table in tables:
-            details.update(table['data'])
+            if 'data' in table:
+                details.update(table['data'])
         
-        return f"{details.get('Brand', '')} {details.get('Name', '')} with " \
-               f"{details.get('Processor', {}).get('Name', '')} processor, " \
-               f"{details.get('Misc', {}).get('Memory Installed', '')} RAM, " \
-               f"{details.get('Misc', {}).get('Storage', '')}, " \
-               f"{details.get('Screen', {}).get('Size', '')} {details.get('Screen', {}).get('Resolution', '')} display, " \
-               f"{details.get('Misc', {}).get('Graphics Card', '')} graphics"
+        # Create a more comprehensive description with available data
+        brand = details.get('Brand', '')
+        name = details.get('Name', '')
+        processor = ""
+        if 'Processor' in details:
+            processor = f"{details['Processor'].get('Brand', '')} {details['Processor'].get('Name', '')}"
+        else:
+            # Try to find processor info elsewhere
+            for table in tables:
+                if table.get('title') == 'Processor' and 'data' in table:
+                    processor = f"{table['data'].get('Brand', '')} {table['data'].get('Name', '')}"
+                    break
+        
+        # Get other specs from the Misc table
+        memory = ""
+        storage = ""
+        graphics = ""
+        screen_size = ""
+        resolution = ""
+        
+        # Extract from Misc table if it exists
+        for table in tables:
+            if table.get('title') == 'Misc' and 'data' in table:
+                memory = table['data'].get('Memory Installed', '')
+                storage = table['data'].get('Storage', '')
+                graphics = table['data'].get('Graphics Card', '')
+        
+        # Extract screen info
+        for table in tables:
+            if table.get('title') == 'Screen' and 'data' in table:
+                screen_size = table['data'].get('Size', '')
+                resolution = table['data'].get('Resolution', '')
+        
+        # Build the description with available information
+        description = f"{brand} {name}"
+        
+        if processor:
+            description += f" with {processor} processor"
+        
+        if memory:
+            description += f", {memory} RAM"
+        
+        if storage:
+            description += f", {storage} storage"
+        
+        if screen_size or resolution:
+            description += f", {screen_size} {resolution} display"
+        
+        if graphics:
+            description += f", {graphics} graphics"
+        
+        return description
 
     def _filter_laptops(self, filters: Dict = None) -> List[Dict]:
         """
@@ -392,6 +447,38 @@ class LaptopRecommendationBot:
         descriptions = [self._format_laptop_description(laptop) for laptop in laptops]
         return self.model.encode(descriptions)
 
+    def _keyword_based_use_case(self, user_input: str) -> str:
+        """
+        Use keyword matching as a fallback for use case detection
+        """
+        user_input = user_input.lower()
+        
+        # Define keywords for each category
+        keywords = {
+            "gaming": ["gaming", "game", "play", "fps", "aaa", "shooter", "mmo", "rpg", "esports"],
+            "business": ["business", "work", "office", "professional", "meetings", "presentation"],
+            "student": ["student", "school", "college", "university", "education", "study", "homework"],
+            "design": ["design", "creative", "art", "photo", "video", "editing", "creator", "adobe", "illustrator", "photoshop"],
+            "programming": ["programming", "coding", "development", "software", "code", "developer", "programming"],
+            "portable": ["portable", "light", "travel", "thin", "lightweight", "carry", "commute"]
+        }
+        
+        # Count keyword matches for each category
+        category_scores = {category: 0 for category in keywords}
+        
+        for category, words in keywords.items():
+            for word in words:
+                # Use word boundary to match whole words
+                matches = len(re.findall(r'\b' + word + r'\b', user_input))
+                category_scores[category] += matches
+                
+        # Find the category with the highest score
+        if max(category_scores.values()) > 0:
+            return max(category_scores.items(), key=lambda x: x[1])[0]
+        
+        # Default to "student" if no keywords match
+        return "student"
+
     def process_input(self, user_input: str) -> Dict:
         """
         Process user input and return appropriate response
@@ -406,16 +493,26 @@ class LaptopRecommendationBot:
         user_embedding = self.model.encode(user_input)
 
         if self.conversation_state == "initial":
-            # Find most relevant use case
+            # Find most relevant use case using embedding similarity
             similarities = {
                 use_case: cosine_similarity([user_embedding], [emb])[0][0]
                 for use_case, emb in self.feature_embeddings.items()
             }
             most_relevant = max(similarities.items(), key=lambda x: x[1])
             
-            self.user_preferences['use_case'] = most_relevant[0]
+            # Fallback to keyword matching if similarity is low
+            if most_relevant[1] < 0.3:  # Threshold for low confidence
+                keyword_use_case = self._keyword_based_use_case(user_input)
+                print(f"Embedding similarity too low ({most_relevant[1]:.2f}), using keyword matching: {keyword_use_case}")
+                self.user_preferences['use_case'] = keyword_use_case
+            else:
+                # Use the embedding similarity result
+                self.user_preferences['use_case'] = most_relevant[0]
+                print(f"Using embedding similarity ({most_relevant[1]:.2f}) for use case: {most_relevant[0]}")
+            
+            
             self.conversation_state = "size"
-            response["message"] = f"I understand you're looking for a {most_relevant[0]} laptop."
+            response["message"] = f"I understand you're looking for a {self.user_preferences['use_case']} laptop."
             response["next_question"] = self.questions["size"]
             
         elif self.conversation_state == "size":
@@ -440,18 +537,25 @@ class LaptopRecommendationBot:
                 top_indices = np.argsort(similarities)[-3:][::-1]
                 
                 recommendations = [filtered_laptops[i] for i in top_indices]
-                response["recommendations"] = [
-                    {
-                        'brand': next(table['data']['Brand'] 
-                                    for table in laptop['tables'] 
-                                    if table['title'] == 'Product Details'),
-                        'name': next(table['data']['Name'] 
-                                   for table in laptop['tables'] 
-                                   if table['title'] == 'Product Details'),
-                        'specs': self._format_laptop_description(laptop)
-                    }
-                    for laptop in recommendations
-                ]
+                response["recommendations"] = []
+                
+                for laptop in recommendations:
+                    brand = ""
+                    name = ""
+                    
+                    # Extract brand and name from Product Details table
+                    for table in laptop['tables']:
+                        if table['title'] == 'Product Details' and 'data' in table:
+                            brand = table['data'].get('Brand', '')
+                            name = table['data'].get('Name', '')
+                            break
+                    
+                    if brand and name:
+                        response["recommendations"].append({
+                            'brand': brand,
+                            'name': name,
+                            'specs': self._format_laptop_description(laptop)
+                        })
                 
                 response["message"] = "Based on your preferences, here are some recommendations:"
             else:
@@ -463,13 +567,21 @@ class LaptopRecommendationBot:
         elif self.conversation_state == "brand":
             # Extract brand preferences
             brands = [brand.strip() for brand in user_input.split(',')]
-            self.user_preferences['brand'] = brands
             
-            filtered_laptops = self._filter_laptops({
-                'size': self.user_preferences.get('size'),
-                'brand': brands
-            })
-            
+            # Special handling for "no" or "none" responses
+            if len(brands) == 1 and brands[0].lower() in ["no", "none", "any", "no preference"]:
+                response["message"] = "Got it, I won't filter by brand. Here are some recommendations based on your other preferences:"
+                filtered_laptops = self._filter_laptops({
+                    'size': self.user_preferences.get('size')
+                })
+            else:
+                self.user_preferences['brand'] = brands
+                filtered_laptops = self._filter_laptops({
+                    'size': self.user_preferences.get('size'),
+                    'brand': brands
+                })
+                response["message"] = "Here are your final personalized recommendations:"
+                
             if filtered_laptops:
                 laptop_embeddings = self._get_laptop_embeddings(filtered_laptops)
                 use_case_embedding = self.feature_embeddings[self.user_preferences['use_case']]
@@ -478,20 +590,25 @@ class LaptopRecommendationBot:
                 top_indices = np.argsort(similarities)[-3:][::-1]
                 
                 recommendations = [filtered_laptops[i] for i in top_indices]
-                response["recommendations"] = [
-                    {
-                        'brand': next(table['data']['Brand'] 
-                                    for table in laptop['tables'] 
-                                    if table['title'] == 'Product Details'),
-                        'name': next(table['data']['Name'] 
-                                   for table in laptop['tables'] 
-                                   if table['title'] == 'Product Details'),
-                        'specs': self._format_laptop_description(laptop)
-                    }
-                    for laptop in recommendations
-                ]
+                response["recommendations"] = []
                 
-                response["message"] = "Here are your final personalized recommendations:"
+                for laptop in recommendations:
+                    brand = ""
+                    name = ""
+                    
+                    # Extract brand and name from Product Details table
+                    for table in laptop['tables']:
+                        if table['title'] == 'Product Details' and 'data' in table:
+                            brand = table['data'].get('Brand', '')
+                            name = table['data'].get('Name', '')
+                            break
+                    
+                    if brand and name:
+                        response["recommendations"].append({
+                            'brand': brand,
+                            'name': name,
+                            'specs': self._format_laptop_description(laptop)
+                        })
             else:
                 response["message"] = "I couldn't find any laptops matching all your criteria. Would you like to see other options?"
             
@@ -505,8 +622,53 @@ class LaptopRecommendationBot:
                 self.user_preferences = {}
                 response["message"] = "Let's start over. " + self.questions["initial"]
             else:
-                # Process any other input in final state
-                response["message"] = "Would you like to explore a different type of laptop? Say 'restart' to begin a new search."
+                # Check if user is asking to see more options
+                if any(term in user_input.lower() for term in ["yes", "sure", "okay", "more options", "show more"]):
+                    # Show more recommendations with relaxed criteria
+                    if 'brand' in self.user_preferences:
+                        # Remove brand filter to get more options
+                        filtered_laptops = self._filter_laptops({
+                            'size': self.user_preferences.get('size')
+                        })
+                    else:
+                        # If no brand filter, just get more recommendations
+                        filtered_laptops = self.laptops
+                    
+                    if filtered_laptops:
+                        laptop_embeddings = self._get_laptop_embeddings(filtered_laptops)
+                        use_case_embedding = self.feature_embeddings[self.user_preferences['use_case']]
+                        
+                        similarities = cosine_similarity([use_case_embedding], laptop_embeddings)[0]
+                        # Get the next batch of recommendations (positions 4-6)
+                        top_indices = np.argsort(similarities)[-6:-3][::-1]
+                        
+                        recommendations = [filtered_laptops[i] for i in top_indices if i >= 0]
+                        response["recommendations"] = []
+                        
+                        for laptop in recommendations:
+                            brand = ""
+                            name = ""
+                            
+                            # Extract brand and name from Product Details table
+                            for table in laptop['tables']:
+                                if table['title'] == 'Product Details' and 'data' in table:
+                                    brand = table['data'].get('Brand', '')
+                                    name = table['data'].get('Name', '')
+                                    break
+                            
+                            if brand and name:
+                                response["recommendations"].append({
+                                    'brand': brand,
+                                    'name': name,
+                                    'specs': self._format_laptop_description(laptop)
+                                })
+                        
+                        response["message"] = "Here are some additional options that might interest you:"
+                    else:
+                        response["message"] = "I don't have any more recommendations based on your criteria. Would you like to start a new search?"
+                else:
+                    # Process any other input in final state
+                    response["message"] = "Would you like to explore a different type of laptop? Say 'restart' to begin a new search."
 
         return response
 
@@ -517,7 +679,7 @@ class LaptopRecommendationBot:
         self.conversation_state = "initial"
         self.user_preferences = {}
 
-def converse_with_chatbot(limit=100):
+def converse_with_chatbot(limit=10000):
     """
     Main function to run an interactive conversation with the laptop recommendation bot
     
@@ -591,4 +753,4 @@ def converse_with_chatbot(limit=100):
 
 if __name__ == "__main__":
     # Run the interactive conversation with a limit of 100 laptops for performance
-    converse_with_chatbot(limit=100)
+    converse_with_chatbot(limit=10000)
