@@ -267,8 +267,11 @@ except Exception as e:
 #Notes
 #I can put all the insert data into a list and use the .executemany() function instead of doing them all separate: DONE
 #I could also add more workers to each worker pool while there is a wait for database read and write: DONE
-#Also I could reduce my prints as each print has a very small hang as the print to console is happening
+#Also I could reduce my prints as each print has a very small hang as the print to console is happening DONE
 #pass create mny own cursor per method as cursors are not thread safe: DONE
+
+#make it so their is a dictionary that holds the laptop_model and its corresponding id, so that I
+# can insert them in bulk, and use the dictionary so that I can grab the id and insert it into the laptop configuration table
 
 
 insert_cpu_list = list(set(insert_cpu_data))
