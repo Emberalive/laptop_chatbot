@@ -22,7 +22,7 @@ from Ross.STPrototype1 import LaptopRecommendationBot
 app = FastAPI(
     title="Laptop Recommendation API",
     description="API for the laptop recommendation chatbot",
-    version="1.5.0"
+    version="1.6.0"
 )
 
 # Add CORS middleware to allow cross-origin requests 
@@ -151,7 +151,12 @@ def cleanup_inactive_sessions():
             del active_chatbots[session_id]
 
 if __name__ == "__main__":
-    import uvicorn
-    
-    # Fix the module name to match the actual file name
-    uvicorn.run("chatBotAPI:app", host="0.0.0.0", port=8000, reload=True)
+    try:
+        import uvicorn
+        # Fix the module name to match the actual file name
+        uvicorn.run("chatBotAPI:app", host="0.0.0.0", port=8000, reload=True)
+    except ImportError:
+        print("ERROR: uvicorn package is not installed. Please install it with:")
+        print("pip install uvicorn fastapi")
+        print("or")
+        print("pip3 install uvicorn fastapi")

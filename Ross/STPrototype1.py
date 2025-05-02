@@ -10,15 +10,14 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 import re
 
-
-# Import database connection from dbAccess
+'''# Import database connection from dbAccess
 try:
     sys.path.append('../Sam/server_side/DBAccess')
     from DBAccess.dbAccess import get_db_connection
     from DBAccess.dbAccess import release_db_connection
 except ImportError:
     print("Warning: Could not import db_access module. Using direct connection.")
-
+'''
 class LaptopRecommendationBot:
     def __init__(self, laptop_data: List[Dict] = None):
         """
