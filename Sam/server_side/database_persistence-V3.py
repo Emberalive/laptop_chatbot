@@ -166,12 +166,11 @@ def bulk_insert_laptop_model(model_records: list[tuple], db_connection):
         results = {}
         counter = 0
         for record in model_records:
-            counter + 1
-            logger_server.info(f"inserting laptop model NO: {counter}")
+
             cursor.execute(laptop_model_query, record)
             model_id, model_name = cursor.fetchone()
             results[model_name] = model_id
-
+        logger.info(f"inserted {len(results)} laptop models")
         return results
     except Exception as model_insert_error:
         logger.error(f"Bulk model insertion failed: {model_insert_error}")
@@ -197,6 +196,9 @@ def bulk_insert_configuration(configuration_records: list[tuple], db_connection)
             config_id = cursor.fetchone()[0]
             model_id = record[0]  # Extract model_id from the input
             results[model_id].append(config_id)
+
+        logger.info(f"inserted {len(results)} laptop configurations")
+
 
         return dict(results)
 
