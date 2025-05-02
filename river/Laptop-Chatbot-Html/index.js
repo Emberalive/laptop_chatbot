@@ -10,23 +10,42 @@ document.addEventListener('DOMContentLoaded', () => {
     const profileContainer = document.getElementById('profile-container');
     const closeProfileBtn = document.getElementById('close-profile-btn');
 
+// Add laptop details panel to the HTML
+    const laptopDetailsPanel = document.createElement('div');
+    laptopDetailsPanel.className = 'laptop-details-panel';
+    laptopDetailsPanel.innerHTML = `
+    <div class="laptop-details-header">
+        <button class="laptop-details-close">←</button>
+        <h2>Laptop Details</h2>
+    </div>
+    <div class="laptop-details-content"></div>
+`;
+    chatContainer.appendChild(laptopDetailsPanel);
 
-    //API Config
-    const API_URL = 'http://localhost:8000'; // Change this to your API URL
+// Get the close button after the panel is added to DOM
+    const laptopDetailsClose = laptopDetailsPanel.querySelector('.laptop-details-close');
 
-    let sessionId = crypto.randomUUID(); // To track conversation state
+// Close button functionality for laptop details
+    if (laptopDetailsClose) {
+        laptopDetailsClose.addEventListener('click', () => {
+            laptopDetailsPanel.classList.remove('open');
+            chatContainer.classList.remove('shifted');
+        });
+    }
 
-    // Check for saved theme preference or use preferred color scheme
+            //API Config
+    const API_URL = 'http://localhost:8000';
+    let sessionId = crypto.randomUUID();
+
+    // Theme handling
     const currentTheme = localStorage.getItem('theme') ||
         (window.matchMedia("(prefers-color-scheme: dark)").matches ? 'dark' : 'light');
 
-    // Set initial theme
     if (currentTheme === 'dark') {
         document.documentElement.setAttribute('data-theme', 'dark');
         themeToggleCheckbox.checked = true;
     }
 
-    // Theme toggle handler
     function toggleTheme(e) {
         if (e.target.checked) {
             document.documentElement.setAttribute('data-theme', 'dark');
@@ -37,10 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Add theme toggle event listener
     themeToggleCheckbox.addEventListener('change', toggleTheme);
 
-    // Start chat button click handler
     startChatBtn.addEventListener('click', () => {
         splashScreen.classList.add('fade-out');
         chatContainer.style.display = 'flex';
@@ -50,38 +67,56 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 800);
     });
 
-    // Send message function
-// Send message function
+    function showLaptopDetails(laptop) {
+        const content = laptopDetailsPanel.querySelector('.laptop-details-content');
+        content.innerHTML = `
+        <div class="laptop-spec">
+            <div class="laptop-spec-label">Model</div>
+            <div class="laptop-spec-value">${laptop.brand} ${laptop.name}</div>
+        </div>
+        <div class="laptop-spec">
+            <div class="laptop-spec-label">Specifications</div>
+            <div class="laptop-spec-value">${laptop.specs}</div>
+        </div>
+        ${laptop.price ? `
+        <div class="laptop-spec">
+            <div class="laptop-spec-label">Price</div>
+            <div class="laptop-spec-value">${laptop.price}</div>
+        </div>` : ''}
+        ${laptop.features ? `
+        <div class="laptop-spec">
+            <div class="laptop-spec-label">Features</div>
+            <div class="laptop-spec-value">${laptop.features}</div>
+        </div>` : ''}
+    `;
+        laptopDetailsPanel.classList.add('open');
+        chatContainer.classList.add('shifted');
+    }
+
     function sendMessage() {
         const message = userInput.value.trim();
         if (message === '') return;
 
-        // Add user's message
         const userMessageDiv = document.createElement('div');
         userMessageDiv.className = 'message user';
         userMessageDiv.innerHTML = `<div class="message-content">${message}</div>`;
         chatMessages.appendChild(userMessageDiv);
 
-        // Clear input
         userInput.value = '';
-
-        // Scroll to bottom of chat
         chatMessages.scrollTop = chatMessages.scrollHeight;
 
-        // Show typing indicator
         const typingDiv = document.createElement('div');
         typingDiv.className = 'message bot';
         typingDiv.innerHTML = `
-        <div class="typing-indicator">
-            <span class="typing-dot"></span>
-            <span class="typing-dot"></span>
-            <span class="typing-dot"></span>
-        </div>
-    `;
+            <div class="typing-indicator">
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+            </div>
+        `;
         chatMessages.appendChild(typingDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
 
-        // Call the API
         fetch(`${API_URL}/api/chat`, {
             method: 'POST',
             headers: {
@@ -93,42 +128,48 @@ document.addEventListener('DOMContentLoaded', () => {
             })
         })
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
+                if (!response.ok) throw new Error('Network response was not ok');
                 return response.json();
             })
             .then(data => {
-                // Remove typing indicator
                 chatMessages.removeChild(typingDiv);
 
-                // Save the session ID
                 if (data.session_id) {
                     sessionId = data.session_id;
                 }
 
-                // Add bot's response
                 const botMessageDiv = document.createElement('div');
                 botMessageDiv.className = 'message bot';
                 botMessageDiv.innerHTML = `<div class="message-content">${data.message}</div>`;
                 chatMessages.appendChild(botMessageDiv);
 
-                // Display recommendations if present
                 if (data.recommendations && data.recommendations.length > 0) {
                     const recsDiv = document.createElement('div');
                     recsDiv.className = 'recommendations';
 
                     let recsHTML = '<h4>Recommended Laptops:</h4><ul>';
-                    data.recommendations.forEach(laptop => {
-                        recsHTML += `<li><strong>${laptop.brand} ${laptop.name}</strong><br>Specs: ${laptop.specs}</li>`;
+                    data.recommendations.forEach((laptop, index) => {
+                        recsHTML += `
+                            <li class="recommendation-item" data-laptop-id="${index}">
+                                <strong>${laptop.brand} ${laptop.name}</strong><br>
+                                <span>Click for more details</span>
+                            </li>`;
                     });
                     recsHTML += '</ul>';
 
                     recsDiv.innerHTML = recsHTML;
                     chatMessages.appendChild(recsDiv);
+
+                    const recItems = recsDiv.querySelectorAll('.recommendation-item');
+                    recItems.forEach(item => {
+                        item.addEventListener('click', () => {
+                            const laptopId = item.dataset.laptopId;
+                            const laptop = data.recommendations[laptopId];
+                            showLaptopDetails(laptop);
+                        });
+                    });
                 }
 
-                // Display next question if present
                 if (data.next_question) {
                     const nextQuestionDiv = document.createElement('div');
                     nextQuestionDiv.className = 'message bot';
@@ -136,24 +177,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     chatMessages.appendChild(nextQuestionDiv);
                 }
 
-                // Scroll to bottom of chat
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             })
             .catch(error => {
-                // Remove typing indicator
                 chatMessages.removeChild(typingDiv);
 
-                // Show error message
                 const errorDiv = document.createElement('div');
                 errorDiv.className = 'message bot error';
                 errorDiv.innerHTML = `
-            <div class="message-content">
-                Sorry, I encountered an error connecting to the service. Please try again later.
-            </div>
-        `;
+                    <div class="message-content">
+                        Sorry, I encountered an error connecting to the service. Please try again later.
+                    </div>
+                `;
                 chatMessages.appendChild(errorDiv);
                 console.error('Error:', error);
-
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             });
     }
@@ -171,10 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Clear chat messages
                     chatMessages.innerHTML = '';
-
-                    // Add a system message indicating reset
                     const systemMessage = document.createElement('div');
                     systemMessage.className = 'message system';
                     systemMessage.innerHTML = `<div class="message-content">${data.message}</div>`;
@@ -186,7 +220,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     }
 
-    // Event listeners for sending message
     sendBtn.addEventListener('click', sendMessage);
     userInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
@@ -214,23 +247,21 @@ document.addEventListener('DOMContentLoaded', () => {
     sidebarClose.addEventListener('click', closeSidebar);
     overlay.addEventListener('click', closeSidebar);
 
-    // Close sidebar when pressing escape key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closeSidebar();
+            laptopDetailsPanel.classList.remove('open');
+            chatContainer.classList.remove('shifted');
         }
     });
 
-    // Profile page functionality
+    // Profile functionality
     const profileLink = document.querySelector('.sidebar-nav li');
 
-    // Make sure profileLink exists before adding event listener
     if (profileLink && profileContainer && closeProfileBtn) {
-        // Open profile page when clicked in sidebar
         profileLink.addEventListener('click', () => {
             closeSidebar();
 
-            // Hide other containers first
             if (chatContainer.style.display !== 'none') {
                 chatContainer.classList.remove('fade-in');
                 setTimeout(() => {
@@ -245,7 +276,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 400);
             }
 
-            // Show profile with fade-in effect
             setTimeout(() => {
                 profileContainer.style.display = 'flex';
                 setTimeout(() => {
@@ -254,21 +284,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 500);
         });
 
-        // Close profile when clicking close button
         closeProfileBtn.addEventListener('click', () => {
             profileContainer.classList.remove('fade-in');
 
             setTimeout(() => {
                 profileContainer.style.display = 'none';
-
-                // Return to chat if splash was already dismissed
                 if (splashScreen.style.display === 'none') {
                     chatContainer.style.display = 'flex';
                     setTimeout(() => {
                         chatContainer.classList.add('fade-in');
                     }, 50);
                 } else {
-                    // Otherwise show splash
                     splashScreen.style.display = 'flex';
                     splashScreen.classList.remove('fade-out');
                 }
@@ -276,7 +302,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Save profile changes button (if exists)
     const profileSaveBtn = document.querySelector('.profile-save-btn');
     if (profileSaveBtn) {
         profileSaveBtn.addEventListener('click', () => {

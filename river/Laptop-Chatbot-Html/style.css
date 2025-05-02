@@ -539,26 +539,26 @@ body {
     gap: 10px;
 }
 
-.recommendation-card {
+.p-recommendation-card {
     padding: 15px;
     border-radius: 8px;
     border-left: 3px solid var(--accent-color);
     background-color: var(--secondary-color);
 }
 
-.recommendation-date {
+.p-recommendation-date {
     font-size: 0.8rem;
     color: var(--text-color-light);
 }
 
-.recommendation-model {
+.p-recommendation-model {
     font-weight: bold;
     font-size: 1.1rem;
     margin: 5px 0;
     color: var(--text-color);
 }
 
-.recommendation-specs {
+.p-recommendation-specs {
     font-size: 0.9rem;
     color: var(--text-color-light);
 }
@@ -591,5 +591,117 @@ body {
 
     .profile-details {
         max-height: 70vh;
+    }
+}
+.recommendations{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    color: var(--text-color);
+}
+.chat-container {
+    position: relative;
+    transition: width 0.3s ease;
+    width: 90%;
+    max-width: 800px;
+}
+
+.chat-container.shifted {
+    max-width: 1150px;
+    width: calc(90% + 350px);
+}
+
+.laptop-details-panel {
+    position: absolute;
+    right: -350px;
+    top: 0;
+    width: 350px;
+    height: 100%;
+    background-color: var(--chat-bg-color);
+    transition: right 0.3s ease;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid var(--secondary-color);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.laptop-details-panel.open {
+    right: -350px;
+    transform: translateX(-100%);
+}
+
+.laptop-details-header {
+    padding: 20px;
+    background-color: var(--accent-color);
+    color: var(--btn-text-color);
+    position: relative;
+    text-align: center;
+}
+
+.laptop-details-header h2 {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+}
+
+.laptop-details-content {
+    flex: 1;
+    padding: 20px;
+    color: var(--text-color);
+    overflow-y: auto;
+}
+
+.laptop-details-close {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--btn-text-color);
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.laptop-details-close:hover {
+    background-color: var(--accent-color-dark);
+}
+
+.laptop-spec {
+    background-color: var(--secondary-color);
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.laptop-spec-label {
+    font-size: 0.9rem;
+    color: var(--text-color-light);
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.laptop-spec-value {
+    font-size: 1.1rem;
+    color: var(--text-color);
+    line-height: 1.4;
+}
+
+@media (max-width: 1200px) {
+    .chat-container.shifted {
+        max-width: 800px;
+        width: 90%;
+    }
+
+    .laptop-details-panel {
+        position: fixed;
+        right: -350px;
+    }
+
+    .laptop-details-panel.open {
+        right: 0;
+        transform: none;
     }
 }
