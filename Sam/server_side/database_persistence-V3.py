@@ -3,7 +3,14 @@ import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from DBAccess.dbAccess import get_db_connection, release_db_connection
 from loguru import logger
-from collections import defaultdict
+
+#this version takes a whopping 14:49:77
+# with new improvements it is now 7:15
+# latest speed is 6:10
+#newest speed 5:28
+#many pool executors = 5:23:21
+#execute many for gpu and cpu 4:38:06
+#newest speed 3:45:03
 
 # Global database connection variables
 global global_db_connection
@@ -126,6 +133,7 @@ def insert_cpu_records(cpu_records: list[tuple], db_connection):
             logger_server.info(f"Inserted {len(cpu_records)} CPUs")
 
     except Exception as cpu_insert_error:
+        db_connection.rollback()
         logger_server.error(f"Failed to bulk insert CPUs: {cpu_insert_error}")
         raise
     finally:
@@ -146,6 +154,7 @@ def insert_gpu_records(gpu_records: list[tuple], db_connection):
             logger_server.info(f"Inserted {len(gpu_records)} GPUs")
 
     except Exception as gpu_insert_error:
+        db_connection.rollback()
         logger_server.error(f"Failed to bulk insert GPUs: {gpu_insert_error}")
         raise
     finally:
@@ -173,6 +182,7 @@ def bulk_insert_laptop_model(model_records: list[tuple], db_connection):
         logger.info(f"inserted {len(results)} laptop models")
         return results
     except Exception as model_insert_error:
+        db_connection.rollback()
         logger.error(f"Bulk model insertion failed: {model_insert_error}")
         raise
     finally:
@@ -194,6 +204,7 @@ def insert_configuration(model_id, price, weight, battery_life, memory_installed
 
         return cursor.fetchone()[0]
     except Exception as config_insert_error:
+        db_connection.rollback()
         logger_server.error(f"Error inserting laptop_configuration: {config_insert_error}")
         raise
     finally:
@@ -207,7 +218,9 @@ def bulk_insert_storage(storage_records: list[tuple], db_connection):
         storage_query = ("INSERT INTO configuration_storage (config_id, storage_type, capacity)"
                          "VALUES(%s, %s, %s)")
         cursor.executemany(storage_query, storage_records)
+        logger_server.info(f"inserted storages: {len(storage_records)}")
     except Exception as storage_insert_error:
+        db_connection.rollback()
         logger_server.error(f"Error inserting storage configuration: {storage_insert_error}")
         raise
     finally:
@@ -221,7 +234,9 @@ def bulk_insert_features(features_records: list[tuple], db_connection):
         features_query = ("INSERT INTO features (config_id, backlit_keyboard, numeric_keyboard, bluetooth)"
                           "VALUES(%s, %s, %s, %s)")
         cursor.executemany(features_query, features_records)
+        logger_server.info(f"inserted storages: {len(features_records)}")
     except Exception as features_insert_error:
+        db_connection.rollback()
         logger_server.error(f"Error inserting into features: {features_insert_error}")
         raise
     finally:
@@ -235,7 +250,9 @@ def bulk_insert_ports(ports_records: list[tuple], db_connection):
         ports_query = ("INSERT INTO ports (config_id, ethernet, hdmi, usb_type_c, thunderbolt, display_port)"
                        "VALUES(%s, %s, %s, %s, %s, %s)")
         cursor.executemany(ports_query, ports_records)
+        logger_server.info(f"inserted storages: {len(ports_records)}")
     except Exception as ports_insert_error:
+        db_connection.rollback()
         logger_server.error(f"Error with port configuration insertion: {ports_insert_error}")
         raise
     finally:
@@ -249,48 +266,13 @@ def bulk_insert_screens(screens_records: list[tuple], db_connection):
         screen_query = ("INSERT INTO screens (config_id, size, resolution, touchscreen, refresh_rate)"
                         "VALUES(%s, %s, %s, %s, %s)")
         cursor.executemany(screen_query, screens_records)
+        logger_server.info(f"inserted storages: {len(screens_records)}")
     except Exception as screen_insert_error:
+        db_connection.rollback()
         logger_server.error(f"Error inserting screen configuration: {screen_insert_error}")
         raise
     finally:
         cursor.close()
-
-# def update_related_records_with_config_ids(configurations, config_lookup,
-#                                            storages, features, ports, screens):
-#     updated_storages = []
-#     updated_features = []
-#     updated_ports = []
-#     updated_screens = []
-
-    # for i, config in enumerate(configurations):
-    #     model_id = config[0]  # Get model_id from configuration
-    #     config_id = config_lookup.get(model_id)
-    #
-    #     if not config_id:
-    #         continue  # Skip if no config_id found
-    #
-    #     # Update storage record if exists at this index
-    #     if i < len(storages):
-    #         _, storage_type, capacity = storages[i]
-    #         updated_storages.append((config_id, storage_type, capacity))
-    #
-    #     # Update features record
-    #     if i < len(features):
-    #         _, backlit, numpad, bluetooth = features[i]
-    #         updated_features.append((config_id, backlit, numpad, bluetooth))
-    #
-    #     # Update ports record
-    #     if i < len(ports):
-    #         _, ethernet, hdmi, usb_c, thunderbolt, display_port = ports[i]
-    #         updated_ports.append((config_id, ethernet, hdmi, usb_c, thunderbolt, display_port))
-    #
-    #     # Update screens record
-    #     if i < len(screens):
-    #         _, size, resolution, touchscreen, refresh_rate = screens[i]
-    #         updated_screens.append((config_id, size, resolution, touchscreen, refresh_rate))
-    #
-    # return updated_storages, updated_features, updated_ports, updated_screens
-
 # #Notes
 
 
@@ -300,9 +282,6 @@ def bulk_insert_screens(screens_records: list[tuple], db_connection):
 # #pass create mny own cursor per method as cursors are not thread safe: DONE
 # #make it so their is a dictionary that holds the laptop_model and its corresponding id, so that I
 # can insert them in bulk, and use the dictionary so that I can grab the id and insert it into the laptop configuration table
-
-
-
 
 try:
     global_db_connection, global_db_cursor = get_db_connection()
@@ -417,51 +396,4 @@ except Exception as worker_error:
 global_db_connection.commit()
 
 release_db_connection(global_db_connection, global_db_connection)
-
-    # try:
-    #     model_id = insert_laptop_model(laptop_brand, laptop_name, global_db_connection)
-    #
-    #     if model_id is None:
-    #         logger_server.error(f"Failed to insert laptop: {laptop_name}")
-    #     else:
-    #         logger_server.info(f"Inserted new laptop with ID: {model_id}")
-    #
-    #     with ThreadPoolExecutor(max_workers=10) as executor:
-    #         config_future = executor.submit(
-    #             insert_laptop_configuration, model_id, laptop_price, laptop_weight,
-    #             laptop_battery, laptop_memory, laptop_os, cpu_model, gpu_model,
-    #             global_db_connection)
-    #
-    #         try:
-    #             config_id = config_future.result()
-    #         except Exception as config_error:
-    #             logger_server.error(f"Error inserting laptop configuration: {config_error}")
-    #             config_id = None
-    #
-    #         futures = [
-    #             executor.submit(insert_port_configuration, config_id, has_ethernet,
-    #                             has_hdmi, has_usb_c, has_thunderbolt, has_display_port,
-    #                             global_db_connection),
-    #             executor.submit(insert_laptop_features, config_id, has_backlit_keyboard,
-    #                             has_numeric_keypad, has_bluetooth, global_db_connection),
-    #             executor.submit(insert_screen_configuration, config_id, screen_size,
-    #                             screen_resolution, has_touchscreen, screen_refresh_rate,
-    #                             global_db_connection),
-    #             executor.submit(insert_storage_configuration, config_id, storage_type,
-    #                             storage_capacity, global_db_connection)
-    #         ]
-    #
-    #         for future in as_completed(futures):
-    #             try:
-    #                 future.result()
-    #             except Exception as worker_error:
-    #                 logger_server.error(f"Error in worker: {worker_error}")
-    #
-    #     global_db_connection.commit()
-    # except Exception as db_commit_error:
-    #     global_db_connection.rollback()
-    #     logger_server.error(
-    #         f"Failed to insert laptop details (ports, features, screen, storage): {db_commit_error}")
-
-# Update all related records with proper config_id
 
