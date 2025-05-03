@@ -2,8 +2,15 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import os
+import sys
 from urllib.parse import urljoin
 from concurrent.futures import ThreadPoolExecutor, as_completed
+
+from loguru import logger
+
+logger.add(sys.stdout, format="{time} {level} {message}")
+logger.add("../logs/scraper_2.log", rotation="10 MB", retention="35 days", compression="zip")
+logger = logger.bind(user="scraper_2")
 
 def scrape_url(url):
     try:
@@ -110,7 +117,7 @@ def scrape_url(url):
         }
 
     except Exception as e:
-        print(f"Error scraping {url}: {e}")
+        logger.error(f"Error scraping {url}: {e}")
         return None
 
 def read_urls(file_path):
@@ -122,7 +129,7 @@ def main():
     output_file = os.path.join("scraped_data", "scraped_data.json")
 
     urls = read_urls(input_file)
-    print(f"Found {len(urls)} URLs to scrape")
+    logger.info(f"Found {len(urls)} URLs to scrape")
 
     existing_data = []
     if os.path.exists(output_file):
@@ -130,7 +137,7 @@ def main():
             with open(output_file, 'r') as f:
                 existing_data = json.load(f)
         except json.JSONDecodeError:
-            print("Warning: Existing output file contains invalid JSON")
+            logger.error("Warning: Existing output file contains invalid JSON")
 
     existing_urls = {item['url'] for item in existing_data if 'url' in item}
     urls_to_scrape = [url for url in urls if url not in existing_urls]
@@ -147,15 +154,15 @@ def main():
                 data = future.result()
                 if data:
                     scraped_data.append(data)
-                    print(f"Scraped: {url}")
+                    logger.info(f"Scraped: {url}")
             except Exception as e:
-                print(f"Error with {url}: {e}")
+                logger.error(f"Error with {url}: {e}")
 
     # Save the combined data
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(existing_data + scraped_data, f, indent=4, ensure_ascii=False)
 
-    print(f"Scraping complete. Total laptops scraped: {len(scraped_data)}")
+    logger.info(f"Scraping complete. Total laptops scraped: {len(scraped_data)}")
 
 if __name__ == "__main__":
     main()
