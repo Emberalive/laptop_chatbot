@@ -189,18 +189,17 @@ def bulk_insert_configuration(configuration_records: list[tuple], db_connection)
             "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
             "RETURNING config_id")
 
+        results = {}  # Dictionary: {model_id: config_id}
 
-        results = defaultdict(list)
         for record in configuration_records:
             cursor.execute(config_query, record)
             config_id = cursor.fetchone()[0]
             model_id = record[0]  # Extract model_id from the input
-            results[model_id].append(config_id)
 
-        logger.info(f"inserted {len(results)} laptop configurations")
+            results[model_id] = config_id
 
-
-        return dict(results)
+        logger_server.info(f"Inserted {len(results)} laptop configurations")
+        return results
 
     except Exception as config_insert_error:
         logger_server.error(f"Error inserting laptop_configuration: {config_insert_error}")
@@ -471,34 +470,24 @@ for laptop_index in range(len(product_details_list)):
     #         f"Failed to insert laptop details (ports, features, screen, storage): {db_commit_error}")
 
 try:
-    config_mappings = bulk_insert_configuration(configurations, global_db_connection)
+    config_lookup = bulk_insert_configuration(configurations, global_db_connection)
     global_db_connection.commit()
-    config_lookup = defaultdict(list)
-
-    for model_id, config_id in config_mappings.items():
-        config_lookup[model_id].append(config_id)
 except Exception as e:
     global_db_connection.rollback()
     logger_server.error(f"Failed to bulk insert configurations: {e}")
     raise
 
 # Update all related records with proper config_ids
-ready_storages, ready_features, ready_ports, ready_screens = update_related_records_with_config_ids(
-    configurations=configurations,
-    config_lookup=config_lookup,
-    storages=storages,
-    features=features,
-    ports=ports,
-    screens=screens
-)
+updated_storages, updated_features, updated_ports, updated_screens = update_related_records_with_config_ids(
+    configurations, config_lookup, storages, features, ports, screens)
 
 # Bulk insert all related data (can be parallelized)
 with ThreadPoolExecutor(max_workers=10) as executor:
     futures = [
-        bulk_insert_storage(ready_storages, global_db_connection),
-        bulk_insert_features(ready_features, global_db_connection),
-        bulk_insert_ports(ready_ports, global_db_connection),
-        bulk_insert_screens(ready_screens, global_db_connection)
+        bulk_insert_storage(updated_storages, global_db_connection),
+        bulk_insert_features(updated_features, global_db_connection),
+        bulk_insert_ports(updated_ports, global_db_connection),
+        bulk_insert_screens(updated_screens, global_db_connection)
     ]
     for future in as_completed(futures):
         try:
