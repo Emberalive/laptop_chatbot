@@ -8,7 +8,7 @@ from threading import Lock
 from loguru import logger
 
 logger.add(sys.stdout, format="{time} {level} {message}")
-logger.add("logs/scraper.log", rotation="10 MB", retention="35 days", compression="zip")
+logger.add("../logs/scraper.log", rotation="10 MB", retention="35 days", compression="zip")
 logger = logger.bind(user="scraper_1")
 
 def fetch_page_links(url, headers):
