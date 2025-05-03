@@ -145,7 +145,7 @@ def main():
     scraped_data = []
 
     # Use ThreadPoolExecutor to scrape concurrently
-    with ThreadPoolExecutor(max_workers=50) as executor:
+    with ThreadPoolExecutor(max_workers=100) as executor:
         future_to_url = {executor.submit(scrape_url, url): url for url in urls_to_scrape}
 
         for future in as_completed(future_to_url):
