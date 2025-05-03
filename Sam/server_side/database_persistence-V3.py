@@ -404,18 +404,16 @@ for laptop_index in range(len(product_details_list)):
     screens.append((config_id, screen_size, screen_resolution, has_touchscreen, screen_refresh_rate))
 
     # Bulk insert all related data (can be parallelized)
-    with ThreadPoolExecutor(max_workers=10) as executor:
-        futures = [
-            bulk_insert_storage(storages, global_db_connection),
-            bulk_insert_features(features, global_db_connection),
-            bulk_insert_ports(ports, global_db_connection),
-            bulk_insert_screens(screens, global_db_connection)
-        ]
-        for future in as_completed(futures):
-            try:
-                future.result()
-            except Exception as worker_error:
-                logger_server.error(f"Error in worker: {worker_error}")
+    try:
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            futures = [
+                bulk_insert_storage(storages, global_db_connection),
+                bulk_insert_features(features, global_db_connection),
+                bulk_insert_ports(ports, global_db_connection),
+                bulk_insert_screens(screens, global_db_connection)
+            ]
+    except Exception as worker_error:
+        logger.error(f"Error with one of the workers ERROR:{worker_error}")
     global_db_connection.commit()
 
     release_db_connection(global_db_connection, global_db_connection)
