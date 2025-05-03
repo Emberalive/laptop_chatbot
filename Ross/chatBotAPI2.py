@@ -62,7 +62,7 @@ class LaptopRecommendation(BaseModel):
 
 class ChatResponse(BaseModel):
     message: str
-    recommendation: List[LaptopRecommendation] = []
+    _get_recommendations: List[LaptopRecommendation] = []
     next_question: Optional[str] = None
     session_id: str
     detected_use_case: Optional[str] = None
@@ -134,7 +134,7 @@ def get_or_create_session(session_id: Optional[str]=None, user_id: Optional[str]
     # Get an existing session or create a new one
 
     if session_id and session_id in active_sessions:
-        session -active_sessions[session_id]
+        session = active_sessions[session_id]
         session.update_activity()
         return session
 
@@ -165,7 +165,7 @@ def cleanup_inactive_sessions():
 @app.get("/api/health", response_model = HealthResponse)
 async def health_check():
     # Health check endpoint to verfiy if the api is running a provide system stats
-    uptime - datetime.now() - start_time 
+    uptime = datetime.now() - start_time 
     uptime_str = str(uptime).split('.')[0] # Format without microseconds
 
     return {
@@ -206,7 +206,7 @@ async def chat(request: ChatRequest, background_tasks: BackgroundTasks):
         raise HTTPException(status_code=500, detail=f"Eror processing message: {str(e)}")
 
 
-@app.post("/api/rest", response_model=ResetRequest)
+@app.post("/api/reset", response_model=ResetRequest)
 async def reset_conversation(request: ResetRequest):
     #Reset the conversation state or creat  a new session
     session_id = request.session_id
