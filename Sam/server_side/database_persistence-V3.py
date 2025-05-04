@@ -384,7 +384,7 @@ for laptop_index in range(len(product_details_list)):
 
     # Bulk insert all related data (can be parallelized)
 try:
-    with ThreadPoolExecutor(max_workers=10) as executor:
+    with ThreadPoolExecutor(max_workers=11) as executor:
         futures = [
             bulk_insert_storage(storages, global_db_connection),
             bulk_insert_features(features, global_db_connection),
