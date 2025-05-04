@@ -11,7 +11,12 @@ from pydantic import BaseModel
 import json
 import uuid 
 import time
+from loguru import logger
 
+
+logger.add(sys.stdout, format="{time} {level} {message}")
+logger.add("../Sam/server_side/logs/server.log", rotation="60 MB", retention="35 days", compression="zip")
+logger = logger.bind(user="API")
 # Add project root tot eh sys.path to import from other modules
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -157,7 +162,7 @@ def cleanup_inactive_sessions():
     for session_id in sessions_to_remove:
         del active_sessions[session_id]
 
-    print(f"Cleaned up {len(sessions_to_remove)} inactive sessions. {len(active_sessions)} sessions remaining.")
+    logger.info(f"Cleaned up {len(sessions_to_remove)} inactive sessions. {len(active_sessions)} sessions remaining.")
 
 
 # API Endpoints
@@ -178,7 +183,8 @@ async def health_check():
 @app.post("/api/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest, background_tasks: BackgroundTasks):
     #Process a chat message and return recommendations
-    try: 
+    try:
+        logger.info("processing a chat message")
         # Get or create a session
         session = get_or_create_session(request.session_id, request.user_id)
         background_tasks.add_task(cleanup_inactive_sessions)
@@ -191,7 +197,8 @@ async def chat(request: ChatRequest, background_tasks: BackgroundTasks):
         if 'recommendations' in response_data and response_data['recommendations']:
             session.track_recommendations(len(response_data['recommendations']))
 
-        # Add session and conversation state info to the repsonse 
+        logger.info(f"processing users response dasta")
+        # Add session and conversation state info to the repsonse
         repsonse_data["session_id"] = session.session_id
         response_data["conversation_state"] = chatbot.conversation_state 
 
@@ -203,6 +210,7 @@ async def chat(request: ChatRequest, background_tasks: BackgroundTasks):
         return response_data
 
     except Exception as e:
+        logger.error(f"error in processing chat message and returning the results Error: {e}")
         raise HTTPException(status_code=500, detail=f"Eror processing message: {str(e)}")
 
 
@@ -215,6 +223,7 @@ async def reset_conversation(request: ResetRequest):
     if session_id and session_id in active_sessions:
         try: 
             # Reset existing session
+            logger.info(f"attempting to reset existing session:{session_id}")
             session = active_sessions[session_id]
             session.chatbot.reset_conversation()
             session.update_activity()
@@ -225,11 +234,13 @@ async def reset_conversation(request: ResetRequest):
                 "session_id": session_id
             }
         except Exception as e:
+            logger.error(f"could not reset the session Error: {e}")
             raise HTTPException(status_code=500, detail = f"Error resettign covnersaton: {str(e)}")
         
     else:
-        # Create a new session 
-        try: 
+        # Create a new session
+        try:
+            logger.info(f"creating a new session for user: {user_id}")
             new_session = get_or_create_session(user_id=user_id)
 
             return{
@@ -237,8 +248,10 @@ async def reset_conversation(request: ResetRequest):
                 "success": True,
                 "session_id": new_session.session_id
             }
+            logger.info(f"New session was created successfully session_id: {new_session.session_id}")
 
         except Exception as e:
+            logger.error(f"Error in making a new session for user: {user_id} Error: {e}")
             raise HTTPException(status_code=500, detail=f"Error creating new conversation: {str(e)}")
 
 @app.get("/api/debug/{session_id}", response_model = DebugInfoResponse)
@@ -247,6 +260,7 @@ async def get_debug_info(session_id: str):
     # Debuf endpoint to get the current state of a chatbot session
 
     if session_id not in active_sessions:
+        logger.warning(f"Session: {session_id} was not available")
         raise HTTPException(status_code=404, detail =f"Session {session_id} not found")
 
     session = active_sessions[session_id]
@@ -266,6 +280,7 @@ async def list_sessions(admin_key: Optional[str] = Header(None)):
     """Admin endpoint to list all active sessions"""
     # Simple admin key check - should be improved for production
     if not admin_key or admin_key != "admin-secret-key":
+        logger.warning(f"admin key was incorrect!! {admin_key}")
         raise HTTPException(status_code=403, detail="Not authorized")
     
     sessions_info = []
@@ -288,7 +303,7 @@ if __name__ == "__main__":
         # Run with auto-reload for development
         uvicorn.run("chatBotAPI:app", host="0.0.0.0", port=8000, reload=True)
     except ImportError:
-        print("ERROR: uvicorn package is not installed. Please install it with:")
-        print("pip install uvicorn fastapi")
-        print("or")
-        print("pip3 install uvicorn fastapi")
+        logger.error("ERROR: uvicorn package is not installed. Please install it with:")
+        logger.warning("pip install uvicorn fastapi")
+        logger.info("or")
+        logger.warning("pip3 install uvicorn fastapi")
