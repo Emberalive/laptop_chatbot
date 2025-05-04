@@ -59,13 +59,22 @@
 
 <div class="chat-container" id="chat-container" style="display: none;">
     <div class="chat-header">
-        <h1>Laptop Recommendation Assistant</h1>
-        <p>Ask me about laptop recommendations based on your needs!</p>
+        <div class="header-left">
+            <h1>Laptop Recommendation Assistant</h1>
+            <p>Ask me about laptop recommendations based on your needs!</p>
+        </div>
+        <button id="restart-chat-btn" class="restart-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+                <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+            </svg>
+            Restart
+        </button>
     </div>
     <div class="chat-messages" id="chat-messages">
         <div class="message bot">
             <div class="message-content">
-                Hello! I'm your laptop recommendation assistant. Tell me what you're looking for in a laptop, your budget, or any specific requirements you have.
+                Hello! I'm your laptop recommendation assistant. Tell me what type of laptop you're looking for and I'll find the best options for you.
             </div>
         </div>
     </div>
