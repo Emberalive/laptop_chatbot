@@ -110,11 +110,14 @@ class SessionInfo:
 
     def update_activity(self):
         self.last_activty = datetime.now()
+        logger.info(f"updating activity to: {self.last_activty}")
 
     def track_recommendations(self, count: int):
         self.total_recommendations += count
+        logger.info(f"adding a new total recommendations count: {self.total_recommendations} ")
 
     def get_age_minutes(self) -> float:
+        logger.info(f"Age of session: {(datetime.now() - self.created_at).total_seconds() /60} minutes")
         return(datetime.now() - self.created_at).total_seconds() /60
 
 
@@ -124,15 +127,17 @@ active_sessions = {}
 
 # API startup time for uptime calculations
 start_time = datetime.now()
+logger.info(f"start time of the api - session: {start_time}")
 
 # Set laptop limit for performance 
 
 LAPTOP_LIMIT = 10000 # Despite the amount of laptops being 2k they are 
-SESSION_TIMEOUT_MINUTES = 20 # Timeout for inactive sessions 
+SESSION_TIMEOUT_MINUTES = 20 # Timeout for inactive sessions
 
 # Helper fucntions
 def generate_session_id() -> str:
     # Generate a unique session ID
+    logger.info(f"initialising session id: {str(uuid.uuid4)}")
     return str(uuid.uuid4())
 
 def get_or_create_session(session_id: Optional[str]=None, user_id: Optional[str]=None)-> SessionInfo:
@@ -141,16 +146,18 @@ def get_or_create_session(session_id: Optional[str]=None, user_id: Optional[str]
     if session_id and session_id in active_sessions:
         session = active_sessions[session_id]
         session.update_activity()
+        logger.info(f"Grabbing the active session: {session_id}, for user: {user_id}")
         return session
 
-
+    logger.warning(f"no session found for user: {user_id}")
     # Create new session 
     new_session_id = session_id or generate_session_id()
     active_sessions[new_session_id] = SessionInfo(new_session_id, user_id)
+    logger.info(f"")
     return active_sessions[new_session_id]
 
 def cleanup_inactive_sessions():
-    # Remvoe session that have been inactvie for too long
+    # Remove session that have been inactive for too long
     current_time = datetime.now()   
     sessions_to_remove=[]
 
