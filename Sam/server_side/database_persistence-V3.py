@@ -36,7 +36,7 @@ logger_server = logger.bind(user="server")
 try:
     #try with the server path
     logger_server.info("Opening the JSON data")
-    with open('/home/samuel/laptop_chat_bot/server_side/scrapers/scraped_data/latest.json', 'r') as json_file:
+    with open('/home/samuel/laptop_chatbot/server_side/scrapers/scraped_data/latest.json', 'r') as json_file:
         laptops_data = json.load(json_file)
 except Exception as server_path_error:
     logger_server.error(f"Server path didn't work, trying desktop path: ERROR: {server_path_error}")
