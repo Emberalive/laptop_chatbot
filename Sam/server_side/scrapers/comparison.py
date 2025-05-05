@@ -17,9 +17,12 @@ try:
 
     diff = DeepDiff(data1, data2, verbose_level=2)
 
-    logger.info("comparison completed")
+    if diff:
+        logger.info("Differences found:")
+        logger.info(pprint.pformat(diff))
+    else:
+        logger.info("No differences found between the two files.")
 
     pprint.pprint(diff)
 except Exception as e:
     logger.error(f"error in attempting to compare the old and new json data {e}")
-pprint.pprint(diff)
