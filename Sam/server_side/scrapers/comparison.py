@@ -2,8 +2,8 @@ from deepdiff import DeepDiff
 import json
 import pprint
 
-with open('scraped_data/latest.json') as f1, \
-     open('scraped_data/old_data/scrape_2025-05-05.json') as f2:
+with open('/home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/latest.json') as f1, \
+     open('/home/samuel/laptop_chatbot/Same/server_side/scrapers/scraped_data/old_data/scrape_2025-05-05.json') as f2:
     data1 = json.load(f1)
     data2 = json.load(f2)
 
