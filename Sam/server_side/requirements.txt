@@ -4,3 +4,4 @@ psycopg2-binary
 bs4
 requests
 loguru
+dotenv

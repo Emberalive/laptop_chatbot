@@ -1,20 +1,24 @@
+import os
+
 import psycopg2
 from psycopg2 import pool
+from dotenv import load_dotenv
 
 connection_pool = None
 
 
 def init_db_pool():
     global connection_pool
+    load_dotenv()
     try:
         print("Creating PostgreSQL connection pool...")
         connection_pool = pool.SimpleConnectionPool(
             minconn = 1,
             maxconn = 400,
-            database = "laptopchatbot_new",
-            user= "samuel",
-            host = "86.19.219.159",
-            password = "QwErTy1243!",
+            database = os.getenv("DATABASE_NAME"),
+            user= os.getenv("USER"),
+            host = os.getenv("DB_HOST"),
+            password = os.getenv("PASSWORD"),
             port = 5432
         )
         print("Connection pool created successfully")

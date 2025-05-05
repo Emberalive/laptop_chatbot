@@ -34,12 +34,14 @@ logger_server = logger.bind(user="server")
 
 # Load the JSON data from the file
 try:
+    #try with the server path
     logger_server.info("Opening the JSON data")
     with open('/home/samuel/laptop_chat_bot/server_side/scrapers/scraped_data/scraped_data.json', 'r') as json_file:
         laptops_data = json.load(json_file)
 except Exception as server_path_error:
     logger_server.error(f"Server path didn't work, trying desktop path: ERROR: {server_path_error}")
     try:
+        #try with the desktop path
         with open(
                 '/home/sammy/Documents/2_brighton/sem2/groupProject-laptopChatBox/laptop_chatbot/Sam/server_side/scrapers/scraped_data/scraped_data.json',
                 'r') as json_file:
@@ -47,6 +49,7 @@ except Exception as server_path_error:
     except Exception as desktop_path_error:
         logger_server.error(f"Desktop path didn't work, trying laptop path: ERROR: {desktop_path_error}")
         try:
+            #try with the laptop path
             with open(
                     '/home/samuel/Documents/2_Brighton/sem2/GroupProject/laptop_chatbot/Sam/server_side/scrapers/scraped_data/scraped_data.json',
                     'r') as json_file:
@@ -67,7 +70,7 @@ for laptop_data in laptops_data:
     features_info = {}
     price_info = {}
 
-    # Process each table in the laptop data
+    # storing all the json objects in the dictionaries
     for table_data in laptop_tables:
         table_title = table_data.get('title', '')
         table_content = table_data.get('data', {})
@@ -81,6 +84,7 @@ for laptop_data in laptops_data:
         elif table_title == 'Specs':
             spec_info.update(table_content)
 
+            # grabbing all the gpu, and cpu data and putting them in their own list
             processor_name = table_content.get("Processor Name", "")
             processor_brand = table_content.get("Processor Brand", "")
             graphics_card = table_content.get("Graphics Card", "")
@@ -99,7 +103,9 @@ for laptop_data in laptops_data:
         elif table_title == 'Prices':
             price_info = table_content  # store the list directly
 
-    # Append extracted details to their respective lists
+    logger_server.info("Adding the dictionary items to their respective list objects\n")
+
+    # Append extracted details to their respective lists, so i can iterate through index
     product_details_list.append(product_info)
     screen_details_list.append(screen_info)
     port_details_list.append(port_info)
@@ -107,18 +113,18 @@ for laptop_data in laptops_data:
     feature_details_list.append(features_info)
     price_details_list.append(price_info)
 
-logger_server.info("Adding the dictionary items to their respective list objects\n")
-
+# getting all the laptop model's and putting them in a unique list
 unique_laptop_models = set()
 for product in product_details_list:
     brand = product.get('Brand', '').strip()
     name = product.get('Name', '').strip()
     if brand and name:
         unique_laptop_models.add((brand, name))
+#asigning the unique list to a list of tuples
 laptop_model_records = list(unique_laptop_models)
 
 
-
+# function to bulk insert the cpu records
 def insert_cpu_records(cpu_records: list[tuple], db_connection):
     cursor = db_connection.cursor()
     try:
@@ -139,7 +145,7 @@ def insert_cpu_records(cpu_records: list[tuple], db_connection):
     finally:
         cursor.close()
 
-
+# function to bulk insert the cpu records
 def insert_gpu_records(gpu_records: list[tuple], db_connection):
     cursor = db_connection.cursor()
     try:
@@ -160,8 +166,8 @@ def insert_gpu_records(gpu_records: list[tuple], db_connection):
     finally:
         cursor.close()
 
-
-def bulk_insert_laptop_model(model_records: list[tuple], db_connection):
+# function to insert all the laptop models and get their return value
+def insert_laptop_model(model_records: list[tuple], db_connection):
     cursor = db_connection.cursor()
     try:
         logger_server.info("\nInserting into laptop_model")
@@ -173,9 +179,7 @@ def bulk_insert_laptop_model(model_records: list[tuple], db_connection):
             "RETURNING model_id, model_name"
         )
         results = {}
-        counter = 0
         for record in model_records:
-
             cursor.execute(laptop_model_query, record)
             model_id, model_name = cursor.fetchone()
             results[model_name] = model_id
@@ -188,7 +192,7 @@ def bulk_insert_laptop_model(model_records: list[tuple], db_connection):
     finally:
         cursor.close()
 
-
+# function to insert all the laptop configurations, individually as i need a return value, which i cant get with execute many
 def insert_configuration(model_id, price, weight, battery_life, memory_installed, os, processor, gpu, db_connection):
     cursor = db_connection.cursor()
     try:
@@ -210,7 +214,7 @@ def insert_configuration(model_id, price, weight, battery_life, memory_installed
     finally:
         cursor.close()
 
-
+# function to bulk insert the storage records
 def bulk_insert_storage(storage_records: list[tuple], db_connection):
     cursor = db_connection.cursor()
     try:
@@ -226,7 +230,7 @@ def bulk_insert_storage(storage_records: list[tuple], db_connection):
     finally:
         cursor.close()
 
-
+# function to bulk insert the feature records
 def bulk_insert_features(features_records: list[tuple], db_connection):
     cursor = db_connection.cursor()
     try:
@@ -242,7 +246,7 @@ def bulk_insert_features(features_records: list[tuple], db_connection):
     finally:
         cursor.close()
 
-
+# function to bulk insert the ports records
 def bulk_insert_ports(ports_records: list[tuple], db_connection):
     cursor = db_connection.cursor()
     try:
@@ -258,7 +262,7 @@ def bulk_insert_ports(ports_records: list[tuple], db_connection):
     finally:
         cursor.close()
 
-
+# function to bulk insert the screen records
 def bulk_insert_screens(screens_records: list[tuple], db_connection):
     cursor = db_connection.cursor()
     try:
@@ -283,20 +287,21 @@ def bulk_insert_screens(screens_records: list[tuple], db_connection):
 # #make it so their is a dictionary that holds the laptop_model and its corresponding id, so that I
 # can insert them in bulk, and use the dictionary so that I can grab the id and insert it into the laptop configuration table
 
+# attempt to take a connection from the connection pool
 try:
     global_db_connection, global_db_cursor = get_db_connection()
 except Exception as db_connection_error:
     logger_server.error(f"Database connection error: {db_connection_error}")
 
-# Process unique CPU and GPU records
+# making the cpu, and gpu records unique
 unique_cpu_records = list(set(cpu_records_to_insert))
 unique_gpu_records = list(set(gpu_records_to_insert))
 
 insert_gpu_records(unique_gpu_records, global_db_connection)
 insert_cpu_records(unique_cpu_records, global_db_connection)
 
-#getting the laptop_model dictionary, doesn't need to be set as it is done through the bulk insert
-model_lookup = bulk_insert_laptop_model(laptop_model_records, global_db_connection)
+#getting the laptop_model dictionary, doesn't need to be set as it is done through the bulk insert, based on database restrictions
+model_lookup = insert_laptop_model(laptop_model_records, global_db_connection)
 
 
 # Lists to hold all prepared data for bulk insertion
@@ -307,6 +312,7 @@ screens = []
 
 # Process each laptop's data
 for laptop_index in range(len(product_details_list)):
+    # initialise data access point for each laptop's data
     current_product = product_details_list[laptop_index] if laptop_index < len(product_details_list) else {}
     current_screen = screen_details_list[laptop_index] if laptop_index < len(screen_details_list) else {}
     current_features = feature_details_list[laptop_index] if laptop_index < len(feature_details_list) else {}
@@ -368,21 +374,23 @@ for laptop_index in range(len(product_details_list)):
     screen_refresh_rate = screen_details_list[laptop_index].get("Refresh Rate", "Unknown")
     has_touchscreen = screen_details_list[laptop_index].get("Touchscreen", False)
 
+    # get the model_id based on the model_lookup returned by the model insert function
     model_name = current_product.get('Name', '').strip()
     model_id = model_lookup.get(model_name)
 
     if not model_id:
         continue  # Skip if model not found
 
+    # insert the configuration for the current laptop, and assign the return value to a variable
     config_id = insert_configuration(model_id, laptop_price, laptop_weight, laptop_battery, laptop_memory, laptop_os, cpu_model, gpu_model, global_db_connection)
 
-    # Prepare table bulk inserts
+    # Prepare table bulk inserts with the current laptops config_id initialized above
     storages.append((config_id, storage_type, storage_capacity))
     features.append((config_id, has_backlit_keyboard, has_numeric_keypad, has_bluetooth))
     ports.append((config_id, has_ethernet, has_hdmi, has_usb_c, has_thunderbolt, has_display_port))
     screens.append((config_id, screen_size, screen_resolution, has_touchscreen, screen_refresh_rate))
 
-    # Bulk insert all related data (can be parallelized)
+    # Bulk insert all related data parallelized
 try:
     with ThreadPoolExecutor(max_workers=11) as executor:
         futures = [
@@ -395,5 +403,6 @@ except Exception as worker_error:
     logger.error(f"Error with one of the workers ERROR:{worker_error}")
 global_db_connection.commit()
 
+# return the database connection to the pool
 release_db_connection(global_db_connection, global_db_connection)
 
