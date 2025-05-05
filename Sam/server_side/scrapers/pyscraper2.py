@@ -126,7 +126,7 @@ def read_urls(file_path):
         return [line.strip() for line in file if line.strip()]
 
 def save_scraped_data( directory="scraped_data/old_data"):
-    latest_file = "/home/sammy/Documents/2_brighton/sem2/groupProject-laptopChatBox/laptop_chatbot/Sam/server_side/scrapers/scraped_data/latest.json"
+    latest_file = "/home/samuel/laptop_chat_bot/server_side/scrapers/scraped_data/latest.json"
 
     if not os.path.exists(latest_file):
         logger.error(f"{latest_file} does not exist. can not archive scraped data")
