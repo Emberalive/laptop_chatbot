@@ -1,0 +1,1 @@
+2025-05-06 13:21:19.984 | INFO     | __main__:get_old_path:20 - looking for filename patterns with re.compile('scrape_(\\d{4}-\\d{2}-\\d{2})\\.json')
