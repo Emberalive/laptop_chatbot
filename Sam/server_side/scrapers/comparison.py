@@ -1,6 +1,4 @@
 import re
-from warnings import catch_warnings
-
 from deepdiff import DeepDiff
 import json
 import pprint
