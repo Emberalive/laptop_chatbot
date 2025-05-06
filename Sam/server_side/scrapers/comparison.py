@@ -62,54 +62,51 @@ def compare_new_and_old (old_path, new_path='/home/samuel/laptop_chatbot/Sam/ser
     except Exception as e:
         logger.error(f"error in attempting to compare the old and new json data {e}")
 
+def process_json_diff(diff_dict, action):
+    models = []
+    for laptop in diff_dict:
+        # get the root key for the data changed
+        if action == "added":
+            logger.info(f"There are new items to be {action} to the database")
+        else:
+            logger.ingo(f"There are items to be {action} removed from the database")
 
-def update_changes (json_diff_data):
-        models = []
-        try:
-            json_diff_added = json_diff_data.get('iterable_item_added')
-            json_diff_removed = json_diff_data.get('iterable_item_removed')
-        except Exception as e:
-            logger.warning(f"could not get the data for added or removed ERROR: {e}")
-
-        # Find the root key dynamically (e.g., "root[n]")
-        logger.info(f"These are the keys for the difference {json_diff_data.keys()}")
+        # getting the root key for the laptop
         root_key = next(
-            (key for key in json_diff_data.keys() if key.startswith("root[")),
-            None
+            (key for key in laptop.keys() if key.startswith("root[")), None
         )
+
         if not root_key:
             logger.warning(f"No root key found in json difference")
             return
+        else:
+            logger.info(f"found the root key: {root_key}")
 
-        if json_diff_added:
-            logger.info("There are new items to be inserted in the database")
-            root_data = json_diff_added.get(root_key, {})
-            tables = root_data.get('tables', [])
-            num_tables = len(tables)
+        root_data = laptop.get(root_key, {})
+        tables = root_data.get('tables', [])
+        num_tables = len(tables)
 
-            if tables and isinstance(tables, list) and num_tables > 0:
-                for table in tables:
-                    table_data = table.get('data', {})
-                    laptop_model = table_data.get('Name')
-                    models.append(laptop_model)
-                    logger.info(f"Laptop model(s) to add: {models}")
-            else:
-                logger.warning("No valid 'tables' data found in diff_added")
+        if tables and isinstance(tables, list) and num_tables > 0:
+            for table in tables:
+                table_data = table.get('data', {})
+                laptop_model = table_data.get('Name')
+                models.append(laptop_model)
+                logger.info(f"Laptop model(s) to add: {models}")
+        else:
+            logger.warning("No valid 'tables' data found in diff_added")
 
-        elif json_diff_removed:
-            logger.info("There are items to be removed from the dictionary")
+def update_changes (json_diff_data):
+        try:
+            json_diff_added = json_diff_data.get('iterable_item_added')
+            json_diff_removed = json_diff_data.get('iterable_item_removed')
 
-            root_data = json_diff_added.get(root_key, {})
-            tables = root_data.get('tables', [])
-            num_tables = len(tables)
+            if json_diff_added:
+                process_json_diff(json_diff_added, "added")
+            elif json_diff_removed:
+                process_json_diff(json_diff_removed, "removed")
 
-            if tables and isinstance(tables, list) and num_tables > 0:
-                for table in tables:
-                    table_data = table.get('data', {})
-                    laptop_model = table_data.get('Name')
-                    models.append(laptop_model)
-                    logger.info(f"Laptop model(s) to add: {models}")
-
+        except Exception as e:
+            logger.warning(f"could not get the data for added or removed ERROR: {e}")
 
 latest_json_archive = get_old_path()
 if latest_json_archive:
