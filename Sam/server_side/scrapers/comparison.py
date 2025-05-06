@@ -14,7 +14,7 @@ logger = logger.bind(user="comparer")
 
 def get_old_path(directory='/home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data'):
     # regex to extract data from filename
-    pattern = re.compile(r"scrape_(\d{4}-\d{2}-\d{2}(?:_\d{2}-\d{2}-\d{2})?)\.json")
+    pattern = re.compile(r"scrape_(\d{4}-\d{2}-\d{2})\.json")
     latest_file = None
     latest_time = None
 
@@ -24,8 +24,7 @@ def get_old_path(directory='/home/samuel/laptop_chatbot/Sam/server_side/scrapers
             timestamp_str = match.group(1)
             try:
                 # parse to datetime (handles both date-only and date_time formats)
-                if '_' in timestamp_str:
-                    dt = datetime.strptime(timestamp_str, "%Y-%m-%d")
+                dt = datetime(timestamp_str, "%Y-%m-%d")
 
                 if not latest_time or dt > latest_time:
                     latest_time = dt
