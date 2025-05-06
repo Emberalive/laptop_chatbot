@@ -40,8 +40,11 @@ def get_old_path(directory='/home/samuel/laptop_chatbot/Sam/server_side/scrapers
     else:
         return None
 
+
+# if the output says items have been removed, then the items are in the old file and not the new
+# if the output says items have been added then the items are not in the old file, but they are in the new file
 def compare_new_and_old (old_path, new_path='/home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/latest.json'):
-    logger.info(f"starting the comparison between the od and new json files")
+    logger.info(f"starting the comparison between the old: {old_path} and new: {new_path} json files")
     try:
         with open(new_path) as f1, \
              open(old_path) as f2:
