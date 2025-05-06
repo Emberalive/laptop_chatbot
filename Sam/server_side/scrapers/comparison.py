@@ -91,10 +91,16 @@ def process_json_diff(diff_dict, action):
 
         if tables and isinstance(tables, list) and num_tables > 0:
             for table in tables:
-                table_data = table.get('data', {})
-                laptop_model = table_data.get('Name')
-                if 'Name' in table_data:  # More explicit than table_data.get('Name')
-                    models.append(table_data['Name'])
+                if isinstance(table, dict):
+                    table_data = table.get('data', {})
+                    if 'Name' in table_data:  # More explicit than table_data.get('Name')
+                        models.append(table_data['Name'])
+                elif isinstance(tables, list):
+                    for item in table and 'Name' in table:
+                        models.append(item['Name'])
+                else:
+                    logger.debug(f"Unexpected table data type: {type(table_data)}")
+
         else:
             logger.warning("No valid 'tables' data found in diff_added")
     logger.info(f"Laptop model(s) to be {action}: {models}")
