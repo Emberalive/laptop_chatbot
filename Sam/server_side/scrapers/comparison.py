@@ -62,16 +62,23 @@ def compare_new_and_old (old_path, new_path='/home/samuel/laptop_chatbot/Sam/ser
     except Exception as e:
         logger.error(f"error in attempting to compare the old and new json data {e}")
 
-def update_changes (json_diff):
-            json_diff_added = json_diff.get('iterable_item_added')
+def update_changes (json_diff_data):
+        try:
+            json_diff_added = json_diff_data.get('iterable_item_added')
+            json_diff_removed = json_diff_data.get('iterable_item_removed')
+        except Exception as e:
+            logger.warning(f"could not get the data for added or removed ERROR: {e}")
 
-            if json_diff_added:
-                logger.info("There are new items to be inserted in the database")
 
-            else:
-                logger.info("There are items to be removed from the dictionary")
-                json_diff_removed = json_diff.get('iterable_item_removed')
-            print(json_diff_added)
+        if json_diff_added:
+            logger.info("There are new items to be inserted in the database")
+            laptop_model = json_diff_added.get('root[4799]').get('tables').get('Name')
+
+        elif json_diff_removed:
+            logger.info("There are items to be removed from the dictionary")
+
+
+        print(json_diff_added)
 
 
 latest_json_archive = get_old_path()
