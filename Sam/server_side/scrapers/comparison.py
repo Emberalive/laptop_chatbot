@@ -62,23 +62,52 @@ def compare_new_and_old (old_path, new_path='/home/samuel/laptop_chatbot/Sam/ser
     except Exception as e:
         logger.error(f"error in attempting to compare the old and new json data {e}")
 
+
 def update_changes (json_diff_data):
+        models = []
         try:
             json_diff_added = json_diff_data.get('iterable_item_added')
             json_diff_removed = json_diff_data.get('iterable_item_removed')
         except Exception as e:
             logger.warning(f"could not get the data for added or removed ERROR: {e}")
 
+        # Find the root key dynamically (e.g., "root[n]")
+        root_key = next(
+            (key for key in json_diff_data.keys() if key.startswith("root[")),
+            None
+        )
+        if not root_key:
+            logger.warning(f"No root key found in json difference")
+            return
 
         if json_diff_added:
             logger.info("There are new items to be inserted in the database")
-            laptop_model = json_diff_added.get('root[4799]').get('tables').get('Name')
+            root_data = json_diff_added.get(root_key, {})
+            tables = root_data.get('tables', [])
+            num_tables = len(tables)
+
+            if tables and isinstance(tables, list) and num_tables > 0:
+                for table in tables:
+                    table_data = table.get('data', {})
+                    laptop_model = table_data.get('Name')
+                    models.append(laptop_model)
+                    logger.info(f"Laptop model(s) to add: {models}")
+            else:
+                logger.warning("No valid 'tables' data found in diff_added")
 
         elif json_diff_removed:
             logger.info("There are items to be removed from the dictionary")
 
+            root_data = json_diff_added.get(root_key, {})
+            tables = root_data.get('tables', [])
+            num_tables = len(tables)
 
-        print(json_diff_added)
+            if tables and isinstance(tables, list) and num_tables > 0:
+                for table in tables:
+                    table_data = table.get('data', {})
+                    laptop_model = table_data.get('Name')
+                    models.append(laptop_model)
+                    logger.info(f"Laptop model(s) to add: {models}")
 
 
 latest_json_archive = get_old_path()
