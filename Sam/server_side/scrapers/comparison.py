@@ -62,10 +62,16 @@ def compare_new_and_old (old_path, new_path='/home/samuel/laptop_chatbot/Sam/ser
     except Exception as e:
         logger.error(f"error in attempting to compare the old and new json data {e}")
 
+def update_changes (json_diff):
+            laptop_tables = json_diff.get['tables']
+            print(laptop_tables)
+
+
 latest_json_archive = get_old_path()
 if latest_json_archive:
     logger.info(f"found old scrape {latest_json_archive}")
     try:
-        compare_new_and_old(latest_json_archive)
+        json_diff = compare_new_and_old(latest_json_archive)
     except UnboundLocalError as e:
         logger.error(f"could not find an old path for the json data ERROR: {e}")
+update_changes(json_diff)
