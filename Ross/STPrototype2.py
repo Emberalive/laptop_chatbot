@@ -12,6 +12,7 @@ import re
 from collections import defaultdict
 from loguru import logger
 
+logger.remove()
 logger.add(sys.stdout, format="{time} {level} {message}")
 # if you dont like the terminal printing of the logger, then remove the sys.stdout line
 logger.add("..Sam/server_side/logs/API.log", rotation="10 MB", retention="35 days", compression="zip")

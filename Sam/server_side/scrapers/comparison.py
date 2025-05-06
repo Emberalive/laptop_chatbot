@@ -9,6 +9,7 @@ import os
 from loguru import logger
 from datetime import datetime
 
+logger.remove()
 logger.add(sys.stdout, format="{time} {level} {message}")
 logger.add("../logs/comparison.log", rotation="10 MB", retention="35 days", compression="zip")
 logger = logger.bind(user="comparer")

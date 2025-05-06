@@ -28,6 +28,7 @@ cpu_records_to_insert = []
 gpu_records_to_insert = []
 
 # Initialize the logger
+logger.remove()
 logger.add(sys.stdout, format="{time} {level} {message}")
 logger.add("logs/server.log", rotation="60 MB", retention="35 days", compression="zip")
 logger_server = logger.bind(user="server")

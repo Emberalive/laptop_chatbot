@@ -13,7 +13,7 @@ import uuid
 import time
 from loguru import logger
 
-
+logger.remove()
 logger.add(sys.stdout, format="{time} {level} {message}")
 logger.add("../Sam/server_side/logs/server.log", rotation="60 MB", retention="35 days", compression="zip")
 logger = logger.bind(user="API")
