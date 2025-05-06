@@ -81,7 +81,7 @@ def process_json_diff(diff_dict, action):
 
         if not root_key:
             logger.warning(f"No root key found in json difference")
-            return
+            continue
         else:
             logger.info(f"found the root key: {root_key}")
 
@@ -93,10 +93,11 @@ def process_json_diff(diff_dict, action):
             for table in tables:
                 table_data = table.get('data', {})
                 laptop_model = table_data.get('Name')
-                models.append(laptop_model)
+                if 'Name' in table_data:  # More explicit than table_data.get('Name')
+                    models.append(table_data['Name'])
         else:
             logger.warning("No valid 'tables' data found in diff_added")
-    logger.info(f"Laptop model(s) to add: {models}")
+    logger.info(f"Laptop model(s) to be {action}: {models}")
 
 
 def update_changes (json_diff_data):
