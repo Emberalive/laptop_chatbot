@@ -96,17 +96,14 @@ def process_json_diff(diff_dict, action):
             logger.warning("No valid 'tables' data found in diff_added")
 
 def update_changes (json_diff_data):
-        try:
-            json_diff_added = json_diff_data.get('iterable_item_added')
-            json_diff_removed = json_diff_data.get('iterable_item_removed')
+        json_diff_added = json_diff_data.get('iterable_item_added')
+        json_diff_removed = json_diff_data.get('iterable_item_removed')
 
-            if json_diff_added:
-                process_json_diff(json_diff_added, "added")
-            elif json_diff_removed:
-                process_json_diff(json_diff_removed, "removed")
+        if json_diff_added:
+            process_json_diff(json_diff_added, "added")
+        elif json_diff_removed:
+            process_json_diff(json_diff_removed, "removed")
 
-        except Exception as e:
-            logger.warning(f"could not get the data for added or removed ERROR: {e}")
 
 latest_json_archive = get_old_path()
 if latest_json_archive:
