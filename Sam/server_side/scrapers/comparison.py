@@ -64,12 +64,15 @@ def compare_new_and_old (old_path, new_path='/home/samuel/laptop_chatbot/Sam/ser
 
 def process_json_diff(diff_dict, action):
     models = []
-    for laptop in diff_dict:
+
+    laptops = [diff_dict] if not isinstance(diff_dict, list) else diff_dict
+
+    for laptop in laptops:
         # get the root key for the data changed
         if action == "added":
             logger.info(f"There are new items to be {action} to the database")
         else:
-            logger.ingo(f"There are items to be {action} removed from the database")
+            logger.info(f"There are items to be {action} removed from the database")
 
         # getting the root key for the laptop
         root_key = next(
@@ -91,9 +94,10 @@ def process_json_diff(diff_dict, action):
                 table_data = table.get('data', {})
                 laptop_model = table_data.get('Name')
                 models.append(laptop_model)
-                logger.info(f"Laptop model(s) to add: {models}")
         else:
             logger.warning("No valid 'tables' data found in diff_added")
+    logger.info(f"Laptop model(s) to add: {models}")
+
 
 def update_changes (json_diff_data):
         json_diff_added = json_diff_data.get('iterable_item_added')
