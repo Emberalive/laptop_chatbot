@@ -72,6 +72,7 @@ def update_changes (json_diff_data):
             logger.warning(f"could not get the data for added or removed ERROR: {e}")
 
         # Find the root key dynamically (e.g., "root[n]")
+        logger.info(f"These are the keys for the difference {json_diff_data.keys()}")
         root_key = next(
             (key for key in json_diff_data.keys() if key.startswith("root[")),
             None
