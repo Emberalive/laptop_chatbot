@@ -26,7 +26,7 @@ def get_old_path(directory='/home/samuel/laptop_chatbot/Sam/server_side/scrapers
             timestamp_str = match.group(1)
             try:
                 # parse to datetime (handles both date-only and date_time formats)
-                dt = datetime(timestamp_str, "%Y-%m-%d")
+                dt = datetime.strptime(timestamp_str, "%Y-%m-%d")
 
                 if not latest_time or dt > latest_time:
                     latest_time = dt
@@ -34,7 +34,7 @@ def get_old_path(directory='/home/samuel/laptop_chatbot/Sam/server_side/scrapers
             except ValueError as e:
                 logger.error(f"ValueError: {e}")
     if latest_file:
-        logger.info(f"found latest file: {os.join(directory, latest_file)}")
+        logger.info(f"found latest file: {os.path.join(directory, latest_file)}")
         return os.path.join(directory, latest_file)
     else:
         return None
