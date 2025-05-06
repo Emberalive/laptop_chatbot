@@ -1,4 +1,5 @@
 import re
+from warnings import catch_warnings
 
 from deepdiff import DeepDiff
 import json
@@ -15,6 +16,7 @@ logger = logger.bind(user="comparer")
 def get_old_path(directory='/home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data'):
     # regex to extract data from filename
     pattern = re.compile(r"scrape_(\d{4}-\d{2}-\d{2})\.json")
+    logger.info(f"looking for filename patterns with {pattern}")
     latest_file = None
     latest_time = None
 
@@ -32,8 +34,9 @@ def get_old_path(directory='/home/samuel/laptop_chatbot/Sam/server_side/scrapers
             except ValueError as e:
                 logger.error(f"ValueError: {e}")
     if latest_file:
+        logger.info(f"found latest file: {os.join(directory, latest_file)}")
         return os.path.join(directory, latest_file)
-    else :
+    else:
         return None
 
 def compare_new_and_old (old_path, new_path='/home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/latest.json'):
@@ -58,5 +61,9 @@ def compare_new_and_old (old_path, new_path='/home/samuel/laptop_chatbot/Sam/ser
         logger.error(f"error in attempting to compare the old and new json data {e}")
 
 latest_json_archive = get_old_path()
-
-compare_new_and_old(latest_json_archive)
+if latest_json_archive:
+    logger.info(f"found old scrape {latest_json_archive}")
+    try:
+        compare_new_and_old(latest_json_archive)
+    except UnboundLocalError as e:
+        logger.error(f"could not find an old path for the json data ERROR: {e}")
