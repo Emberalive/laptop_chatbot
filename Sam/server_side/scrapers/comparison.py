@@ -63,8 +63,15 @@ def compare_new_and_old (old_path, new_path='/home/samuel/laptop_chatbot/Sam/ser
         logger.error(f"error in attempting to compare the old and new json data {e}")
 
 def update_changes (json_diff):
-            laptop_tables = json_diff.get['tables']
-            print(laptop_tables)
+            json_diff_added = json_diff.get('iterable_item_added')
+
+            if json_diff_added:
+                logger.info("There are new items to be inserted in the database")
+
+            else:
+                logger.info("There are items to be removed from the dictionary")
+                json_diff_removed = json_diff.get('iterable_item_removed')
+            print(json_diff_added)
 
 
 latest_json_archive = get_old_path()
