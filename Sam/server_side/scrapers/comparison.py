@@ -6,7 +6,7 @@ import sys
 import os
 from loguru import logger
 from datetime import datetime
-from DBAccess.dbAccess import get_db_connection, release_db_connection
+# from DBAccess.dbAccess import get_db_connection, release_db_connection
 
 
 logger.remove()
@@ -100,12 +100,12 @@ def process_json_diff(diff_dict, action):
                     o_s = table_data.get('Operating System', 'N/A')
                     battery_life = table_data.get('Battery Life', 'N/A')
 
-                model_id = get_model_id(laptop_model)
+                # model_id = get_model_id(laptop_model)
             # Only log after processing all tables
             if laptop_model != "N/A":
                 logger.info(f"Laptop details for {laptop_model}:\n"
                             f"--------------------------------------------------------------------------------\n"
-                            f"model_id = {model_id}"
+                            # f"model_id = {model_id}"
                             f"Weight: {weight}\n"
                             f"Processor: {cpu}\n"
                             f"Graphics card: {gpu}\n"
@@ -123,22 +123,22 @@ def process_json_diff(diff_dict, action):
 
     return models
 
-def get_model_id(laptop_name):
-    conn, cur = get_db_connection()
-    try:
-        stmnt = ("SELECT * FROM laptop_models WHERE model_id = %s")
-
-        cur.execute(stmnt, laptop_name)
-        row_count = cur.rowcount()
-        if row_count > 1:
-            logger.info(f"there is more than one laptop_model, error!!!!!!!")
-            return False
-        model_id = cur.fetchone[0]
-        return model_id
-    except Exception as e:
-        logger.erro(f"error getting the model_id for the laptop")
-    finally:
-        release_db_connection(conn, cur)
+# def get_model_id(laptop_name):
+#     conn, cur = get_db_connection()
+#     try:
+#         stmnt = ("SELECT * FROM laptop_models WHERE model_id = %s")
+#
+#         cur.execute(stmnt, laptop_name)
+#         row_count = cur.rowcount()
+#         if row_count > 1:
+#             logger.info(f"there is more than one laptop_model, error!!!!!!!")
+#             return False
+#         model_id = cur.fetchone[0]
+#         return model_id
+#     except Exception as e:
+#         logger.erro(f"error getting the model_id for the laptop")
+#     finally:
+#         release_db_connection(conn, cur)
 
 
 
