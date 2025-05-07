@@ -68,6 +68,14 @@ def compare_new_and_old (old_path, new_path='/home/samuel/laptop_chatbot/Sam/ser
 
 def process_json_diff(diff_dict, action):
     models = []
+
+    laptop_model_records = []
+    laptop_configuration_records = []
+    feature_records = []
+    ports_records = []
+    storage_records = []
+    screen_records = []
+
     logger.info(f"Processing {action} items")
 
     # Handle case where we get the inner dict directly
@@ -121,9 +129,15 @@ def process_json_diff(diff_dict, action):
                     hdmi = table_data.get('HDMI', False)
                     usb_type_c = table_data.get('USB Type-C', False)
 
+
+
             model_id = get_model_id(laptop_model)
+
+            if not model_id:
+                # insert_laptop_model()
+
             # Only log after processing all tables
-            if laptop_model != "N/A":
+            if laptop_model:
                 logger.info(f"Laptop details for {laptop_model}:\n"
                             f"--------------------------------------------------------------------------------\n"
                             f"model_id = {model_id}\n"
@@ -157,14 +171,13 @@ def get_model_id(laptop_name):
             return False
         elif row_count == 0:
             logger.info(f"Need to insert the laptop model")
-            # call the insert model from database persistence
             return False
         model_id = cur.fetchone()[0]
         return model_id
     except Exception as e:
         logger.error(f"error getting the model_id for the laptop ERROR {e}")
 
-        return None
+        return False
     finally:
         release_db_connection(conn, cur)
 
