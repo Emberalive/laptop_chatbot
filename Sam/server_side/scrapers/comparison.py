@@ -49,7 +49,7 @@ def compare_new_and_old (old_path, new_path='/home/samuel/laptop_chatbot/Sam/ser
             data1 = json.load(f1)
             data2 = json.load(f2)
 
-        diff = DeepDiff(data1, data2, verbose_level=2, view='tree')
+        diff = DeepDiff(data1, data2, verbose_level=2)
 
         if diff:
             logger.info("Differences found:")
@@ -67,26 +67,26 @@ def process_json_diff(diff_dict, action):
 
     laptops = [diff_dict] if not isinstance(diff_dict, list) else diff_dict
 
-    if action == "added":
-        logger.info(f"There are new items to be {action} to the database")
-    else:
-        logger.info(f"There are items to be {action} removed from the database")
+    for laptop in laptops:
+        if action == "added":
+            logger.info(f"There are new items to be {action} to the database")
+        else:
+            logger.info(f"There are items to be {action} removed from the database")
 
-    # get the root key for the data changed
-    root_key = next(
-        (key for key in laptops.keys() if key.startswith("root[")), None
-    )
+        # get the root key for the data changed
+        root_key = next(
+            (key for key in laptop.keys() if key.startswith("root[")), None
+        )
 
-    if not root_key:
-        logger.warning(f"No root key found in json difference")
-    else:
-        logger.info(f"found the root key: {root_key}")
+        if not root_key:
+            logger.warning(f"No root key found in json difference")
+            continue
+        else:
+            logger.info(f"found the root key: {root_key}")
 
-    root_data = laptops.get(root_key, {})
-
-    for laptop in root_data:
-        tables = laptop.get('tables', [])
-        num_tables = len(root_data)
+        root_data = laptop.get(root_key, {})
+        tables = root_data.get('tables', [])
+        num_tables = len(tables)
 
         if tables and isinstance(tables, list) and num_tables > 0:
             for table in tables:
