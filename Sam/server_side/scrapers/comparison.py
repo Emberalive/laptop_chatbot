@@ -136,7 +136,7 @@ def get_model_id(laptop_name):
         model_id = cur.fetchone[0]
         return model_id
     except Exception as e:
-        logger.erro(f"error getting the model_id for the laptop")
+        logger.error(f"error getting the model_id for the laptop")
     finally:
         release_db_connection(conn, cur)
 
