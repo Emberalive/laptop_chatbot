@@ -401,7 +401,7 @@ def main():
     # return the database connection to the pool
     release_db_connection(global_db_connection, global_db_connection)
 
-if __name__ == "main":
+if __name__ == "__main__":
     # Initialize the logger
     logger.remove()
     logger.add(sys.stdout, format="{time} {level} {message}")
