@@ -82,16 +82,32 @@ def process_json_diff(diff_dict, action):
 
         tables = laptop_data.get('tables', [])
 
+        laptop_data = []
         # We only need the Name from the first table's data
         if tables and isinstance(tables, list) and len(tables) > 0:
-            first_table = tables[0]
-            if isinstance(first_table.get('data', {}), dict):
-                name = first_table['data'].get('Name')
-                if name:
-                    models.append(name)
-                    logger.debug(f"Found laptop model: {name}")
-            else:
-                logger.warning(f"Unexpected data format in first table for {root_key}")
+            for table in tables:
+                table_title = table.get['title']
+                if table_title == "Product Details":
+                    laptop_model = table.get['Name']
+                    weight = table.get['Weight']
+                elif table_title == "Specs":
+                    cpu = table.get['Processor Name']
+                    gpu = table.get['Graphics Card']
+                    memory = table.get['Memory Installed']
+                elif table_title == "Features":
+                    o_s = table.get['Operating System']
+                    battery_life = table.get['Battery Life']
+                laptop_data.append((weight, cpu, gpu, memory, o_s, battery_life))
+                logger.info(f"got the details for laptop {laptop_model}:"
+                            f"\n"
+                            f"--------------------------------------------------------------------------------\n"
+                            f"Weight: {weight}"
+                            f"Processor: {cpu}"
+                            f"Graphics card: {gpu}"
+                            f"memory Installed: {memory}"
+                            f"Operating System: {o_s}"
+                            f"Battery Life: {battery_life}")
+                models.append(laptop_model)
         else:
             logger.warning(f"No valid tables found for {root_key}")
 
@@ -99,8 +115,6 @@ def process_json_diff(diff_dict, action):
         logger.info(f"Laptop model(s) to {action}: {models}")
     else:
         logger.warning(f"No laptop models found in {action} items")
-
-    logger.info(f"Laptop model(s) to be {action}: {models}")
 
     return models
 
