@@ -30,7 +30,7 @@ gpu_records_to_insert = []
 # Initialize the logger
 logger.remove()
 logger.add(sys.stdout, format="{time} {level} {message}")
-logger.add("logs/server.log", rotation="60 MB", retention="35 days", compression="zip")
+logger.add("../logs/server.log", rotation="60 MB", retention="35 days", compression="zip")
 logger_server = logger.bind(user="server")
 
 # Load the JSON data from the file
@@ -52,7 +52,7 @@ except Exception as server_path_error:
         try:
             #try with the laptop path
             with open(
-                    '/home/samuel/Documents/2_Brighton/sem2/GroupProject/laptop_chatbot/Sam/server_side/scrapers/scraped_data/latest.json',
+                    '/scrapers/scraped_data/latest.json',
                     'r') as json_file:
                 laptops_data = json.load(json_file)
         except Exception as laptop_path_error:
