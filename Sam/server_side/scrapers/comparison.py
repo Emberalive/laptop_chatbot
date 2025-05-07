@@ -6,7 +6,7 @@ import sys
 import os
 from loguru import logger
 from datetime import datetime
-from ..DBAccess.dbAccess import get_db_connection, release_db_connection
+from DBAccess.dbAccess import get_db_connection, release_db_connection
 
 
 logger.remove()
