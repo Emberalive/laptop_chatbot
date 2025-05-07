@@ -53,7 +53,7 @@ def compare_new_and_old (old_path, new_path='/home/samuel/laptop_chatbot/Sam/ser
 
         if diff:
             logger.info("Differences found:")
-            logger.info(pprint.pformat(diff))
+            logger.info(pprint.pprint(diff))
             return diff
         else:
             logger.info("No differences found between the two files.")
