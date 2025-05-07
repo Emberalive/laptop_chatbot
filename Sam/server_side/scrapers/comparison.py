@@ -49,7 +49,7 @@ def compare_new_and_old (old_path, new_path='/home/samuel/laptop_chatbot/Sam/ser
             data1 = json.load(f1)
             data2 = json.load(f2)
 
-        diff = DeepDiff(data1, data2, verbose_level=2)
+        diff = DeepDiff(data1, data2, verbose_level=2, view='tree')
 
         if diff:
             logger.info("Differences found:")
