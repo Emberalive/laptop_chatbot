@@ -134,6 +134,7 @@ def process_json_diff(diff_dict, action):
             model_id = get_model_id(laptop_model)
 
             if not model_id:
+                print("jazz")
                 # insert_laptop_model()
 
             # Only log after processing all tables
