@@ -1,7 +1,7 @@
 import json
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from dbAccess import get_db_connection, release_db_connection, init_db_pool
+from DBAccess.dbAccess import get_db_connection, release_db_connection, init_db_pool
 from loguru import logger
 
 #this version takes a whopping 14:49:77
@@ -252,8 +252,6 @@ def main():
                 features_info.update(table_content)
             elif table_title == 'Prices':
                 price_info = table_content  # store the list directly
-
-        logger_server.info("Adding the dictionary items to their respective list objects\n")
 
         # Append extracted details to their respective lists, so i can iterate through index
         product_details_list.append(product_info)
