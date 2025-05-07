@@ -104,8 +104,9 @@ def process_json_diff(diff_dict, action):
 
         else:
             logger.warning("No valid 'tables' data found in diff_added")
-    logger.info(f"Laptop model(s) to be {action}: {models}")
+    logger.info(f"found {laptop_counter} laptops")
 
+    logger.info(f"Laptop model(s) to be {action}: {models}")
 
 def update_changes (json_diff_data):
         json_diff_added = json_diff_data.get('iterable_item_added')
