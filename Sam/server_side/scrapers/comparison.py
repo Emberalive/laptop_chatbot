@@ -62,51 +62,47 @@ def compare_new_and_old (old_path, new_path='/home/samuel/laptop_chatbot/Sam/ser
     except Exception as e:
         logger.error(f"error in attempting to compare the old and new json data {e}")
 
-def process_json_diff(diff_dict, action):
 
+def process_json_diff(diff_dict, action):
     models = []
 
-    laptops = [diff_dict] if not isinstance(diff_dict, list) else diff_dict
-    laptop_counter = 0
-    for laptop in laptops:
-        laptop_counter +1
-        if action == "added":
-            logger.info(f"There are new items to be {action} to the database")
+    # Log the action type once at start
+    logger.info(f"Processing {action} items")
+
+    # Handle case where we get the inner dict directly
+    if not any(key.startswith("root[") for key in diff_dict.keys()):
+        diff_dict = {'root[0]': diff_dict}  # Wrap in a root key if needed
+
+    # Process each laptop (each root[ID] entry)
+    for root_key, laptop_data in diff_dict.items():
+        if not root_key.startswith("root["):
+            continue  # Skip non-laptop entries
+
+        logger.debug(f"Processing laptop: {root_key}")
+
+        tables = laptop_data.get('tables', [])
+
+        # We only need the Name from the first table's data
+        if tables and isinstance(tables, list) and len(tables) > 0:
+            first_table = tables[0]
+            if isinstance(first_table.get('data', {}), dict):
+                name = first_table['data'].get('Name')
+                if name:
+                    models.append(name)
+                    logger.debug(f"Found laptop model: {name}")
+            else:
+                logger.warning(f"Unexpected data format in first table for {root_key}")
         else:
-            logger.info(f"There are items to be {action} removed from the database")
+            logger.warning(f"No valid tables found for {root_key}")
 
-        # get the root key for the data changed
-        root_key = next(
-            (key for key in laptop.keys() if key.startswith("root[")), None
-        )
-
-        if not root_key:
-            logger.warning(f"No root key found in json difference")
-            continue
-        else:
-            logger.info(f"found the root key: {root_key}")
-
-        root_data = laptop.get(root_key, {})
-        tables = root_data.get('tables', [])
-        num_tables = len(tables)
-
-        if tables and isinstance(tables, list) and num_tables > 0:
-            for table in tables:
-                if isinstance(table, dict):
-                    table_data = table.get('data', {})
-                    if 'Name' in table_data:  # More explicit than table_data.get('Name')
-                        models.append(table_data['Name'])
-                elif isinstance(tables, list):
-                    for item in table and 'Name' in table:
-                        models.append(item['Name'])
-                else:
-                    logger.debug(f"Unexpected table data type: {type(table_data)}")
-
-        else:
-            logger.warning("No valid 'tables' data found in diff_added")
-    logger.info(f"found {laptop_counter} laptops")
+    if models:
+        logger.info(f"Laptop model(s) to {action}: {models}")
+    else:
+        logger.warning(f"No laptop models found in {action} items")
 
     logger.info(f"Laptop model(s) to be {action}: {models}")
+
+    return models
 
 def update_changes (json_diff_data):
         json_diff_added = json_diff_data.get('iterable_item_added')
