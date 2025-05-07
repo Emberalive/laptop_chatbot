@@ -81,7 +81,7 @@ pip install -r requirments.txt
 3. **Run the script:**
 
 ```bash
-python database_persistence-V3.py
+python database_persistence_V3.py
 ```
 
 The script will:
