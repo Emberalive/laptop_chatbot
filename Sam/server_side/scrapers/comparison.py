@@ -100,7 +100,7 @@ def process_json_diff(diff_dict, action):
                     o_s = table_data.get('Operating System', 'N/A')
                     battery_life = table_data.get('Battery Life', 'N/A')
 
-                model_id = get_model_id(laptop_model)
+            model_id = get_model_id(laptop_model)
             # Only log after processing all tables
             if laptop_model != "N/A":
                 logger.info(f"Laptop details for {laptop_model}:\n"
@@ -138,6 +138,8 @@ def get_model_id(laptop_name):
         return model_id
     except Exception as e:
         logger.error(f"error getting the model_id for the laptop ERROR {e}")
+
+        return None
     finally:
         release_db_connection(conn, cur)
 
