@@ -125,10 +125,11 @@ def process_json_diff(diff_dict, action):
 
 def get_model_id(laptop_name):
     conn, cur = get_db_connection()
+    model = (laptop_name, )
     try:
         stmnt = ("SELECT * FROM laptop_models WHERE model_name = %s")
 
-        cur.execute(stmnt, laptop_name)
+        cur.execute(stmnt, model)
         row_count = cur.rowcount
         if row_count > 1:
             logger.info(f"there is more than one laptop_model, error!!!!!!!")
