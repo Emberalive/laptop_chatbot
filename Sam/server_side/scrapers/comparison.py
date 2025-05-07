@@ -105,7 +105,7 @@ def process_json_diff(diff_dict, action):
             if laptop_model != "N/A":
                 logger.info(f"Laptop details for {laptop_model}:\n"
                             f"--------------------------------------------------------------------------------\n"
-                            f"model_id = {model_id}"
+                            f"model_id = {model_id}\n"
                             f"Weight: {weight}\n"
                             f"Processor: {cpu}\n"
                             f"Graphics card: {gpu}\n"
