@@ -1,7 +1,7 @@
 import json
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from DBAccess.dbAccess import get_db_connection, release_db_connection, init_db_pool
+from dbAccess import get_db_connection, release_db_connection, init_db_pool
 from loguru import logger
 
 #this version takes a whopping 14:49:77
