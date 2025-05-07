@@ -6,7 +6,7 @@ import sys
 import os
 from loguru import logger
 from datetime import datetime
-from DBAccess.dbAccess import get_db_connection, release_db_connection
+from DBAccess.dbAccess import get_db_connection, release_db_connection, init_db_pool
 
 
 logger.remove()
@@ -151,12 +151,18 @@ def update_changes (json_diff_data):
         elif json_diff_removed:
             process_json_diff(json_diff_removed, "removed")
 
+def main():
 
-latest_json_archive = get_old_path()
-if latest_json_archive:
-    logger.info(f"found old scrape {latest_json_archive}")
-    try:
-        json_diff = compare_new_and_old(latest_json_archive)
-    except UnboundLocalError as e:
-        logger.error(f"could not find an old path for the json data ERROR: {e}")
-update_changes(json_diff)
+    latest_json_archive = get_old_path()
+    if latest_json_archive:
+        logger.info(f"found old scrape {latest_json_archive}")
+        try:
+            json_diff = compare_new_and_old(latest_json_archive)
+        except UnboundLocalError as e:
+            logger.error(f"could not find an old path for the json data ERROR: {e}")
+    update_changes(json_diff)
+
+if __name__ == "__main__":
+    init_db_pool()  # Initialize the pool first
+    # Now you can safely use get_db_connection()
+    conn, cur = get_db_connection()

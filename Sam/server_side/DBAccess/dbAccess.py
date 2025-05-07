@@ -39,6 +39,7 @@ def get_db_connection():
         return conn, cur
     except Exception as e:
         logger.error(f"Failed to get connection {e}")
+        return None, None
 
 def release_db_connection(conn, cur):
     try :
