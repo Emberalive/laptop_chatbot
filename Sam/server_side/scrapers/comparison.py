@@ -65,8 +65,6 @@ def compare_new_and_old (old_path, new_path='/home/samuel/laptop_chatbot/Sam/ser
 
 def process_json_diff(diff_dict, action):
     models = []
-
-    # Log the action type once at start
     logger.info(f"Processing {action} items")
 
     # Handle case where we get the inner dict directly
@@ -76,37 +74,40 @@ def process_json_diff(diff_dict, action):
     # Process each laptop (each root[ID] entry)
     for root_key, laptop_data in diff_dict.items():
         if not root_key.startswith("root["):
-            continue  # Skip non-laptop entries
+            continue
 
         logger.debug(f"Processing laptop: {root_key}")
-
         tables = laptop_data.get('tables', [])
 
-        laptop_data = []
-        # We only need the Name from the first table's data
-        if tables and isinstance(tables, list) and len(tables) > 0:
+        # Initialize variables
+        laptop_model = weight = cpu = gpu = memory = o_s = battery_life = "N/A"
+
+        if tables and isinstance(tables, list):
             for table in tables:
-                table_title = table.get['title']
+                table_data = table.get('data', {})  # Get the data dictionary
+                table_title = table.get('title', '')  # Fixed: use () not []
+
                 if table_title == "Product Details":
-                    laptop_model = table.get['Name']
-                    weight = table.get['Weight']
+                    laptop_model = table_data.get('Name', 'N/A')
+                    weight = table_data.get('Weight', 'N/A')
                 elif table_title == "Specs":
-                    cpu = table.get['Processor Name']
-                    gpu = table.get['Graphics Card']
-                    memory = table.get['Memory Installed']
+                    cpu = table_data.get('Processor Name', 'N/A')
+                    gpu = table_data.get('Graphics Card', 'N/A')
+                    memory = table_data.get('Memory Installed', 'N/A')
                 elif table_title == "Features":
-                    o_s = table.get['Operating System']
-                    battery_life = table.get['Battery Life']
-                laptop_data.append((weight, cpu, gpu, memory, o_s, battery_life))
-                logger.info(f"got the details for laptop {laptop_model}:"
-                            f"\n"
+                    o_s = table_data.get('Operating System', 'N/A')
+                    battery_life = table_data.get('Battery Life', 'N/A')
+
+            # Only log after processing all tables
+            if laptop_model != "N/A":
+                logger.info(f"Laptop details for {laptop_model}:\n"
                             f"--------------------------------------------------------------------------------\n"
-                            f"Weight: {weight}"
-                            f"Processor: {cpu}"
-                            f"Graphics card: {gpu}"
-                            f"memory Installed: {memory}"
-                            f"Operating System: {o_s}"
-                            f"Battery Life: {battery_life}")
+                            f"Weight: {weight}\n"
+                            f"Processor: {cpu}\n"
+                            f"Graphics card: {gpu}\n"
+                            f"Memory: {memory}\n"
+                            f"OS: {o_s}\n"
+                            f"Battery: {battery_life}\n")
                 models.append(laptop_model)
         else:
             logger.warning(f"No valid tables found for {root_key}")
