@@ -63,11 +63,13 @@ def compare_new_and_old (old_path, new_path='/home/samuel/laptop_chatbot/Sam/ser
         logger.error(f"error in attempting to compare the old and new json data {e}")
 
 def process_json_diff(diff_dict, action):
+
     models = []
 
     laptops = [diff_dict] if not isinstance(diff_dict, list) else diff_dict
-
+    laptop_counter = 0
     for laptop in laptops:
+        laptop_counter +1
         if action == "added":
             logger.info(f"There are new items to be {action} to the database")
         else:
