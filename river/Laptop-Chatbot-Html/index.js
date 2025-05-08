@@ -140,6 +140,11 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="comparison-container">
                 <div class="laptop-column">
                     <h3>${laptopSpecs[0].laptop.brand} ${laptopSpecs[0].laptop.name}</h3>
+                    <div class="laptop-image">
+                    ${laptopSpecs[0].laptop.image ?
+                `<img src="${laptopSpecs[0].laptop.image}" alt="${laptopSpecs[0].laptop.brand} ${laptopSpecs[0].laptop.name}">` :
+                `<div class="placeholder-image">${laptopSpecs[0].laptop.brand.charAt(0)}${laptopSpecs[0].laptop.name.charAt(0)}</div>`}
+                       </div>
                     <div class="laptop-spec">
                         <div class="laptop-spec-label">CPU</div>
                         <div class="laptop-spec-value">${laptopSpecs[0].cpu}</div>
@@ -174,6 +179,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 <div class="laptop-column">
                     <h3>${laptopSpecs[1].laptop.brand} ${laptopSpecs[1].laptop.name}</h3>
+                    <div class="laptop-image">
+                     ${laptopSpecs[1].laptop.image ?
+                     `<img src="${laptopSpecs[1].laptop.image}" alt="${laptopSpecs[1].laptop.brand} ${laptopSpecs[1].laptop.name}">` :
+                     `<div class="placeholder-image">${laptopSpecs[1].laptop.brand.charAt(0)}${laptopSpecs[1].laptop.name.charAt(0)}</div>`}
+                 </div>
                     <div class="laptop-spec">
                         <div class="laptop-spec-label">CPU</div>
                         <div class="laptop-spec-value">${laptopSpecs[1].cpu}</div>
@@ -210,6 +220,11 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             // Single laptop view - keep as is
             contentHTML = `
+                <div class="laptop-image-container">
+                 ${laptop.image ?
+                `<img src="${laptop.image}" alt="${laptop.brand} ${laptop.name}" class="laptop-image">` :
+                `<div class="placeholder-image">${laptop.brand.charAt(0)}${laptop.name.charAt(0)}</div>`}
+                  </div>
             <div class="laptop-spec">
                 <div class="laptop-spec-label">Model</div>
                 <div class="laptop-spec-value">${laptop.brand} ${laptop.name}</div>
@@ -309,23 +324,35 @@ document.addEventListener('DOMContentLoaded', () => {
         // Fill the selection list with available laptops
         const selectionList = selectionOverlay.querySelector('.comparison-selection-list');
 
-        // Use cached recommendations or get them from the page
-        let availableLaptops = recommendationsCache;
-        if (availableLaptops.length === 0) {
-            const recItems = document.querySelectorAll('.recommendation-item');
-            recItems.forEach(item => {
-                const laptopId = item.dataset.laptopId;
-                const recsContainer = item.closest('.recommendations');
-                if (recsContainer && recsContainer.dataset.recommendationsData) {
-                    const allLaptops = JSON.parse(recsContainer.dataset.recommendationsData);
-                    if (allLaptops[laptopId]) {
-                        availableLaptops.push(allLaptops[laptopId]);
-                    }
-                }
-            });
-        }
+        // Collect all laptops from the page AND cache
+        let availableLaptops = [...recommendationsCache]; // Start with cached recommendations
 
-        // Filter out the currently selected laptop
+        // Get all recommendation sections from chat history
+        const recsContainers = document.querySelectorAll('.recommendations');
+        recsContainers.forEach(container => {
+            if (container.dataset.recommendationsData) {
+                const laptopsFromSection = JSON.parse(container.dataset.recommendationsData);
+                // Add these laptops to our collection
+                if (Array.isArray(laptopsFromSection)) {
+                    availableLaptops = [...availableLaptops, ...laptopsFromSection];
+                } else {
+                    // Handle case where it's an object with indices
+                    Object.values(laptopsFromSection).forEach(laptop => {
+                        availableLaptops.push(laptop);
+                    });
+                }
+            }
+        });
+
+        // Remove duplicates by creating a map using brand+name as key
+        const uniqueLaptops = {};
+        availableLaptops.forEach(laptop => {
+            const key = `${laptop.brand}-${laptop.name}`;
+            uniqueLaptops[key] = laptop;
+        });
+        availableLaptops = Object.values(uniqueLaptops);
+
+        // Filter out the currently selected laptop(s)
         availableLaptops = availableLaptops.filter(laptop =>
             !comparisonLaptops.some(selected =>
                 selected.brand === laptop.brand && selected.name === laptop.name));
@@ -399,6 +426,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 chatMessages.appendChild(botMessageDiv);
 
                 if (data.recommendations && data.recommendations.length > 0) {
+                    recommendationsCache = data.recommendations;
                     const recsDiv = document.createElement('div');
                     recsDiv.className = 'recommendations';
                     recsDiv.dataset.recommendationsData = JSON.stringify(data.recommendations);
