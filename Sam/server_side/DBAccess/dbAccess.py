@@ -1,33 +1,45 @@
+import os
+
 import psycopg2
 from psycopg2 import pool
+import sys
+from dotenv import load_dotenv
+from loguru import logger
+
+logger.add(sys.stdout, format="{time} {level} {message}")
+logger.add("../logs/database.log", rotation="2 MB", retention="20 days", compression="zip")
+logger = logger.bind(user="database")
 
 connection_pool = None
 
 
 def init_db_pool():
     global connection_pool
+    load_dotenv()
     try:
-        print("Creating PostgreSQL connection pool...")
+        logger.info("Creating PostgreSQL connection pool...")
         connection_pool = pool.SimpleConnectionPool(
             minconn = 1,
             maxconn = 400,
-            database = "laptopchatbot_new",
-            user= "samuel",
-            host = "86.19.219.159",
-            password = "QwErTy1243!",
+            database = os.getenv("DATABASE_NAME"),
+            user= os.getenv("USER"),
+            host = os.getenv("DB_HOST"),
+            password = os.getenv("PASSWORD"),
             port = 5432
         )
-        print("Connection pool created successfully")
+        logger.info("Connection pool created successfully")
     except Exception as e:
-        print(f"Failed to create the connection pool {e}")
+        logger.error(f"Failed to create the connection pool {e}")
 
 def get_db_connection():
     try:
+        logger.info(f"grabbing a connection from the pool")
         conn = connection_pool.getconn()
         cur = conn.cursor()
         return conn, cur
     except Exception as e:
-        print(f"Failed to get connection {e}")
+        logger.error(f"Failed to get connection {e}")
+        return None, None
 
 def release_db_connection(conn, cur):
     try :
@@ -35,9 +47,9 @@ def release_db_connection(conn, cur):
             cur.close()
         if conn:
             connection_pool.putconn(conn)  # Return connection to pool
-        print("Connection has been returned to the pool")
+        logger.info("Connection has been returned to the pool")
     except Exception as e:
-        print(f"Error releasing connection: {e}")
+        logger.error(f"Error releasing connection: {e}")
 
 def db_access():
     try:
@@ -55,7 +67,3 @@ def db_access():
         return conn, cur
     except Exception as e:
         print("connection was not made. Error: {e}")
-
-init_db_pool()
-conn, cur = get_db_connection()
-release_db_connection(conn, cur)

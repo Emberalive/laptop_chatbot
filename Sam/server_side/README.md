@@ -81,7 +81,7 @@ pip install -r requirments.txt
 3. **Run the script:**
 
 ```bash
-python database_persistence-V3.py
+python database_persistence_V3.py
 ```
 
 The script will:
@@ -107,17 +107,37 @@ This script has been optimized over several versions:
 - Current runtime: ~3:45
 
 Speedups achieved via:
-- Thread pools
-- Cursor management
-- JSON path fallbacks
-- Reduced logging to stdout
 
----
+### Thread pools
+```
+I have added ThreadPoolExecutor for when i am bulk inserting, so that each table (ports, features, storage, screen) is inserted 
+at the same time, making the process faster
+```
+### Cursor management
+
+```
+Instead of initializing a new connection for each insert query as well as commiting and rolling back on each function I have
+created a global connectiona and cursor usig the database access script. I then passed through the global connection into each
+function and created a new cursor for the function (this is also because cursors are not thread safe)
+```
+### JSON path fallbacks
+```
+This isnt necessarily speed of execution, but it allows me to not have to worry aboout changing the path depending on the machine that 
+I am using to test or run the script, as there are at least 3 devices that I will be using to edit the script
+```
+
+### Reduced logging to stdout
+```
+I have  massivley reduced the output to system, by being able to bulk insert, as i dont need to (and cant) log every time i insert
+one set of values, this reduces time as there is no slight hanging to wait for the system output to occur
+```
+
 
 ## To-Do / Improvements
 
 - Add unit tests for individual insert functions
 - Include a config file for JSON paths
+- create a dotenv file for sensitive information
 - Dockerize the script with environment-based DB credentials
 
 ---

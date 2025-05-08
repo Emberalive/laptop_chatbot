@@ -15,11 +15,11 @@ prices = []
 
 # Load the JSON data from the file
 print("Opening the scraped data\n")
-with open('/home/samuel/laptop_chat_bot/server_side/scrapers/scraped_data/scraped_data.json', 'r') as file:
+with open('/home/samuel/laptop_chat_bot/server_side/scrapers/scraped_data/latest.json', 'r') as file:
     data = json.load(file)
 
 # desktop path
-# with open('/home/sammy/Documents/2_brighton/sem2/groupProject-laptopChatBox/laptop_chatbot/Sam/server_side/scrapers/scraped_data/scraped_data.json', 'r') as file:
+# with open('/home/sammy/Documents/2_brighton/sem2/groupProject-laptopChatBox/laptop_chatbot/Sam/server_side/scrapers/scraped_data/latest.json', 'r') as file:
 #     data = json.load(file)
 
 # Loop through each laptop in the JSON data

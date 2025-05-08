@@ -5,9 +5,11 @@ import os
 import sys
 from urllib.parse import urljoin
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime
 
 from loguru import logger
 
+logger.remove()
 logger.add(sys.stdout, format="{time} {level} {message}")
 logger.add("../logs/scraper_2.log", rotation="10 MB", retention="35 days", compression="zip")
 logger = logger.bind(user="scraper_2")
@@ -124,9 +126,35 @@ def read_urls(file_path):
     with open(file_path, 'r') as file:
         return [line.strip() for line in file if line.strip()]
 
+def save_scraped_data(directory="scraped_data/old_data"):
+    latest_file = "/home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/latest.json"
+
+    if not os.path.exists(latest_file):
+        logger.error(f"{latest_file} does not exist. can not archive scraped data")
+    try:
+        with open(latest_file, 'r', encoding='utf-8') as f:
+            old_data = json.load(f)
+
+        # create the directory if needed
+        os.makedirs(directory, exist_ok=True)
+
+
+        # create timestamped file path
+        timestamp = datetime.now().strftime("%Y-%m-%d")
+        file_name = f"scrape_{timestamp}.json"
+        filepath = os.path.join(directory, file_name)
+
+        # save archived data
+        with open(filepath, 'w', encoding='utf-8') as file:
+            json.dump(old_data, file, indent=2, ensure_ascii= False)
+
+        logger.info(f"Scrape saved to {filepath}")
+    except Exception as e:
+        logger.error(f"could not archive old data {e}")
+
 def main():
     input_file = os.path.join("scraped_data", "laptop_links.txt")
-    output_file = os.path.join("scraped_data", "scraped_data.json")
+    output_file = os.path.join("scraped_data", "latest.json")
 
     urls = read_urls(input_file)
     logger.info(f"Found {len(urls)} URLs to scrape")
@@ -158,9 +186,13 @@ def main():
             except Exception as e:
                 logger.error(f"Error with {url}: {e}")
 
+    # save the old scraped data to an old directory
+    save_scraped_data()
+
     # Save the combined data
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(existing_data + scraped_data, f, indent=4, ensure_ascii=False)
+
 
     logger.info(f"Scraping complete. Total laptops scraped: {len(scraped_data)}")
 
