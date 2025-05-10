@@ -60,8 +60,8 @@ def insert_laptop_model(model_records: list[tuple], db_connection):
     try:
         logger_server.info("\nInserting into laptop_model")
         laptop_model_query = (
-            "INSERT INTO laptop_models (brand, model_name) "
-            "VALUES(%s, %s) "
+            "INSERT INTO laptop_models (brand, model_name, image) "
+            "VALUES(%s, %s, %s) "
             "ON CONFLICT (model_name) "
             "DO UPDATE SET model_name = EXCLUDED.model_name "
             "RETURNING model_id, model_name"
@@ -266,8 +266,9 @@ def main():
     for product in product_details_list:
         brand = product.get('Brand', '').strip()
         name = product.get('Name', '').strip()
+        image = product.get('image')
         if brand and name:
-            unique_laptop_models.add((brand, name))
+            unique_laptop_models.add((brand, name, image))
     #asigning the unique list to a list of tuples
     laptop_model_records = list(unique_laptop_models)
     # #Notes
@@ -316,6 +317,9 @@ def main():
         laptop_weight = current_product.get('Weight', '')
         laptop_brand = current_product.get('Brand', '')
         laptop_battery = current_features.get('Battery Life', '')
+        laptop_image = current_product.get('image')
+        if not laptop_image:
+            laptop_image  = 'None'
 
         # Default price values
         laptop_price = "No Price available"
@@ -350,7 +354,6 @@ def main():
             logger_server.info(f"Skipping GPU insertion for laptop: {laptop_name}, No GPU found")
 
         gpu_components = gpu_info.split(" ")
-        gpu_brand = gpu_components[0] if gpu_components else "Unknown"
         gpu_model = " ".join(gpu_components[1:]) if len(gpu_components) > 1 else "Unknown"
 
         storage_info = current_specs.get("Storage", "").split()
