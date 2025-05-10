@@ -25,7 +25,7 @@ CREATE TABLE laptop_configurations (
     config_id SERIAL UNIQUE,
     model_id INTEGER NOT NULL REFERENCES laptop_models(model_id) ON DELETE CASCADE,
     price VARCHAR(25),
-    weight VARCHAR(10) ,
+    weight VARCHAR(20) ,
     battery_life VARCHAR(30),
     memory_installed VARCHAR(20) NOT NULL,
     operating_system VARCHAR(50),
