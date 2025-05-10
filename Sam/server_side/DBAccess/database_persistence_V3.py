@@ -315,11 +315,12 @@ def main():
 
         laptop_name = current_product.get('Name', '')
         laptop_weight = current_product.get('Weight', '')
+        if not laptop_weight:
+            laptop_weight = 'Not available'
         laptop_brand = current_product.get('Brand', '')
         laptop_battery = current_features.get('Battery Life', '')
-        laptop_image = current_product.get('image')
-        if not laptop_image:
-            laptop_image  = 'None'
+        if not laptop_battery:
+            laptop_battery = "Unknown"
 
         # Default price values
         laptop_price = "No Price available"
