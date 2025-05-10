@@ -60,7 +60,7 @@ def insert_laptop_model(model_records: list[tuple], db_connection):
     try:
         logger_server.info("\nInserting into laptop_model")
         laptop_model_query = (
-            "INSERT INTO laptop_models (brand, model_name, image) "
+            "INSERT INTO laptop_models (brand, model_name, image_url) "
             "VALUES(%s, %s, %s) "
             "ON CONFLICT (model_name) "
             "DO UPDATE SET model_name = EXCLUDED.model_name "
