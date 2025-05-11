@@ -242,20 +242,4 @@ onMounted(() => {
   transition: width 0.3s ease;
 }
 
-.laptop-details-panel {
-  position: relative;
-  height: 80vh;
-  width: 350px;
-  background-color: var(--chat-bg-color);
-  border-radius: 0 10px 10px 0;
-  display: none;
-  flex-direction: column;
-  border-left: 1px solid var(--secondary-color);
-  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1);
-}
-
-.laptop-details-panel.open {
-  display: flex;
-}
-
 </style>

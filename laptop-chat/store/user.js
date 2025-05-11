@@ -2,6 +2,7 @@ export const useUserStore = defineStore('user', {
     state: () => ({
         isLoggedIn: false,
         currentUser: {
+            id: null,
             username: '',
             email: '',
             name: ''
@@ -9,26 +10,13 @@ export const useUserStore = defineStore('user', {
     }),
 
     actions: {
-        login(username, password) {
-            // For demo purposes - would connect to backend in production
-            if (username && password) {
-                this.isLoggedIn = true;
-                this.currentUser.username = username;
-                this.currentUser.name = username;
-                return true;
-            }
-            return false;
-        },
-
-        register(username, email, password) {
-            if (username && email && password) {
-                this.isLoggedIn = true;
-                this.currentUser.username = username;
-                this.currentUser.email = email;
-                this.currentUser.name = username;
-                return true;
-            }
-            return false;
+        setUser(user) {
+            this.isLoggedIn = true;
+            this.currentUser.id = user.id;
+            this.currentUser.username = user.username;
+            this.currentUser.email = user.email;
+            this.currentUser.name = user.username; // Default name to username
+            return true;
         },
 
         saveProfile(name, email) {
@@ -39,6 +27,7 @@ export const useUserStore = defineStore('user', {
         logout() {
             this.isLoggedIn = false;
             this.currentUser = {
+                id: null,
                 username: '',
                 email: '',
                 name: ''

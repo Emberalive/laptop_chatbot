@@ -3,6 +3,7 @@
     <ThemeToggle />
     <Sidebar />
 
+    <div class="profile-container">
       <div class="profile-content">
         <button class="close-profile-btn" @click="$router.push('/')">&times;</button>
 
@@ -21,8 +22,14 @@
               <label for="password">Password</label>
               <input type="password" id="password" v-model="loginForm.password" class="profile-input" placeholder="Enter your password">
             </div>
+            <div v-if="isLoading" class="loading-indicator">
+              Processing...
+            </div>
             <div class="login-actions">
               <button @click="handleLogin" class="profile-save-btn">Login</button>
+            </div>
+            <div v-if="errorMessage" class="error-message">
+              {{ errorMessage }}
             </div>
             <div class="register-link">
               <p>Don't have an account? <a href="#" @click.prevent="showRegister = true">Register</a></p>
@@ -43,8 +50,14 @@
               <label for="reg-password">Password</label>
               <input type="password" id="reg-password" v-model="registerForm.password" class="profile-input" placeholder="Choose a password">
             </div>
+            <div v-if="isLoading" class="loading-indicator">
+              Processing...
+            </div>
             <div class="login-actions">
               <button @click="handleRegister" class="profile-save-btn">Register</button>
+            </div>
+            <div v-if="errorMessage" class="error-message">
+              {{ errorMessage }}
             </div>
             <div class="register-link">
               <p>Already have an account? <a href="#" @click.prevent="showRegister = false">Login</a></p>
@@ -62,7 +75,7 @@
             <div class="profile-section">
               <h2>Personal Information</h2>
               <div class="profile-field">
-                <label>Name</label>
+                <label>Username</label>
                 <input type="text" v-model="profileForm.name" class="profile-input">
               </div>
               <div class="profile-field">
@@ -94,15 +107,24 @@
             </div>
 
             <div class="profile-actions">
+              <div v-if="isLoading" class="loading-indicator">
+                Processing...
+              </div>
               <button @click="saveProfileChanges" class="profile-save-btn">{{ saveButtonText }}</button>
+              <div v-if="errorMessage" class="error-message">
+                {{ errorMessage }}
+              </div>
               <button @click="handleLogout" class="profile-logout-btn">Logout</button>
             </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
 </template>
 
+// Changes for profile.vue
+// Modified script section
 <script setup>
 import ThemeToggle from '~/components/ThemeToggle.vue';
 import Sidebar from '~/components/Sidebar.vue';
@@ -111,6 +133,8 @@ import { useUserStore } from '~/store/user';
 const userStore = useUserStore();
 const showRegister = ref(false);
 const saveButtonText = ref('Save Changes');
+const isLoading = ref(false);
+const errorMessage = ref('');
 
 const loginForm = reactive({
   username: '',
@@ -130,37 +154,123 @@ const profileForm = reactive({
   budget: 'midrange'
 });
 
-// Set initial values when component mounts
-onMounted(() => {
-  if (userStore.isLoggedIn) {
-    profileForm.name = userStore.currentUser.name;
-    profileForm.email = userStore.currentUser.email;
+// Set initial values when component mounts or when login state changes
+watch(() => userStore.isLoggedIn, (isLoggedIn) => {
+  if (isLoggedIn) {
+    profileForm.name = userStore.currentUser.username;
+    profileForm.email = userStore.currentUser.email || '';
   }
-});
+}, { immediate: true });
 
-function handleLogin() {
-  if (userStore.login(loginForm.username, loginForm.password)) {
-    // Success
-  } else {
-    alert("Please enter both username and password");
+async function handleLogin() {
+  if (!loginForm.username || !loginForm.password) {
+    errorMessage.value = "Please enter both username and password";
+    return;
+  }
+
+  isLoading.value = true;
+  errorMessage.value = '';
+
+  try {
+    const { data, error } = await useFetch('/api/db', {
+      method: 'POST',
+      body: {
+        action: 'login',
+        username: loginForm.username,
+        password: loginForm.password
+      }
+    });
+
+    if (error.value) throw new Error(error.value.message);
+
+    if (data.value?.success) {
+      userStore.setUser(data.value.user);
+      loginForm.username = '';
+      loginForm.password = '';
+    } else {
+      errorMessage.value = data.value?.message || 'Login failed';
+    }
+  } catch (err) {
+    errorMessage.value = 'An error occurred during login';
+    console.error(err);
+  } finally {
+    isLoading.value = false;
   }
 }
 
-function handleRegister() {
-  if (userStore.register(registerForm.username, registerForm.email, registerForm.password)) {
-    // Success
-  } else {
-    alert("Please fill in all fields");
+async function handleRegister() {
+  if (!registerForm.username || !registerForm.email || !registerForm.password) {
+    errorMessage.value = "Please fill in all fields";
+    return;
+  }
+
+  isLoading.value = true;
+  errorMessage.value = '';
+
+  try {
+    const { data, error } = await useFetch('/api/db', {
+      method: 'POST',
+      body: {
+        action: 'register',
+        username: registerForm.username,
+        email: registerForm.email,
+        password: registerForm.password
+      }
+    });
+
+    if (error.value) throw new Error(error.value.message);
+
+    if (data.value?.success) {
+      userStore.setUser(data.value.user);
+      registerForm.username = '';
+      registerForm.email = '';
+      registerForm.password = '';
+    } else {
+      errorMessage.value = data.value?.message || 'Registration failed';
+    }
+  } catch (err) {
+    errorMessage.value = 'An error occurred during registration';
+    console.error(err);
+  } finally {
+    isLoading.value = false;
   }
 }
 
-function saveProfileChanges() {
-  userStore.saveProfile(profileForm.name, profileForm.email);
+async function saveProfileChanges() {
+  isLoading.value = true;
+  errorMessage.value = '';
 
-  saveButtonText.value = 'Saved!';
-  setTimeout(() => {
-    saveButtonText.value = 'Save Changes';
-  }, 2000);
+  try {
+    const { data, error } = await useFetch('/api/db', {
+      method: 'POST',
+      body: {
+        action: 'updateProfile',
+        username: userStore.currentUser.username,
+        email: profileForm.email,
+        primary_use: profileForm.primaryUse,
+        budget: profileForm.budget
+      }
+    });
+
+    if (error.value) throw new Error(error.value.message);
+
+    if (data.value?.success) {
+      // Update the local store with the new data
+      userStore.saveProfile(profileForm.name, profileForm.email);
+
+      saveButtonText.value = 'Saved!';
+      setTimeout(() => {
+        saveButtonText.value = 'Save Changes';
+      }, 2000);
+    } else {
+      errorMessage.value = data.value?.message || 'Failed to update profile';
+    }
+  } catch (err) {
+    errorMessage.value = 'An error occurred while saving changes';
+    console.error(err);
+  } finally {
+    isLoading.value = false;
+  }
 }
 
 function handleLogout() {

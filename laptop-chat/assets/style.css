@@ -504,17 +504,22 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    /* Removed initial transform/opacity for Nuxt */
 }
 
 .profile-content {
-    width: 90%;
+    width: 25%;
     max-width: 800px;
+    min-width: 500px;
     background-color: var(--chat-bg-color);
     border-radius: 15px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
     overflow: hidden;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
 }
 
 .close-profile-btn {
@@ -637,7 +642,22 @@ body {
     transition: background-color 0.3s;
 }
 
+
 .profile-save-btn:hover {
+    background-color: var(--accent-color-dark);
+}
+.profile-logout-btn {
+    padding: 10px 30px;
+    background-color: var(--accent-color);
+    color: var(--btn-text-color);
+    border: none;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.profile-logout-btn:hover {
     background-color: var(--accent-color-dark);
 }
 

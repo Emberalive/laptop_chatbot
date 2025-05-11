@@ -10,11 +10,15 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "nuxt": "^3.17.2",
+    "postgres": "^3.4.5",
     "vue": "^3.5.13",
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
-    "@pinia/nuxt": "^0.11.0"
+    "@nuxthub/core": "^0.8.27",
+    "@pinia/nuxt": "^0.11.0",
+    "wrangler": "^4.14.4"
   }
 }
