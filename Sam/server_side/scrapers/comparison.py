@@ -145,14 +145,21 @@ def process_json_diff(diff_dict, action, json_conn):
                     hdmi = table_data.get('HDMI', False)
                     usb_type_c = table_data.get('USB Type-C', False)
                 elif table_title == 'Prices':
-                    laptop_price = table_data[0].get('price', 'No Price available')
-                    laptop_shop_url = table_data[0].get('shop_url', 'No Shop available')
+                    #checking if the prices object is empty or is a list, if its empty then no actual value is got, and if its not
+                    #empty then it is gathered.
+                    if isinstance(table_data, list) and len(table_data) > 0:
+                        first_entry = table_data[0]
+                        laptop_price = first_entry.get('price', 'No Price available')
+                        laptop_shop_url = first_entry.get('shop_url', 'No Shop available')
+                    else:
+                        laptop_price = 'No Price available'
+                        laptop_shop_url = 'No Shop available'
 
-                model_id = get_model_id(laptop_model)
+            model_id = get_model_id(laptop_model)
 
-                if model_id is None:
-                    laptop_model_records.append((laptop_brand, laptop_model, laptop_image))
-                    insert_laptop_model(laptop_model_records, json_conn)
+            if model_id is None:
+                laptop_model_records.append((laptop_brand, laptop_model, laptop_image))
+                insert_laptop_model(laptop_model_records, json_conn)
 
             # Only log after processing all tables
             if laptop_model:
