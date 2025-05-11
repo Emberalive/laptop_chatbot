@@ -20,7 +20,11 @@ yarn install
 bun install
 
 npm install nuxt/core
+
+npm install bcrypt
 ```
+
+`You also need to install nuxt hub hub.nuxt.com/docs/getting-starte/installation#ad-to-a-nuxt-project`
 
 ## Development Server
 
