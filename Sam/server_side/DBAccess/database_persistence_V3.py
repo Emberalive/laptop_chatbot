@@ -409,7 +409,6 @@ if __name__ == "__main__":
     logger.add(sys.stdout, format="{time} {level} {message}")
     logger.add("../logs/server.log", rotation="60 MB", retention="35 days", compression="zip")
     logger_server = logger.bind(user="server")
-
     init_db_pool()
     main()
 

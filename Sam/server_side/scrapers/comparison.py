@@ -177,6 +177,7 @@ def process_json_diff(diff_dict, action):
     bulk_insert_storage(storage_records, conn)
     bulk_insert_features(feature_records, conn)
     bulk_insert_ports(ports_records, conn)
+    bulk_insert_screens(screen_records, conn)
 
 
     return models
