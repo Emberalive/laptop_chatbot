@@ -18,6 +18,8 @@ yarn install
 
 # bun
 bun install
+
+npm install nuxt/core
 ```
 
 ## Development Server
