@@ -125,10 +125,10 @@ def process_json_diff(diff_dict, action):
                     thunderbolt = table_data.get('Thunderbolt', False)
                     display_port = table.get('Display Port', False)
                 elif table_title == 'Screen':
-                    Matte = table_data.get('Matte')
-                    Resolution = table_data.get('Resolution')
+                    resolution = table_data.get('Resolution')
                     size = table_data.get('Size')
                     touch_screen = table_data.get('Touchscreen')
+                    refresh_rate = table_data.get('Refresh Rate')
                 elif table_title == 'Ports':
                     ethernet = table_data.get('Ethernet', False)
                     hdmi = table_data.get('HDMI', False)
@@ -140,16 +140,17 @@ def process_json_diff(diff_dict, action):
 
 
 
-                    model_id = get_model_id(laptop_model)
+                model_id = get_model_id(laptop_model)
 
-                    if not model_id:
-                        laptop_model_records.append((laptop_brand, laptop_model, laptop_image))
-                        insert_laptop_model(laptop_model_records, conn)
+                if not model_id:
+                    laptop_model_records.append((laptop_brand, laptop_model, laptop_image))
+                    insert_laptop_model(laptop_model_records, conn)
 
-                    config_id = insert_configuration(model_id)
-                    storage_records.append((config_id, storage_type))
-                    feature_records.append((config_id, back_lit, num_pad, bluetooth))
-                    ports_records.append((config_id, ethernet, hdmi, usb_type_c, thunderbolt, display_port))
+                config_id = insert_configuration(model_id)
+                storage_records.append((config_id, storage_type))
+                feature_records.append((config_id, back_lit, num_pad, bluetooth))
+                ports_records.append((config_id, ethernet, hdmi, usb_type_c, thunderbolt, display_port))
+                screen_records.append((config_id, size, resolution, touch_screen, refresh_rate))
 
 
 
@@ -173,7 +174,10 @@ def process_json_diff(diff_dict, action):
     else:
         logger.warning(f"No laptop models found in {action} items")
 
-    insert
+    bulk_insert_storage(storage_records, conn)
+    bulk_insert_features(feature_records, conn)
+    bulk_insert_ports(ports_records, conn)
+
 
     return models
 
