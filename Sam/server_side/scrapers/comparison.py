@@ -70,7 +70,6 @@ def process_json_diff(diff_dict, action):
     models = []
 
     laptop_model_records = []
-    laptop_configuration_records = []
     feature_records = []
     ports_records = []
     storage_records = []
@@ -102,12 +101,16 @@ def process_json_diff(diff_dict, action):
                     laptop_model = table_data.get('Name', '')
                     laptop_brand = table_data.get('Brand', '')
                     weight = table_data.get('Weight', '')
+                    laptop_image = table_data.get('image_url', '')
                 elif table_title == "Specs":
                     cpu_name = table_data.get('Processor Name', '')
                     cpu_brand = table_data.get('Processor Brand')
                     gpu_info = table_data.get('Graphics Card', '')
                     memory = table_data.get('Memory Installed', '')
                     storage = table_data.get('Storage', '')
+                    storage_info = storage.split(" ")
+                    storage_type = storage_info[1]
+
 
                     gpu_components = gpu_info.split(" ")
                     gpu_brand = gpu_components[0] if gpu_components else "Unknown"
@@ -115,27 +118,40 @@ def process_json_diff(diff_dict, action):
 
                 elif table_title == "Features":
                     o_s = table_data.get('Operating System', 'Not Specified')
-                    battery_life = table_data.get('Battery Life', '')
+                    battery_life = table_data.get('Battery Life', 'Unknown')
                     back_lit = table_data.get('Backlit Keyboard', False)
                     bluetooth = table_data.get('Bluetooth', False)
                     num_pad = table_data.get('Numeric Keyboard', False)
+                    thunderbolt = table_data.get('Thunderbolt', False)
+                    display_port = table.get('Display Port', False)
                 elif table_title == 'Screen':
                     Matte = table_data.get('Matte')
                     Resolution = table_data.get('Resolution')
                     size = table_data.get('Size')
                     touch_screen = table_data.get('Touchscreen')
                 elif table_title == 'Ports':
-                    ethernet = table.get('Ethernet', False)
+                    ethernet = table_data.get('Ethernet', False)
                     hdmi = table_data.get('HDMI', False)
                     usb_type_c = table_data.get('USB Type-C', False)
+                elif table_title == 'Prices':
+                    laptop_price = table_data[0].get('price')
+                    laptop_shop_url = table_data[0].get('shop_url')
 
 
 
-            model_id = get_model_id(laptop_model)
 
-            if not model_id:
-                print("jazz")
-                # insert_laptop_model()
+                    model_id = get_model_id(laptop_model)
+
+                    if not model_id:
+                        laptop_model_records.append((laptop_brand, laptop_model, laptop_image))
+                        insert_laptop_model(laptop_model_records, conn)
+
+                    config_id = insert_configuration(model_id)
+                    storage_records.append((config_id, storage_type))
+                    feature_records.append((config_id, back_lit, num_pad, bluetooth))
+                    ports_records.append((config_id, ethernet, hdmi, usb_type_c, thunderbolt, display_port))
+
+
 
             # Only log after processing all tables
             if laptop_model:
@@ -156,6 +172,8 @@ def process_json_diff(diff_dict, action):
         logger.info(f"Laptop model(s) to {action}: {models}")
     else:
         logger.warning(f"No laptop models found in {action} items")
+
+    insert
 
     return models
 
@@ -178,7 +196,7 @@ def get_model_id(laptop_name):
     except Exception as e:
         logger.error(f"error getting the model_id for the laptop ERROR {e}")
 
-        return False
+        return None
     finally:
         release_db_connection(conn, cur)
 
