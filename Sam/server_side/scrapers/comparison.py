@@ -96,7 +96,7 @@ def process_json_diff(diff_dict, action, json_conn):
         # Initialize variables
         model_id = weight = memory = o_s = battery_life = laptop_price = None
         laptop_model = laptop_brand = laptop_image = None
-        storage_type = None
+        storage_type = storage_capacity = None
         back_lit = num_pad = bluetooth = None
         ethernet = hdmi = usb_type_c = thunderbolt = display_port = None
         size = resolution = touch_screen = refresh_rate = None
@@ -120,7 +120,9 @@ def process_json_diff(diff_dict, action, json_conn):
                     memory = table_data.get('Memory Installed', '')
                     storage = table_data.get('Storage', '')
                     storage_info = storage.split(" ")
-                    storage_type = storage_info[1]
+                    storage_capacity = storage_info[0] if storage_info else 'none'
+                    storage_type = storage_info[1].strip().upper() if len(storage_info) > 1 else 'none'
+
 
 
                     gpu_components = gpu_info.split(" ")
@@ -175,7 +177,7 @@ def process_json_diff(diff_dict, action, json_conn):
                 models.append(laptop_model)
 
                 config_id = insert_configuration(model_id, laptop_price, weight, battery_life, memory, o_s, cpu_name, gpu_model, json_conn)
-                storage_records.append((config_id, storage_type))
+                storage_records.append((config_id, storage_type, storage_capacity))
                 feature_records.append((config_id, back_lit, num_pad, bluetooth))
                 ports_records.append((config_id, ethernet, hdmi, usb_type_c, thunderbolt, display_port))
                 screen_records.append((config_id, size, resolution, touch_screen, refresh_rate))
@@ -200,10 +202,10 @@ def process_json_diff(diff_dict, action, json_conn):
         ports_conn, ports_cur= get_db_connection()
         screens_conn, screens_cur = get_db_connection()
 
-        bulk_insert_storage(storage_records, storage_conn)
-        bulk_insert_features(feature_records, features_conn)
-        bulk_insert_ports(ports_records, ports_conn)
-        bulk_insert_screens(screen_records, screens_conn)
+        executor.submit(bulk_insert_storage, storage_records, storage_conn)
+        executor.submit(bulk_insert_features, feature_records, features_conn)
+        executor.submit(bulk_insert_ports, ports_records, ports_conn)
+        executor.submit(bulk_insert_screens, screen_records, screens_conn)
 
         release_db_connection(storage_conn, storage_cur)
         release_db_connection(features_conn, features_cur)
