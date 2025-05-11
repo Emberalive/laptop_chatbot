@@ -18,7 +18,15 @@ yarn install
 
 # bun
 bun install
+
+npm install nuxt/core
+
+npm install bcrypt
+
+npm install postgres
 ```
+
+`You also need to install nuxt hub hub.nuxt.com/docs/getting-starte/installation#ad-to-a-nuxt-project`
 
 ## Development Server
 

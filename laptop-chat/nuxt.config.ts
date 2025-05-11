@@ -1,6 +1,6 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-05-06',
-  modules: ['@pinia/nuxt'],
+  modules: ['@pinia/nuxt', '@nuxthub/core'],
   css: ['~/assets/style.css'],
   debug: true,
   app: {
