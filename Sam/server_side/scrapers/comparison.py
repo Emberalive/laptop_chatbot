@@ -157,7 +157,7 @@ def process_json_diff(diff_dict, action, json_conn):
 
             model_id = get_model_id(laptop_model)
 
-            if model_id is None:
+            if not model_id:
                 laptop_model_records.append((laptop_brand, laptop_model, laptop_image))
                 model_look_up = insert_laptop_model(laptop_model_records, json_conn)
                 model_id = model_look_up(laptop_model)
@@ -230,11 +230,11 @@ def get_model_id(laptop_name):
             return model_id
         else:
             logger.warning("fetchone() returned None")
-            return None
+            return False
 
     except Exception as e:
         logger.error(f"Exception in get_model_id(): {e}")
-        return None
+        return False
     finally:
         release_db_connection(model_id_conn, model_id_cur)
 
