@@ -90,7 +90,13 @@ def process_json_diff(diff_dict, action):
         tables = laptop_data.get('tables', [])
 
         # Initialize variables
-        laptop_model = weight = cpu = gpu = memory = o_s = battery_life = "N/A"
+        model_id = weight = cpu_name = gpu_model = memory = o_s = battery_life = laptop_price = None
+        laptop_model = laptop_brand = laptop_image = None
+        storage_type = None
+        back_lit = num_pad = bluetooth = None
+        ethernet = hdmi = usb_type_c = thunderbolt = display_port = None
+        size = resolution = touch_screen = refresh_rate = None
+
 
         if tables and isinstance(tables, list) and action == "added":
             for table in tables:
@@ -134,25 +140,14 @@ def process_json_diff(diff_dict, action):
                     hdmi = table_data.get('HDMI', False)
                     usb_type_c = table_data.get('USB Type-C', False)
                 elif table_title == 'Prices':
-                    laptop_price = table_data[0].get('price')
-                    laptop_shop_url = table_data[0].get('shop_url')
-
-
-
+                    laptop_price = table_data[0].get('price', 'No Price available')
+                    laptop_shop_url = table_data[0].get('shop_url', 'No Shop available')
 
                 model_id = get_model_id(laptop_model)
 
-                if not model_id:
+                if model_id is None:
                     laptop_model_records.append((laptop_brand, laptop_model, laptop_image))
                     insert_laptop_model(laptop_model_records, conn)
-
-                config_id = insert_configuration(model_id)
-                storage_records.append((config_id, storage_type))
-                feature_records.append((config_id, back_lit, num_pad, bluetooth))
-                ports_records.append((config_id, ethernet, hdmi, usb_type_c, thunderbolt, display_port))
-                screen_records.append((config_id, size, resolution, touch_screen, refresh_rate))
-
-
 
             # Only log after processing all tables
             if laptop_model:
@@ -166,6 +161,12 @@ def process_json_diff(diff_dict, action):
                             f"OS: {o_s}\n"
                             f"Battery: {battery_life}\n")
                 models.append(laptop_model)
+
+                config_id = insert_configuration(model_id, laptop_price, weight, battery_life, memory, o_s, cpu_name, gpu_model, conn)
+                storage_records.append((config_id, storage_type))
+                feature_records.append((config_id, back_lit, num_pad, bluetooth))
+                ports_records.append((config_id, ethernet, hdmi, usb_type_c, thunderbolt, display_port))
+                screen_records.append((config_id, size, resolution, touch_screen, refresh_rate))
         else:
             logger.warning(f"No valid tables found for {root_key}")
 
@@ -183,27 +184,35 @@ def process_json_diff(diff_dict, action):
     return models
 
 def get_model_id(laptop_name):
-    conn, cur = get_db_connection()
     model = (laptop_name, )
     try:
-        stmnt = ("SELECT * FROM laptop_models WHERE model_name = %s")
-
+        logger.info(f"Looking up model_id for laptop_name: '{laptop_name}'")
+        stmnt = "SELECT * FROM laptop_models WHERE model_name = %s"
         cur.execute(stmnt, model)
-        row_count = cur.rowcount
-        if row_count > 1:
-            logger.info(f"there is more than one laptop_model, error!!!!!!!")
-            return False
-        elif row_count == 0:
-            logger.info(f"Need to insert the laptop model")
-            return False
-        model_id = cur.fetchone()[0]
-        return model_id
-    except Exception as e:
-        logger.error(f"error getting the model_id for the laptop ERROR {e}")
+        logger.info(f"Row count: {cur.rowcount}")
 
+        if cur.rowcount > 1:
+            logger.warning("More than one model found for this name.")
+            return False
+        elif cur.rowcount == 0:
+            logger.info("No matching model found; will need to insert.")
+            return False
+
+        result = cur.fetchone()
+        if result:
+            model_id = result[0]
+            logger.info(f"Found model_id: {model_id}")
+            return model_id
+        else:
+            logger.warning("fetchone() returned None")
+            return None
+
+    except Exception as e:
+        logger.error(f"Exception in get_model_id(): {e}")
         return None
     finally:
         release_db_connection(conn, cur)
+
 
 
 
@@ -217,7 +226,7 @@ def update_changes (json_diff_data):
             process_json_diff(json_diff_removed, "removed")
 
 def main():
-
+    json_diff = None
     latest_json_archive = get_old_path()
     if latest_json_archive:
         logger.info(f"found old scrape {latest_json_archive}")
