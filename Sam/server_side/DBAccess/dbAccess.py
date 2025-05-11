@@ -1,6 +1,5 @@
 import os
 
-import psycopg2
 from psycopg2 import pool
 import sys
 from dotenv import load_dotenv
@@ -35,8 +34,13 @@ def get_db_connection():
     try:
         logger.info(f"grabbing a connection from the pool")
         conn = connection_pool.getconn()
-        cur = conn.cursor()
-        return conn, cur
+        if conn:
+            cur = conn.cursor()
+            logger.info("Connection successful")
+            return conn, cur
+        else:
+            logger.error("No connection available in the pool")
+            return None, None
     except Exception as e:
         logger.error(f"Failed to get connection {e}")
         return None, None
@@ -67,3 +71,4 @@ def db_access():
         return conn, cur
     except Exception as e:
         print("connection was not made. Error: {e}")
+

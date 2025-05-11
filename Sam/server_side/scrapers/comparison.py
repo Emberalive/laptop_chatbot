@@ -1,4 +1,6 @@
 import re
+from concurrent.futures import ThreadPoolExecutor
+
 from deepdiff import DeepDiff
 import json
 import pprint
@@ -66,7 +68,7 @@ def compare_new_and_old (old_path, new_path='/home/samuel/laptop_chatbot/Sam/ser
         logger.error(f"error in attempting to compare the old and new json data {e}")
 
 
-def process_json_diff(diff_dict, action):
+def process_json_diff(diff_dict, action, json_conn):
     models = []
 
     laptop_model_records = []
@@ -74,6 +76,8 @@ def process_json_diff(diff_dict, action):
     ports_records = []
     storage_records = []
     screen_records = []
+    gpu_records = []
+    cpu_records = []
 
     logger.info(f"Processing {action} items")
 
@@ -90,12 +94,13 @@ def process_json_diff(diff_dict, action):
         tables = laptop_data.get('tables', [])
 
         # Initialize variables
-        model_id = weight = cpu_name = gpu_model = memory = o_s = battery_life = laptop_price = None
+        model_id = weight = memory = o_s = battery_life = laptop_price = None
         laptop_model = laptop_brand = laptop_image = None
         storage_type = None
         back_lit = num_pad = bluetooth = None
         ethernet = hdmi = usb_type_c = thunderbolt = display_port = None
         size = resolution = touch_screen = refresh_rate = None
+        cpu_brand = cpu_name = gpu_model = gpu_brand = None
 
 
         if tables and isinstance(tables, list) and action == "added":
@@ -147,7 +152,7 @@ def process_json_diff(diff_dict, action):
 
                 if model_id is None:
                     laptop_model_records.append((laptop_brand, laptop_model, laptop_image))
-                    insert_laptop_model(laptop_model_records, conn)
+                    insert_laptop_model(laptop_model_records, json_conn)
 
             # Only log after processing all tables
             if laptop_model:
@@ -162,11 +167,14 @@ def process_json_diff(diff_dict, action):
                             f"Battery: {battery_life}\n")
                 models.append(laptop_model)
 
-                config_id = insert_configuration(model_id, laptop_price, weight, battery_life, memory, o_s, cpu_name, gpu_model, conn)
+                config_id = insert_configuration(model_id, laptop_price, weight, battery_life, memory, o_s, cpu_name, gpu_model, json_conn)
                 storage_records.append((config_id, storage_type))
                 feature_records.append((config_id, back_lit, num_pad, bluetooth))
                 ports_records.append((config_id, ethernet, hdmi, usb_type_c, thunderbolt, display_port))
                 screen_records.append((config_id, size, resolution, touch_screen, refresh_rate))
+                cpu_records.append((cpu_brand, cpu_name))
+                gpu_brand.append((gpu_brand, gpu_model))
+
         else:
             logger.warning(f"No valid tables found for {root_key}")
 
@@ -175,30 +183,40 @@ def process_json_diff(diff_dict, action):
     else:
         logger.warning(f"No laptop models found in {action} items")
 
-    bulk_insert_storage(storage_records, conn)
-    bulk_insert_features(feature_records, conn)
-    bulk_insert_ports(ports_records, conn)
-    bulk_insert_screens(screen_records, conn)
+    insert_cpu_records(cpu_records, json_conn)
+    insert_gpu_records(gpu_records, json_conn)
 
+    with ThreadPoolExecutor(max_workers=11) as executor:
+        # Get one connection per thread
+        storage_conn = get_db_connection()
+        features_conn = get_db_connection()
+        ports_conn = get_db_connection()
+        screens_conn = get_db_connection()
+
+        bulk_insert_storage(storage_records, storage_conn)
+        bulk_insert_features(feature_records, features_conn)
+        bulk_insert_ports(ports_records, ports_conn)
+        bulk_insert_screens(screen_records, screens_conn)
 
     return models
 
 def get_model_id(laptop_name):
+    model_id_conn, model_id_cur = get_db_connection()
     model = (laptop_name, )
     try:
         logger.info(f"Looking up model_id for laptop_name: '{laptop_name}'")
         stmnt = "SELECT * FROM laptop_models WHERE model_name = %s"
-        cur.execute(stmnt, model)
-        logger.info(f"Row count: {cur.rowcount}")
+        model_id_cur.execute(stmnt, model)
+        logger.info(f"Row count: {model_id_cur.rowcount}")
 
-        if cur.rowcount > 1:
+        if model_id_cur.rowcount > 1:
             logger.warning("More than one model found for this name.")
             return False
-        elif cur.rowcount == 0:
+        elif model_id_cur.rowcount == 0:
             logger.info("No matching model found; will need to insert.")
             return False
 
-        result = cur.fetchone()
+        result = model_id_cur.fetchone()
         if result:
             model_id = result[0]
             logger.info(f"Found model_id: {model_id}")
@@ -211,19 +229,17 @@ def get_model_id(laptop_name):
         logger.error(f"Exception in get_model_id(): {e}")
         return None
     finally:
-        release_db_connection(conn, cur)
+        release_db_connection(model_id_conn, model_id_cur)
 
 
-
-
-def update_changes (json_diff_data):
+def update_changes (json_diff_data, changes_conn):
         json_diff_added = json_diff_data.get('iterable_item_added')
         json_diff_removed = json_diff_data.get('iterable_item_removed')
 
         if json_diff_added:
-            process_json_diff(json_diff_added, "added")
+            process_json_diff(json_diff_added, "added", changes_conn)
         elif json_diff_removed:
-            process_json_diff(json_diff_removed, "removed")
+            process_json_diff(json_diff_removed, "removed", changes_conn)
 
 def main():
     json_diff = None
@@ -234,7 +250,7 @@ def main():
             json_diff = compare_new_and_old(latest_json_archive)
         except UnboundLocalError as e:
             logger.error(f"could not find an old path for the json data ERROR: {e}")
-    update_changes(json_diff)
+    update_changes(json_diff, conn)
 
 if __name__ == "__main__":
     init_db_pool()  # Initialize the pool first

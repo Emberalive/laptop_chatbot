@@ -394,12 +394,16 @@ def main():
         # Bulk insert all related data parallelized
     try:
         with ThreadPoolExecutor(max_workers=11) as executor:
-            futures = [
-                bulk_insert_storage(storages, global_db_connection),
-                bulk_insert_features(features, global_db_connection),
-                bulk_insert_ports(ports, global_db_connection),
-                bulk_insert_screens(screens, global_db_connection)
-            ]
+            # Get one connection per thread
+            storage_conn = get_db_connection()
+            features_conn = get_db_connection()
+            ports_conn = get_db_connection()
+            screens_conn = get_db_connection()
+
+            executor.submit(bulk_insert_storage, storages, storage_conn)
+            executor.submit(bulk_insert_features, features, features_conn)
+            executor.submit(bulk_insert_ports, ports, ports_conn)
+            executor.submit(bulk_insert_screens, screens, screens_conn)
     except Exception as worker_error:
         logger.error(f"Error with one of the workers ERROR:{worker_error}")
     global_db_connection.commit()
