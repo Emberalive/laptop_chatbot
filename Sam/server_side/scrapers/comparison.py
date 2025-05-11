@@ -159,9 +159,9 @@ def process_json_diff(diff_dict, action, json_conn):
 
             if model_id is None:
                 laptop_model_records.append((laptop_brand, laptop_model, laptop_image))
-                insert_laptop_model(laptop_model_records, json_conn)
+                model_look_up = insert_laptop_model(laptop_model_records, json_conn)
+                model_id = model_look_up(laptop_model)
 
-            # Only log after processing all tables
             if laptop_model:
                 logger.info(f"Laptop details for {laptop_model}:\n"
                             f"--------------------------------------------------------------------------------\n"
