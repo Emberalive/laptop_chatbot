@@ -4,6 +4,10 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from DBAccess.dbAccess import get_db_connection, release_db_connection, init_db_pool
 from loguru import logger
 
+logger.remove()
+logger.add(sys.stdout, format="{time} {level} {message}")
+logger.add("../logs/server.log", rotation="60 MB", retention="35 days", compression="zip")
+logger_server = logger.bind(user="server")
 #this version takes a whopping 14:49:77
 # with new improvements it is now 7:15
 # latest speed is 6:10
@@ -405,10 +409,6 @@ def main():
 
 if __name__ == "__main__":
     # Initialize the logger
-    logger.remove()
-    logger.add(sys.stdout, format="{time} {level} {message}")
-    logger.add("../logs/server.log", rotation="60 MB", retention="35 days", compression="zip")
-    logger_server = logger.bind(user="server")
     init_db_pool()
     main()
 
