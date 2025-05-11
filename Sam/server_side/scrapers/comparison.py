@@ -160,7 +160,7 @@ def process_json_diff(diff_dict, action, json_conn):
             if not model_id:
                 laptop_model_records.append((laptop_brand, laptop_model, laptop_image))
                 model_look_up = insert_laptop_model(laptop_model_records, json_conn)
-                model_id = model_look_up(laptop_model)
+                model_id = model_look_up.get(laptop_model)
 
             if laptop_model:
                 logger.info(f"Laptop details for {laptop_model}:\n"
