@@ -395,10 +395,10 @@ def main():
     try:
         with ThreadPoolExecutor(max_workers=11) as executor:
             # Get one connection per thread
-            storage_conn = get_db_connection()
-            features_conn = get_db_connection()
-            ports_conn = get_db_connection()
-            screens_conn = get_db_connection()
+            storage_conn, storage_cur = get_db_connection()
+            features_conn, features_cur = get_db_connection()
+            ports_conn, ports_cur = get_db_connection()
+            screens_conn, screens_cur = get_db_connection()
 
             executor.submit(bulk_insert_storage, storages, storage_conn)
             executor.submit(bulk_insert_features, features, features_conn)

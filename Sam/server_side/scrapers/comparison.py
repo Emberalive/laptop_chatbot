@@ -195,16 +195,20 @@ def process_json_diff(diff_dict, action, json_conn):
 
     with ThreadPoolExecutor(max_workers=11) as executor:
         # Get one connection per thread
-        storage_conn = get_db_connection()
-        features_conn = get_db_connection()
-        ports_conn = get_db_connection()
-        screens_conn = get_db_connection()
+        storage_conn, storage_cur= get_db_connection()
+        features_conn, features_cur = get_db_connection()
+        ports_conn, ports_cur= get_db_connection()
+        screens_conn, screens_cur = get_db_connection()
 
         bulk_insert_storage(storage_records, storage_conn)
         bulk_insert_features(feature_records, features_conn)
         bulk_insert_ports(ports_records, ports_conn)
         bulk_insert_screens(screen_records, screens_conn)
 
+        release_db_connection(storage_conn, storage_cur)
+        release_db_connection(features_conn, features_cur)
+        release_db_connection(ports_conn, ports_cur)
+        release_db_connection(screens_conn, screens_cur)
     return models
 
 def get_model_id(laptop_name):
