@@ -180,7 +180,7 @@ def process_json_diff(diff_dict, action, json_conn):
                 ports_records.append((config_id, ethernet, hdmi, usb_type_c, thunderbolt, display_port))
                 screen_records.append((config_id, size, resolution, touch_screen, refresh_rate))
                 cpu_records.append((cpu_brand, cpu_name))
-                gpu_brand.append((gpu_brand, gpu_model))
+                gpu_records.append((gpu_brand, gpu_model))
 
         else:
             logger.warning(f"No valid tables found for {root_key}")
