@@ -256,7 +256,7 @@ async function saveProfileChanges() {
 
     if (data.value?.success) {
       // Update the local store with the new data
-      userStore.saveProfile(profileForm.name, profileForm.email);
+      userStore.saveProfile(profileForm.username, profileForm.email, profileForm.primaryUse, profileForm.budget);
 
       saveButtonText.value = 'Saved!';
       setTimeout(() => {
