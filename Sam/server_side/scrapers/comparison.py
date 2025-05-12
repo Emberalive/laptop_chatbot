@@ -13,8 +13,14 @@ from DBAccess.database_persistence_V3 import insert_configuration, insert_laptop
 
 
 logger.remove()
+
+# Ensure the logs directory exists
+os.makedirs(os.path.join(os.path.dirname(__file__), "logs"), exist_ok=True)
+
+
 logger.add(sys.stdout, format="{time} {level} {message}")
-logger.add("../logs/comparison.log", rotation="10 MB", retention="35 days", compression="zip")
+logger.add(os.path.join(os.path.dirname(__file__), "logs", "comparison.log"),
+           rotation="10 MB", retention="35 days", compression="zip")
 logger = logger.bind(user="comparer")
 
 def get_old_path(directory='/home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data'):
