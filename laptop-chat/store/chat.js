@@ -1,11 +1,11 @@
-// store/chat.js
 import { defineStore } from 'pinia';
 
 export const useChatStore = defineStore('chat', {
     state: () => ({
         messages: [],
         recommendedLaptops: [],
-        currentRecommendations: [], // Add this for the latest recommendations
+        currentRecommendations: [],
+        allRecommendations: [],
         sessionId: null
     }),
 
@@ -15,11 +15,47 @@ export const useChatStore = defineStore('chat', {
         },
 
         async sendMessage(message) {
-            // API call logic
-            // Update messages and recommendations
+            this.addMessage({ text: message, sender: 'user' });
 
-            // After getting recommendations from API:
-            // this.currentRecommendations = laptopsFromApi;
+            try {
+                const response = await $fetch('/api/chat', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        message,
+                        session_id: this.sessionId
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                // Handle the response properly
+                this.messages.push(...response.messages.map(msg => ({ text: msg, sender: 'bot' })));
+
+                if (response.recommendations && response.recommendations.length > 0) {
+                    this.currentRecommendations = response.recommendations;
+                    this.addRecommendations(response.recommendations);
+                }
+
+                this.sessionId = response.session_id || this.sessionId;
+
+            } catch (error) {
+                console.error('Error calling chatbot API:', error);
+                this.addMessage({ text: "I'm having trouble connecting to my knowledge base. Please try again later.", sender: 'bot' });
+            }
+        },
+
+        addRecommendations(recommendations) {
+            this.recommendedLaptops = recommendations;
+            this.currentRecommendations = recommendations;
+
+            // Add each recommendation to allRecommendations with timestamp
+            recommendations.forEach(recommendation => {
+                this.allRecommendations.push({
+                    ...recommendation,
+                    timestamp: Date.now()
+                });
+            });
         },
 
         resetChat() {
@@ -28,6 +64,7 @@ export const useChatStore = defineStore('chat', {
                 sender: 'bot'
             }];
             this.currentRecommendations = [];
+            // Note: We're not clearing allRecommendations to keep history
         }
     }
 });
