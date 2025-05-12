@@ -1,0 +1,12 @@
+2025-05-10 16:16:48.253 | INFO     | __main__:<module>:130 - start time of the api - session: 2025-05-10 16:16:48.253762
+2025-05-10 16:16:48.256 | ERROR    | __main__:<module>:313 - ERROR: uvicorn package is not installed. Please install it with:
+2025-05-10 16:16:48.256 | WARNING  | __main__:<module>:314 - pip install uvicorn fastapi
+2025-05-10 16:16:48.257 | INFO     | __main__:<module>:315 - or
+2025-05-10 16:16:48.257 | WARNING  | __main__:<module>:316 - pip3 install uvicorn fastapi
+2025-05-10 16:17:06.899 | INFO     | __main__:<module>:130 - start time of the api - session: 2025-05-10 16:17:06.899467
+2025-05-10 16:17:41.129 | INFO     | __main__:<module>:130 - start time of the api - session: 2025-05-10 16:17:41.129057
+2025-05-10 16:17:44.151 | INFO     | __mp_main__:<module>:130 - start time of the api - session: 2025-05-10 16:17:44.151366
+2025-05-11 20:38:56.610 | INFO     | __main__:<module>:130 - start time of the api - session: 2025-05-11 20:38:56.610921
+2025-05-11 20:39:01.844 | INFO     | __mp_main__:<module>:130 - start time of the api - session: 2025-05-11 20:39:01.844170
+2025-05-12 12:57:42.796 | INFO     | __main__:<module>:130 - start time of the api - session: 2025-05-12 12:57:42.796257
+2025-05-12 12:57:47.744 | INFO     | __mp_main__:<module>:130 - start time of the api - session: 2025-05-12 12:57:47.744564
