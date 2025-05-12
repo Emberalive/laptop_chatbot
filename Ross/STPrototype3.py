@@ -11,45 +11,38 @@ import re
 import psycopg2
 from collections import defaultdict
 from loguru import logger
-from dotenv import load_dotenv
 
 # Setup logger
 logger.remove()
 logger.add(sys.stdout, format="{time} {level} {message}")
-logger.add("../logs/API.log", rotation="10 MB", retention="35 days", compression="zip")
+logger.add("../Sam/server_side/logs/API.log", rotation="10 MB", retention="35 days", compression="zip")
 logger = logger.bind(user="API")
 
-# Add paths for imports - corrected based on file structure
-current_dir = os.path.dirname(os.path.abspath(__file__))  # Ross directory
-project_root = os.path.dirname(current_dir)  # Parent directory
-server_side_path = os.path.join(project_root, "Sam", "server_side")  # Sam/server_side
-dbaccess_path = os.path.join(server_side_path, "DBAccess")  # Sam/server_side/DBAccess
+# Add paths for imports
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(current_dir)
+server_side_path = os.path.join(project_root, "Sam", "server_side")
+dbaccess_path = os.path.join(server_side_path, "DBAccess")
 
 # Add paths to sys.path if they're not already there
 for path in [project_root, server_side_path, dbaccess_path]:
     if path not in sys.path and os.path.exists(path):
         sys.path.append(path)
-        logger.info(f"Added path to sys.path: {path}")
-    elif not os.path.exists(path):
-        logger.warning(f"Path doesn't exist: {path}")
-
-# Try to load the .env file first
-try:
-    load_dotenv(os.path.join(project_root, '.env'))
-    logger.info("Loaded .env file")
-except Exception as e:
-    logger.warning(f"Could not load .env file: {e}")
 
 # First try to import database module via DBAccess
 HAS_DB_MODULE = False
 try:
-    # Import directly based on seen file structure
     from DBAccess.dbAccess import init_db_pool, get_db_connection, release_db_connection
     logger.info("Successfully imported database module")
     
-    # Explicitly set DATABASE_NAME to "laptopchatbot_new"
-    os.environ["DATABASE_NAME"] = "laptopchatbot_new"
-    logger.info("Set DATABASE_NAME environment variable to laptopchatbot_new")
+    # Override the database name in .env with laptopchatbot_new if needed
+    if "DATABASE_NAME" in os.environ:
+        original_db = os.environ["DATABASE_NAME"]
+        os.environ["DATABASE_NAME"] = "laptopchatbot_new"
+        logger.info(f"Database name overridden from {original_db} to laptopchatbot_new")
+    else:
+        os.environ["DATABASE_NAME"] = "laptopchatbot_new"
+        logger.info("Set DATABASE_NAME environment variable to laptopchatbot_new")
     
     # Initialize the database connection pool
     init_db_pool()
@@ -67,39 +60,53 @@ try:
     except Exception as e:
         logger.error(f"Error testing database connection: {e}")
 except ImportError as e:
-    # Try alternative import path based on the image
-    logger.error(f"Failed to import database modules using first method: {e}")
+    logger.error(f"Failed to import database modules: {e}")
+
+# Try to load settings from a potential .env file if it exists
+def load_environment_settings():
+    env_path = os.path.join(project_root, '.env')
+    if os.path.exists(env_path):
+        logger.info(f"Found .env file at {env_path}")
+        try:
+            with open(env_path, 'r') as f:
+                for line in f:
+                    if '=' in line and not line.startswith('#'):
+                        key, value = line.strip().split('=', 1)
+                        os.environ[key] = value
+                        logger.info(f"Loaded setting {key} from .env file")
+            return True
+        except Exception as e:
+            logger.error(f"Error loading .env file: {e}")
+    else:
+        logger.error(f"No .env file found at {env_path}")
+    return False
+
+# Attempt to load .env if we don't have a working database connection
+if not HAS_DB_MODULE:
+    load_environment_settings()
     try:
-        sys.path.insert(0, dbaccess_path)  # Ensure this path is first in sys.path
-        from dbAccess import init_db_pool, get_db_connection, release_db_connection
-        
-        # Explicitly set DATABASE_NAME to "laptopchatbot_new"
+        from DBAccess.dbAccess import init_db_pool, get_db_connection, release_db_connection
+        # Force database name to be correct
         os.environ["DATABASE_NAME"] = "laptopchatbot_new"
-        logger.info("Set DATABASE_NAME environment variable to laptopchatbot_new (alternative path)")
+        logger.info("Set DATABASE_NAME environment variable to laptopchatbot_new")
         
-        # Initialize the database connection pool
+        # Try to initialize the pool again
         init_db_pool()
-        logger.info("Database pool initialized (alternative path)")
         
         # Test connection
         conn, cur = get_db_connection()
         if conn and cur:
-            logger.info("Successfully connected to database pool using alternative path")
+            logger.info("Successfully connected to database pool on second attempt")
             release_db_connection(conn, cur)
             HAS_DB_MODULE = True
-        else:
-            logger.error("Could not get a connection from the pool (alternative path)")
-    except Exception as alt_e:
-        logger.error(f"Failed with alternative import method: {alt_e}")
+    except Exception as e:
+        logger.error(f"Second attempt to connect to database failed: {e}")
 
 # Direct database connection function as a fallback
 def direct_db_connection():
     """Create a direct connection to the database, bypassing the connection pool"""
     try:
         logger.info("Attempting direct connection to the database")
-        # Load potential environment variables first
-        load_dotenv(os.path.join(project_root, '.env'))
-        
         conn = psycopg2.connect(
             database="laptopchatbot_new",
             user=os.getenv("USER", "postgres"),
@@ -120,10 +127,10 @@ def find_and_load_laptops_json():
     logger.info("Searching for JSON file with laptop data")
     
     possible_paths = [
-        # Add potential paths to JSON files based on the shown file structure
+        # Add potential paths to JSON files here
         os.path.join(server_side_path, 'scrapers', 'scraped_data', 'latest.json'),
         os.path.join(project_root, 'Sam', 'server_side', 'scrapers', 'scraped_data', 'latest.json'),
-        os.path.join(project_root, 'Sam', 'scrapers', 'scraped_data', 'latest.json'),
+        os.path.join(project_root, 'scrapers', 'scraped_data', 'latest.json'),
         os.path.join(project_root, 'data', 'laptops.json'),
         os.path.join(current_dir, 'laptops.json')
     ]
@@ -318,8 +325,6 @@ class LaptopRecommendationBot:
                     })
                 
                 # Get processor info if available
-                specs_data = {}  # Initialize it outside the if statements
-                
                 if config[6]:  # processor
                     processor_model = config[6]
                     cur.execute("""
@@ -336,6 +341,7 @@ class LaptopRecommendationBot:
                         }
                         
                         # Add to Specs table
+                        specs_data = {}
                         specs_data.update(processor_data)
                 
                 # Get graphics card info
@@ -350,6 +356,8 @@ class LaptopRecommendationBot:
                     graphics = cur.fetchone()
                     if graphics:
                         # Add to specs data
+                        if 'specs_data' not in locals():
+                            specs_data = {}
                         specs_data['Graphics Card'] = f"{graphics[0]} {graphics[1]}"  # brand model
                 
                 # Get storage info
@@ -368,10 +376,12 @@ class LaptopRecommendationBot:
                     
                     if storage_strings:
                         # Add to specs data
+                        if 'specs_data' not in locals():
+                            specs_data = {}
                         specs_data['Storage'] = ", ".join(storage_strings)
                 
                 # Add specs table if we have data
-                if specs_data:
+                if 'specs_data' in locals() and specs_data:
                     laptop['tables'].append({
                         'title': 'Specs',
                         'data': specs_data
@@ -536,11 +546,1318 @@ class LaptopRecommendationBot:
         
         return {key: self.model.encode(desc) for key, desc in features.items()}
 
-    # The remaining methods are unchanged from your original implementation
-    # I'm omitting them here to keep the artifact focused on the connection logic
-    
-    # You can include the rest of your LaptopRecommendationBot class methods here
-    # They remain the same as in the previous STPrototype3.py
+    def _format_laptop_description(self, laptop: Dict) -> str:
+        """
+        Create a detailed description string from laptop specifications
+        """
+        tables = laptop.get('tables', [])
+        details = {}
+        
+        # Extract relevant information from nested structure
+        for table in tables:
+            title = table.get('title', '')
+            data = table.get('data', {})
+            
+            if isinstance(data, dict):
+                if title == 'Product Details':
+                    details.update(data)
+                elif title == 'Specs':
+                    details.update(data)
+                elif title == 'Screen':
+                    for key, value in data.items():
+                        details[f"Screen {key}"] = value
+                elif title == 'Features':
+                    for key, value in data.items():
+                        details[f"Feature {key}"] = value
+                elif title == 'Ports':
+                    for key, value in data.items():
+                        if value:  # Only include ports that are present
+                            details[f"Has {key}"] = value
+                elif title == 'Misc':
+                    details.update(data)
+        
+        # Build the description with available information
+        brand = details.get('Brand', '')
+        name = details.get('Name', '')
+        description = f"{brand} {name}"
+        
+        # Add processor info
+        processor_brand = details.get('Processor Brand', '')
+        processor_name = details.get('Processor Name', '')
+        if processor_brand and processor_name:
+            description += f" with {processor_brand} {processor_name} processor"
+        
+        # Add memory
+        memory = details.get('Memory Installed', '')
+        if memory:
+            description += f", {memory} RAM"
+        
+        # Add storage
+        storage = details.get('Storage', '')
+        if storage:
+            description += f", {storage} storage"
+        
+        # Add screen info
+        screen_size = details.get('Screen Size', '')
+        screen_resolution = details.get('Screen Resolution', '')
+        if screen_size or screen_resolution:
+            screen_info = ""
+            if screen_size:
+                screen_info += f"{screen_size}"
+            if screen_resolution:
+                if screen_info:
+                    screen_info += f" {screen_resolution}"
+                else:
+                    screen_info = screen_resolution
+            description += f", {screen_info} display"
+        
+        # Add screen refresh rate if available
+        refresh_rate = details.get('Screen Refresh Rate', '')
+        if refresh_rate:
+            description += f" with {refresh_rate} refresh rate"
+        
+        # Add graphics card
+        graphics = details.get('Graphics Card', '')
+        if graphics:
+            description += f", {graphics} graphics"
+        
+        # Add operating system
+        os = details.get('Operating System', '')
+        if os:
+            description += f", {os}"
+        
+        # Add battery life
+        battery_life = details.get('Battery Life', '')
+        if battery_life:
+            description += f", {battery_life} battery life"
+        
+        # Add weight information
+        weight = details.get('Weight', '')
+        if weight:
+            description += f", weighing {weight}"
+        
+        # Add key features
+        features = []
+        for key, value in details.items():
+            if key.startswith('Feature ') and value is True:
+                feature_name = key.replace('Feature ', '')
+                features.append(feature_name)
+        
+        if features:
+            description += f". Features include: {', '.join(features)}"
+        
+        # Add ports information
+        ports = []
+        for key, value in details.items():
+            if key.startswith('Has ') and value is True:
+                port_name = key.replace('Has ', '')
+                ports.append(port_name)
+        
+        if ports:
+            description += f". Ports include: {', '.join(ports)}"
+        
+        return description
+
+    def _extract_price_range(self, laptop: Dict) -> Tuple[Optional[float], Optional[str]]:
+        """
+        Extract the lowest price from a laptop's price table
+        Returns: (price_value, price_string)
+        """
+        price_value = None
+        price_string = None
+        
+        for table in laptop.get('tables', []):
+            if table.get('title') == 'Prices' and 'data' in table:
+                prices_data = table['data']
+                if isinstance(prices_data, list) and prices_data:
+                    # Find the lowest price
+                    lowest_price = None
+                    lowest_price_str = None
+                    
+                    for price_entry in prices_data:
+                        price_str = price_entry.get('price', '')
+                        if price_str and price_str != 'N/A':
+                            # Clean and convert price string to float
+                            clean_price = price_str.replace('£', '').replace(',', '')
+                            try:
+                                price_val = float(clean_price)
+                                if lowest_price is None or price_val < lowest_price:
+                                    lowest_price = price_val
+                                    lowest_price_str = price_str
+                            except ValueError:
+                                continue
+                    
+                    price_value = lowest_price
+                    price_string = lowest_price_str
+        
+        return (price_value, price_string)
+
+    def _parse_budget_range(self, budget_input: str) -> Tuple[Optional[float], Optional[float]]:
+        """
+        Parse budget input to extract lower and upper bounds
+        Returns: (min_budget, max_budget) in float values
+        """
+        # Remove currency symbols and commas
+        cleaned_input = budget_input.replace('£', '').replace('$', '').replace('€', '').replace(',', '').lower()
+        
+        # Look for range patterns like "500-1000" or "between 500 and 1000"
+        range_match = re.search(r'(\d+)\s*-\s*(\d+)', cleaned_input)
+        between_match = re.search(r'between\s+(\d+)\s+and\s+(\d+)', cleaned_input)
+        
+        if range_match:
+            return (float(range_match.group(1)), float(range_match.group(2)))
+        elif between_match:
+            return (float(between_match.group(1)), float(between_match.group(2)))
+        
+        # Look for "under X" or "less than X" patterns
+        under_match = re.search(r'(?:under|less than|below|max|maximum)\s+(\d+)', cleaned_input)
+        if under_match:
+            return (None, float(under_match.group(1)))
+        
+        # Look for "over X" or "more than X" patterns
+        over_match = re.search(r'(?:over|more than|above|min|minimum)\s+(\d+)', cleaned_input)
+        if over_match:
+            return (float(over_match.group(1)), None)
+        
+        # Look for just a number
+        number_match = re.search(r'(\d+)', cleaned_input)
+        if number_match:
+            budget = float(number_match.group(1))
+            # Assume 20% flexibility around the stated budget
+            return (budget * 0.8, budget * 1.2)
+        
+        # If no patterns match, return None
+        return (None, None)
+
+    def _filter_laptops(self, filters: Dict = None) -> List[Dict]:
+        """
+        Filter laptops based on user preferences
+        """
+        if not filters:
+            return self.laptops
+
+        filtered_laptops = self.laptops
+        logger.info(f"Starting filtering with {len(filtered_laptops)} laptops")
+        
+        # Filter by screen size
+        if 'size' in filters and filters['size']:
+            # Convert string sizes to actual sizes for comparison
+            size_values = []
+            for size in filters['size']:
+                try:
+                    # Handle ranges like "13-14"
+                    if isinstance(size, str) and '-' in size:
+                        min_size, max_size = map(float, size.split('-'))
+                        size_values.extend([min_size, max_size])
+                    else:
+                        size_values.append(float(str(size).replace('"', '')))
+                except ValueError:
+                    continue
+            
+            if size_values:
+                min_size = min(size_values)
+                max_size = max(size_values)
+                
+                size_filtered = []
+                for laptop in filtered_laptops:
+                    for table in laptop.get('tables', []):
+                        if table.get('title') == 'Screen' and 'data' in table:
+                            size_str = table['data'].get('Size', '')
+                            if size_str:
+                                try:
+                                    # Extract just the numeric part
+                                    laptop_size = float(re.search(r'(\d+(\.\d+)?)', size_str).group(1))
+                                    if min_size <= laptop_size <= max_size:
+                                        size_filtered.append(laptop)
+                                        break
+                                except (ValueError, AttributeError):
+                                    continue
+                filtered_laptops = size_filtered
+                logger.info(f"After size filtering: {len(filtered_laptops)} laptops")
+        
+        # Filter by brand
+        if 'brand' in filters and filters['brand']:
+            brand_filtered = []
+            brand_names = [b.lower() for b in filters['brand']]
+            
+            for laptop in filtered_laptops:
+                for table in laptop.get('tables', []):
+                    if table.get('title') == 'Product Details' and 'data' in table:
+                        brand = table['data'].get('Brand', '').lower()
+                        if brand and any(b in brand for b in brand_names):
+                            brand_filtered.append(laptop)
+                            break
+            filtered_laptops = brand_filtered
+            logger.info(f"After brand filtering: {len(filtered_laptops)} laptops")
+        
+        # Filter by budget
+        if 'budget' in filters and (filters['budget'][0] is not None or filters['budget'][1] is not None):
+            min_budget, max_budget = filters['budget']
+            
+            budget_filtered = []
+            
+            for laptop in filtered_laptops:
+                price_value, _ = self._extract_price_range(laptop)
+                
+                if price_value is not None:
+                    if (min_budget is None or price_value >= min_budget) and \
+                       (max_budget is None or price_value <= max_budget):
+                        budget_filtered.append(laptop)
+            
+            filtered_laptops = budget_filtered
+            logger.info(f"After budget filtering: {len(filtered_laptops)} laptops")
+        
+        # Filter by features
+        if 'features' in filters:
+            features = filters['features']
+            
+            # Filter by touchscreen
+            if 'touchscreen' in features:
+                feature_filtered = []
+                for laptop in filtered_laptops:
+                    for table in laptop.get('tables', []):
+                        if table.get('title') == 'Screen' and 'data' in table:
+                            touchscreen = table['data'].get('Touchscreen')
+                            if touchscreen is True:
+                                feature_filtered.append(laptop)
+                                break
+                filtered_laptops = feature_filtered
+                logger.info(f"After touchscreen filtering: {len(filtered_laptops)} laptops")
+            
+            # Filter by backlit keyboard
+            if 'backlit_keyboard' in features:
+                feature_filtered = []
+                for laptop in filtered_laptops:
+                    for table in laptop.get('tables', []):
+                        if table.get('title') == 'Features' and 'data' in table:
+                            backlit = table['data'].get('Backlit Keyboard')
+                            if backlit is True:
+                                feature_filtered.append(laptop)
+                                break
+                filtered_laptops = feature_filtered
+                logger.info(f"After backlit keyboard filtering: {len(filtered_laptops)} laptops")
+            
+            # Filter by numeric keyboard
+            if 'numeric_keyboard' in features:
+                feature_filtered = []
+                for laptop in filtered_laptops:
+                    for table in laptop.get('tables', []):
+                        if table.get('title') == 'Features' and 'data' in table:
+                            numeric = table['data'].get('Numeric Keyboard')
+                            if numeric is True:
+                                feature_filtered.append(laptop)
+                                break
+                filtered_laptops = feature_filtered
+                logger.info(f"After numeric keyboard filtering: {len(filtered_laptops)} laptops")
+            
+            # Filter by bluetooth
+            if 'bluetooth' in features:
+                feature_filtered = []
+                for laptop in filtered_laptops:
+                    for table in laptop.get('tables', []):
+                        if table.get('title') == 'Features' and 'data' in table:
+                            bluetooth = table['data'].get('Bluetooth')
+                            if bluetooth is True:
+                                feature_filtered.append(laptop)
+                                break
+                filtered_laptops = feature_filtered
+                logger.info(f"After bluetooth filtering: {len(filtered_laptops)} laptops")
+        
+        # Filter by ports
+        if 'ports' in filters:
+            ports = filters['ports']
+            
+            # Filter by USB-C
+            if 'usb_c' in ports:
+                ports_filtered = []
+                for laptop in filtered_laptops:
+                    for table in laptop.get('tables', []):
+                        if table.get('title') == 'Ports' and 'data' in table:
+                            usb_c = table['data'].get('USB Type-C')
+                            if usb_c is True:
+                                ports_filtered.append(laptop)
+                                break
+                filtered_laptops = ports_filtered
+                logger.info(f"After USB-C filtering: {len(filtered_laptops)} laptops")
+            
+            # Filter by HDMI
+            if 'hdmi' in ports:
+                ports_filtered = []
+                for laptop in filtered_laptops:
+                    for table in laptop.get('tables', []):
+                        if table.get('title') == 'Ports' and 'data' in table:
+                            hdmi = table['data'].get('HDMI')
+                            if hdmi is True:
+                                ports_filtered.append(laptop)
+                                break
+                filtered_laptops = ports_filtered
+                logger.info(f"After HDMI filtering: {len(filtered_laptops)} laptops")
+            
+            # Filter by Ethernet
+            if 'ethernet' in ports:
+                ports_filtered = []
+                for laptop in filtered_laptops:
+                    for table in laptop.get('tables', []):
+                        if table.get('title') == 'Ports' and 'data' in table:
+                            ethernet = table['data'].get('Ethernet (RJ45)')
+                            if ethernet is True:
+                                ports_filtered.append(laptop)
+                                break
+                filtered_laptops = ports_filtered
+                logger.info(f"After Ethernet filtering: {len(filtered_laptops)} laptops")
+            
+            # Filter by Thunderbolt
+            if 'thunderbolt' in ports:
+                ports_filtered = []
+                for laptop in filtered_laptops:
+                    for table in laptop.get('tables', []):
+                        if table.get('title') == 'Ports' and 'data' in table:
+                            thunderbolt = table['data'].get('Thunderbolt')
+                            if thunderbolt is True:
+                                ports_filtered.append(laptop)
+                                break
+                filtered_laptops = ports_filtered
+                logger.info(f"After Thunderbolt filtering: {len(filtered_laptops)} laptops")
+            
+            # Filter by Display Port
+            if 'display_port' in ports:
+                ports_filtered = []
+                for laptop in filtered_laptops:
+                    for table in laptop.get('tables', []):
+                        if table.get('title') == 'Ports' and 'data' in table:
+                            display_port = table['data'].get('Display Port')
+                            if display_port is True:
+                                ports_filtered.append(laptop)
+                                break
+                filtered_laptops = ports_filtered
+                logger.info(f"After Display Port filtering: {len(filtered_laptops)} laptops")
+        
+        # Filter by performance level
+        if 'performance' in filters:
+            perf_level = filters['performance']
+            
+            if perf_level == 'high':
+                # Look for high-end processors and GPUs
+                performance_filtered = []
+                high_end_patterns = [
+                    r'i7', r'i9', r'Ryzen 7', r'Ryzen 9', 
+                    r'RTX', r'Radeon RX', r'Quadro', 
+                    r'32GB', r'64GB'
+                ]
+                
+                for laptop in filtered_laptops:
+                    laptop_desc = self._format_laptop_description(laptop)
+                    if any(re.search(pattern, laptop_desc, re.IGNORECASE) for pattern in high_end_patterns):
+                        performance_filtered.append(laptop)
+                
+                filtered_laptops = performance_filtered if performance_filtered else filtered_laptops
+                logger.info(f"After high performance filtering: {len(filtered_laptops)} laptops")
+            
+            elif perf_level == 'medium':
+                # Look for mid-range processors and GPUs
+                performance_filtered = []
+                mid_range_patterns = [
+                    r'i5', r'Ryzen 5', 
+                    r'GTX', r'Radeon', 
+                    r'16GB'
+                ]
+                
+                for laptop in filtered_laptops:
+                    laptop_desc = self._format_laptop_description(laptop)
+                    if any(re.search(pattern, laptop_desc, re.IGNORECASE) for pattern in mid_range_patterns):
+                        performance_filtered.append(laptop)
+                
+                filtered_laptops = performance_filtered if performance_filtered else filtered_laptops
+                logger.info(f"After medium performance filtering: {len(filtered_laptops)} laptops")
+            
+            elif perf_level == 'basic':
+                # Look for entry-level processors and integrated graphics
+                performance_filtered = []
+                basic_patterns = [
+                    r'i3', r'Celeron', r'Pentium', r'Ryzen 3', r'A\d+', 
+                    r'UHD Graphics', r'Intel Graphics', r'AMD Graphics', 
+                    r'4GB', r'8GB'
+                ]
+                
+                for laptop in filtered_laptops:
+                    laptop_desc = self._format_laptop_description(laptop)
+                    if any(re.search(pattern, laptop_desc, re.IGNORECASE) for pattern in basic_patterns):
+                        performance_filtered.append(laptop)
+                
+                filtered_laptops = performance_filtered if performance_filtered else filtered_laptops
+                logger.info(f"After basic performance filtering: {len(filtered_laptops)} laptops")
+        
+        # If no laptops left after filtering, return a small portion of the original dataset
+        if not filtered_laptops and self.laptops:
+            logger.warning("No laptops left after filtering, returning a subset of all laptops")
+            return self.laptops[:min(5, len(self.laptops))]
+        
+        return filtered_laptops
+
+    def _get_laptop_embeddings(self, laptops: List[Dict]) -> List[np.ndarray]:
+        """
+        Create embeddings for laptop descriptions
+        """
+        descriptions = [self._format_laptop_description(laptop) for laptop in laptops]
+        return self.model.encode(descriptions)
+
+    def _extract_features_from_input(self, user_input: str) -> Dict:
+        """
+        Extract feature preferences from user input
+        Returns a dictionary of features and their values
+        """
+        features = {}
+        
+        # Check for touchscreen
+        if re.search(r'\b(?:touch|touchscreen)\b', user_input.lower()):
+            features['touchscreen'] = True
+        
+        # Check for backlit keyboard
+        if re.search(r'\b(?:backlit|lit keyboard|keyboard lighting)\b', user_input.lower()):
+            features['backlit_keyboard'] = True
+        
+        # Check for numeric keypad
+        if re.search(r'\b(?:numeric|numpad|number pad|keypad)\b', user_input.lower()):
+            features['numeric_keyboard'] = True
+        
+        # Check for bluetooth
+        if re.search(r'\bbluetooth\b', user_input.lower()):
+            features['bluetooth'] = True
+        
+        # Check for battery life
+        battery_match = re.search(r'(?:battery|battery life|long battery|last\w*\s+\d+\s+hours)', user_input.lower())
+        if battery_match:
+            features['battery_life'] = True
+        
+        return features
+
+    def _extract_ports_from_input(self, user_input: str) -> Dict:
+        """
+        Extract port preferences from user input
+        Returns a dictionary of ports and their values
+        """
+        ports = {}
+        
+        # Check for USB-C
+        if re.search(r'\b(?:usb-c|usb c|type-c|type c)\b', user_input.lower()):
+            ports['usb_c'] = True
+        
+        # Check for HDMI
+        if re.search(r'\bhdmi\b', user_input.lower()):
+            ports['hdmi'] = True
+        
+        # Check for Ethernet
+        if re.search(r'\b(?:ethernet|lan|rj45|network port)\b', user_input.lower()):
+            ports['ethernet'] = True
+        
+        # Check for Thunderbolt
+        if re.search(r'\b(?:thunderbolt)\b', user_input.lower()):
+            ports['thunderbolt'] = True
+        
+        # Check for Display Port
+        if re.search(r'\b(?:displayport|display port)\b', user_input.lower()):
+            ports['display_port'] = True
+        
+        return ports
+
+    def _parse_size_preference(self, user_input: str) -> List[Union[int, str]]:
+        """
+        Parse screen size preferences from user input
+        Returns a list of sizes or size ranges
+        """
+        sizes = []
+        
+        # Extract exact sizes like "13 inch", "15.6\"", etc.
+        size_matches = re.findall(r'(\d+(\.\d+)?)["\s]*(?:inch|"|inches)?', user_input)
+        for match in size_matches:
+            try:
+                sizes.append(float(match[0]))
+            except ValueError:
+                continue
+        
+        # Look for size ranges like "13-15 inch"
+        range_matches = re.findall(r'(\d+(\.\d+)?)\s*-\s*(\d+(\.\d+)?)["\s]*(?:inch|"|inches)?', user_input)
+        for match in range_matches:
+            try:
+                sizes.append(f"{match[0]}-{match[2]}")
+            except (ValueError, IndexError):
+                continue
+        
+        # Look for size descriptions
+        if re.search(r'\b(?:small|compact|portable)\b', user_input.lower()):
+            sizes.extend([13, 14])
+        
+        if re.search(r'\b(?:medium|standard)\b', user_input.lower()):
+            sizes.extend([15, 15.6])
+        
+        if re.search(r'\b(?:large|big|desktop replacement)\b', user_input.lower()):
+            sizes.extend([16, 17])
+        
+        return sizes
+
+    def _extract_brands_from_input(self, user_input: str) -> List[str]:
+        """
+        Extract brand preferences from user input
+        Returns a list of brand names
+        """
+        brands = []
+        common_brands = [
+            "dell", "lenovo", "hp", "asus", "acer", "apple", "msi", 
+            "samsung", "microsoft", "lg", "razer", "toshiba", "alienware",
+            "huawei", "sony", "fujitsu", "gigabyte", "chuwi"
+        ]
+        
+        # Convert input to lowercase for case-insensitive comparison
+        user_input_lower = user_input.lower()
+        
+        # Search for brand mentions
+        for brand in common_brands:
+            if brand in user_input_lower:
+                # Verify it's not part of another word
+                if re.search(r'\b' + brand + r'\b', user_input_lower):
+                    brands.append(brand)
+        
+        return brands
+
+    def _extract_performance_level(self, user_input: str) -> str:
+        """
+        Determine the performance level preference from user input
+        Returns: 'high', 'medium', or 'basic'
+        """
+        user_input_lower = user_input.lower()
+        
+        # High performance indicators
+        high_perf = [
+            "high performance", "powerful", "fast", "gaming", "rendering",
+            "video editing", "3d modeling", "simulation", "high-end", "top spec",
+            "best performance", "fastest", "i7", "i9", "ryzen 7", "ryzen 9"
+        ]
+        
+        # Medium performance indicators
+        medium_perf = [
+            "medium performance", "balanced", "mid-range", "moderate",
+            "good performance", "decent", "i5", "ryzen 5"
+        ]
+        
+        # Basic performance indicators
+        basic_perf = [
+            "basic", "budget", "entry level", "simple tasks", "browsing",
+            "office work", "light use", "casual", "everyday", "i3", "celeron"
+        ]
+        
+        # Count matches for each category
+        high_count = sum(1 for term in high_perf if term in user_input_lower)
+        medium_count = sum(1 for term in medium_perf if term in user_input_lower)
+        basic_count = sum(1 for term in basic_perf if term in user_input_lower)
+        
+        # Determine the highest matching category
+        if high_count > medium_count and high_count > basic_count:
+            return "high"
+        elif medium_count > basic_count:
+            return "medium"
+        else:
+            return "basic"
+
+    def _keyword_based_use_case(self, user_input: str) -> str:
+        """
+        Use keyword matching as a fallback for use case detection
+        """
+        user_input = user_input.lower()
+        
+        # Define keywords for each category
+        keywords = {
+            "gaming": ["gaming", "game", "play", "fps", "aaa", "shooter", "mmo", "rpg", "esports", "stream"],
+            "business": ["business", "work", "office", "professional", "meetings", "presentation", "teams", "zoom"],
+            "student": ["student", "school", "college", "university", "education", "study", "homework", "notes"],
+            "design": ["design", "creative", "art", "photo", "video", "editing", "creator", "adobe", "illustrator", "photoshop"],
+            "programming": ["programming", "coding", "development", "software", "code", "developer", "programming", "ide"],
+            "portable": ["portable", "light", "travel", "thin", "lightweight", "carry", "commute", "mobility"],
+            "entertainment": ["entertainment", "media", "movies", "streaming", "netflix", "videos", "watch", "content"],
+            "content_creation": ["content", "creator", "youtube", "stream", "render", "production", "vlog"],
+            "budget": ["budget", "cheap", "affordable", "inexpensive", "economical", "low cost", "value"],
+            "premium": ["premium", "high-end", "luxury", "best", "top", "flagship", "expensive"],
+            "workstation": ["workstation", "cad", "engineering", "simulation", "data science", "virtualization"],
+            "ultrabook": ["ultrabook", "ultraportable", "thin and light", "premium build", "sleek"]
+        }
+        
+        # Count keyword matches for each category
+        category_scores = {category: 0 for category in keywords}
+        
+        for category, words in keywords.items():
+            for word in words:
+                # Use word boundary to match whole words
+                matches = len(re.findall(r'\b' + word + r'\b', user_input))
+                category_scores[category] += matches
+                
+        # Find the category with the highest score
+        if max(category_scores.values()) > 0:
+            return max(category_scores.items(), key=lambda x: x[1])[0]
+        
+        # Default to "student" if no keywords match
+        return "student"
+
+    def _analyze_preferences(self, user_input: str) -> Dict:
+        """
+        Analyze user input for all possible preferences in one go
+        """
+        preferences = {}
+        
+        # Extract use case using embeddings first, then keywords as fallback
+        user_embedding = self.model.encode(user_input)
+        similarities = {
+            use_case: cosine_similarity([user_embedding], [emb])[0][0]
+            for use_case, emb in self.feature_embeddings.items()
+        }
+        most_relevant = max(similarities.items(), key=lambda x: x[1])
+        
+        # Use embedding if similarity is high enough, otherwise keyword matching
+        if most_relevant[1] < 0.3:  # Threshold for low confidence
+            preferences['use_case'] = self._keyword_based_use_case(user_input)
+        else:
+            preferences['use_case'] = most_relevant[0]
+        
+        # Extract screen size preferences
+        size_pref = self._parse_size_preference(user_input)
+        if size_pref:
+            preferences['size'] = size_pref
+        
+        # Extract brand preferences
+        brand_pref = self._extract_brands_from_input(user_input)
+        if brand_pref:
+            preferences['brand'] = brand_pref
+        
+        # Extract budget range
+        budget_match = re.search(r'\b(?:budget|price|cost|spend|around|under|below|max)\b[^.]*?(\d[\d,.]*)', user_input, re.IGNORECASE)
+        if budget_match:
+            budget_input = budget_match.group(0)
+            min_budget, max_budget = self._parse_budget_range(budget_input)
+            if min_budget is not None or max_budget is not None:
+                preferences['budget'] = (min_budget, max_budget)
+        
+        # Extract feature preferences
+        feature_pref = self._extract_features_from_input(user_input)
+        if feature_pref:
+            preferences['features'] = feature_pref
+        
+        # Extract port preferences
+        ports_pref = self._extract_ports_from_input(user_input)
+        if ports_pref:
+            preferences['ports'] = ports_pref
+        
+        # Extract performance level
+        preferences['performance'] = self._extract_performance_level(user_input)
+        
+        return preferences
+
+    def process_input(self, user_input: str) -> Dict:
+        """
+        Process user input and return appropriate response
+        """
+        response = {
+            "message": "",
+            "recommendations": [],
+            "next_question": None,
+            "detected_preferences": {}
+        }
+
+        # Check for restart or new search request
+        if any(term in user_input.lower() for term in ["restart", "start over", "new search", "new recommendation"]):
+            self.reset_conversation()
+            response["message"] = "Let's start over. " + self.questions["initial"]
+            self.conversation_state = "initial"
+            return response
+
+        # Process based on conversation state
+        if self.conversation_state == "initial":
+            # Analyze initial input comprehensively
+            preferences = self._analyze_preferences(user_input)
+            self.user_preferences.update(preferences)
+            
+            # Provide information about detected preferences
+            use_case = self.user_preferences.get('use_case', '')
+            response["detected_preferences"] = preferences
+            response["message"] = f"I understand you're looking for a {use_case} laptop."
+            
+            # Add details about detected preferences
+            if 'brand' in preferences:
+                response["message"] += f" You mentioned {', '.join(preferences['brand'])} brand(s)."
+            
+            if 'size' in preferences:
+                response["message"] += f" You're interested in {', '.join(str(s) for s in preferences['size'])}\" screen size."
+            
+            if 'budget' in preferences:
+                min_budget, max_budget = preferences['budget']
+                if min_budget is not None and max_budget is not None:
+                    response["message"] += f" Your budget is between £{min_budget:.0f} and £{max_budget:.0f}."
+                elif min_budget is not None:
+                    response["message"] += f" You're looking to spend above £{min_budget:.0f}."
+                else:
+                    response["message"] += f" You're looking to spend under £{max_budget:.0f}."
+            
+            if 'performance' in preferences:
+                response["message"] += f" You need {preferences['performance']} performance."
+            
+            # Check if we have enough information to provide recommendations
+            if len(preferences) >= 2:
+                # Apply filters based on detected preferences
+                filters = {}
+                
+                if 'size' in preferences:
+                    filters['size'] = preferences['size']
+                
+                if 'brand' in preferences:
+                    filters['brand'] = preferences['brand']
+                
+                if 'budget' in preferences:
+                    filters['budget'] = preferences['budget']
+                
+                if 'features' in preferences:
+                    filters['features'] = preferences['features']
+                
+                if 'ports' in preferences:
+                    filters['ports'] = preferences['ports']
+                
+                if 'performance' in preferences:
+                    filters['performance'] = preferences['performance']
+                
+                filtered_laptops = self._filter_laptops(filters)
+                
+                if filtered_laptops:
+                    # Get recommendations based on use case and filtered laptops
+                    recommendations = self._get_recommendations(filtered_laptops, preferences.get('use_case', 'student'), 3)
+                    
+                    if recommendations:
+                        response["recommendations"] = recommendations
+                        self.last_recommendations = recommendations
+                        response["message"] += " Based on your preferences, here are some initial recommendations:"
+                        self.conversation_state = "refine"
+                        response["next_question"] = "Would you like to refine your search criteria or see more options?"
+                    else:
+                        response["message"] += " I couldn't find laptops matching all your criteria. Let me ask you more questions to provide better recommendations."
+                        self.conversation_state = "budget"
+                        response["next_question"] = self.questions["budget"]
+                else:
+                    response["message"] += " I need more information to provide good recommendations."
+                    self.conversation_state = "size"
+                    response["next_question"] = self.questions["size"]
+            else:
+                # Not enough information yet
+                self.conversation_state = "size"
+                response["next_question"] = self.questions["size"]
+        
+        elif self.conversation_state == "size":
+            # Extract screen size preference
+            size_pref = self._parse_size_preference(user_input)
+            
+            if size_pref:
+                self.user_preferences['size'] = size_pref
+                response["message"] = f"Got it, you prefer a {', '.join(str(s) for s in size_pref)}\" screen size."
+            else:
+                response["message"] = "I'll note that screen size isn't a priority for you."
+            
+            # Move to next question
+            self.conversation_state = "budget"
+            response["next_question"] = self.questions["budget"]
+        
+        elif self.conversation_state == "budget":
+            # Extract budget preference
+            budget_input = user_input
+            min_budget, max_budget = self._parse_budget_range(budget_input)
+            
+            if min_budget is not None or max_budget is not None:
+                self.user_preferences['budget'] = (min_budget, max_budget)
+                
+                if min_budget is not None and max_budget is not None:
+                    response["message"] = f"I'll look for laptops between £{min_budget:.0f} and £{max_budget:.0f}."
+                elif min_budget is not None:
+                    response["message"] = f"I'll look for laptops over £{min_budget:.0f}."
+                else:
+                    response["message"] = f"I'll look for laptops under £{max_budget:.0f}."
+            else:
+                response["message"] = "I'll consider a range of price points for you."
+            
+            # Move to brand question
+            self.conversation_state = "brand"
+            response["next_question"] = self.questions["brand"]
+        
+        elif self.conversation_state == "brand":
+            # Extract brand preferences
+            if any(term in user_input.lower() for term in ["no", "none", "any", "no preference", "doesn't matter"]):
+                response["message"] = "Got it, I won't filter by brand."
+            else:
+                brands = self._extract_brands_from_input(user_input)
+                if brands:
+                    self.user_preferences['brand'] = brands
+                    response["message"] = f"I'll focus on {', '.join(brands)} laptops."
+                else:
+                    response["message"] = "I couldn't identify specific brand preferences. I'll show options from various manufacturers."
+            
+            # Move to features question
+            self.conversation_state = "features"
+            response["next_question"] = self.questions["features"]
+        
+        elif self.conversation_state == "features":
+            # Extract feature preferences
+            features = self._extract_features_from_input(user_input)
+            ports = self._extract_ports_from_input(user_input)
+            
+            if features:
+                self.user_preferences['features'] = features
+                feature_list = ", ".join(features.keys())
+                response["message"] = f"I'll look for laptops with {feature_list}."
+            else:
+                response["message"] = "No specific features noted."
+            
+            if ports:
+                self.user_preferences['ports'] = ports
+                if features:
+                    response["message"] += f" And I'll ensure they have the requested ports: {', '.join(ports.keys())}."
+                else:
+                    response["message"] = f"I'll focus on laptops with the requested ports: {', '.join(ports.keys())}."
+            
+            # Move to performance question
+            self.conversation_state = "performance"
+            response["next_question"] = self.questions["performance"]
+        
+        elif self.conversation_state == "performance":
+            # Extract performance level
+            if any(term in user_input.lower() for term in ["high", "powerful", "gaming", "top", "best"]):
+                self.user_preferences['performance'] = "high"
+                response["message"] = "I'll look for high-performance laptops with powerful processors and graphics."
+            elif any(term in user_input.lower() for term in ["medium", "mid", "balanced", "moderate"]):
+                self.user_preferences['performance'] = "medium"
+                response["message"] = "I'll look for mid-range laptops with good balanced performance."
+            else:
+                self.user_preferences['performance'] = "basic"
+                response["message"] = "I'll focus on laptops with basic performance suitable for everyday tasks."
+            
+            # Generate recommendations based on all preferences
+            filters = {}
+            
+            if 'size' in self.user_preferences:
+                filters['size'] = self.user_preferences['size']
+            
+            if 'brand' in self.user_preferences:
+                filters['brand'] = self.user_preferences['brand']
+            
+            if 'budget' in self.user_preferences:
+                filters['budget'] = self.user_preferences['budget']
+            
+            if 'features' in self.user_preferences:
+                filters['features'] = self.user_preferences['features']
+            
+            if 'ports' in self.user_preferences:
+                filters['ports'] = self.user_preferences['ports']
+            
+            if 'performance' in self.user_preferences:
+                filters['performance'] = self.user_preferences['performance']
+            
+            filtered_laptops = self._filter_laptops(filters)
+            
+            if filtered_laptops:
+                # Get recommendations based on use case and filtered laptops
+                recommendations = self._get_recommendations(filtered_laptops, self.user_preferences.get('use_case', 'student'), 5)
+                
+                if recommendations:
+                    response["recommendations"] = recommendations
+                    self.last_recommendations = recommendations
+                    response["message"] += " Here are your personalized recommendations:"
+                else:
+                    response["message"] += " I couldn't find laptops matching all your criteria. Let me show you some alternatives."
+                    # Relax some constraints
+                    relaxed_filters = {k: v for k, v in filters.items() if k not in ['features', 'ports']}
+                    relaxed_laptops = self._filter_laptops(relaxed_filters)
+                    recommendations = self._get_recommendations(relaxed_laptops, self.user_preferences.get('use_case', 'student'), 3)
+                    response["recommendations"] = recommendations
+                    self.last_recommendations = recommendations
+            else:
+                response["message"] += " I couldn't find laptops matching all your criteria. Let me show you some alternatives."
+                # Try with minimal filtering
+                minimal_filters = {}
+                if 'budget' in filters:
+                    minimal_filters['budget'] = filters['budget']
+                if 'brand' in filters:
+                    minimal_filters['brand'] = filters['brand']
+                
+                minimal_laptops = self._filter_laptops(minimal_filters)
+                recommendations = self._get_recommendations(minimal_laptops, self.user_preferences.get('use_case', 'student'), 3)
+                response["recommendations"] = recommendations
+                self.last_recommendations = recommendations
+            
+            self.conversation_state = "refine"
+            response["next_question"] = "Would you like to refine your search or see more options?"
+        
+        elif self.conversation_state == "refine":
+            # Handle refinement requests or requests for more options
+            if any(term in user_input.lower() for term in ["more", "additional", "other", "alternative", "show more"]):
+                # Show more recommendations
+                use_case = self.user_preferences.get('use_case', 'student')
+                filters = {}
+                
+                if 'size' in self.user_preferences:
+                    filters['size'] = self.user_preferences['size']
+                
+                if 'brand' in self.user_preferences:
+                    filters['brand'] = self.user_preferences['brand']
+                
+                if 'budget' in self.user_preferences:
+                    filters['budget'] = self.user_preferences['budget']
+                
+                if 'features' in self.user_preferences:
+                    filters['features'] = self.user_preferences['features']
+                
+                if 'ports' in self.user_preferences:
+                    filters['ports'] = self.user_preferences['ports']
+                
+                filtered_laptops = self._filter_laptops(filters)
+                
+                # Skip laptops that were already recommended
+                previous_names = [rec['name'] for rec in self.last_recommendations]
+                new_laptops = [laptop for laptop in filtered_laptops if not any(
+                    self._get_laptop_name(laptop) == name for name in previous_names
+                )]
+                
+                if new_laptops:
+                    recommendations = self._get_recommendations(new_laptops, use_case, 3)
+                    response["recommendations"] = recommendations
+                    self.last_recommendations.extend(recommendations)
+                    response["message"] = "Here are some additional options that might interest you:"
+                else:
+                    response["message"] = "I don't have any more recommendations matching your criteria. Would you like to broaden your search?"
+            
+            # Handle specific refinement requests
+            elif any(term in user_input.lower() for term in ["cheaper", "less expensive", "lower price", "budget", "affordable"]):
+                # Find cheaper options
+                if 'budget' in self.user_preferences:
+                    min_budget, max_budget = self.user_preferences['budget']
+                    if max_budget is not None:
+                        # Reduce max budget by 25%
+                        new_max = max_budget * 0.75
+                        self.user_preferences['budget'] = (min_budget, new_max)
+                        response["message"] = f"Looking for more affordable options under £{new_max:.0f}:"
+                else:
+                    # Set a default budget cap
+                    self.user_preferences['budget'] = (None, 800)
+                    response["message"] = "Looking for more affordable options:"
+                
+                # Apply the new budget filter
+                filters = {}
+                if 'size' in self.user_preferences:
+                    filters['size'] = self.user_preferences['size']
+                if 'brand' in self.user_preferences:
+                    filters['brand'] = self.user_preferences['brand']
+                filters['budget'] = self.user_preferences['budget']
+                
+                filtered_laptops = self._filter_laptops(filters)
+                recommendations = self._get_recommendations(filtered_laptops, self.user_preferences.get('use_case', 'student'), 3)
+                response["recommendations"] = recommendations
+                self.last_recommendations = recommendations
+            
+            elif any(term in user_input.lower() for term in ["expensive", "higher price", "premium", "better", "high-end"]):
+                # Find more premium options
+                if 'budget' in self.user_preferences:
+                    min_budget, max_budget = self.user_preferences['budget']
+                    if min_budget is not None:
+                        # Increase min budget by 25%
+                        new_min = min_budget * 1.25
+                        self.user_preferences['budget'] = (new_min, max_budget)
+                        response["message"] = f"Looking for more premium options above £{new_min:.0f}:"
+                else:
+                    # Set a default budget floor
+                    self.user_preferences['budget'] = (1000, None)
+                    response["message"] = "Looking for more premium options:"
+                
+                # Apply the new budget filter
+                filters = {}
+                if 'size' in self.user_preferences:
+                    filters['size'] = self.user_preferences['size']
+                if 'brand' in self.user_preferences:
+                    filters['brand'] = self.user_preferences['brand']
+                filters['budget'] = self.user_preferences['budget']
+                
+                filtered_laptops = self._filter_laptops(filters)
+                recommendations = self._get_recommendations(filtered_laptops, self.user_preferences.get('use_case', 'student'), 3)
+                response["recommendations"] = recommendations
+                self.last_recommendations = recommendations
+            
+            elif any(term in user_input.lower() for term in ["smaller", "more portable", "lighter", "portable"]):
+                # Find smaller, more portable options
+                smaller_sizes = []
+                if 'size' in self.user_preferences:
+                    current_sizes = self.user_preferences['size']
+                    for size in current_sizes:
+                        try:
+                            if isinstance(size, (int, float)) and size > 14:
+                                smaller_sizes.extend([13, 14])
+                            elif isinstance(size, str) and '-' in size:
+                                min_size, max_size = map(float, size.split('-'))
+                                if max_size > 14:
+                                    smaller_sizes.extend([13, 14])
+                        except (ValueError, TypeError):
+                            pass
+                
+                if not smaller_sizes:
+                    smaller_sizes = [13, 14]
+                
+                self.user_preferences['size'] = smaller_sizes
+                response["message"] = "Looking for smaller, more portable laptops:"
+                
+                # Apply the new size filter
+                filters = {}
+                filters['size'] = self.user_preferences['size']
+                if 'brand' in self.user_preferences:
+                    filters['brand'] = self.user_preferences['brand']
+                if 'budget' in self.user_preferences:
+                    filters['budget'] = self.user_preferences['budget']
+                
+                filtered_laptops = self._filter_laptops(filters)
+                recommendations = self._get_recommendations(filtered_laptops, 'portable', 3)
+                response["recommendations"] = recommendations
+                self.last_recommendations = recommendations
+            
+            elif any(term in user_input.lower() for term in ["larger", "bigger screen", "larger display"]):
+                # Find laptops with larger screens
+                larger_sizes = []
+                if 'size' in self.user_preferences:
+                    current_sizes = self.user_preferences['size']
+                    for size in current_sizes:
+                        try:
+                            if isinstance(size, (int, float)) and size < 15:
+                                larger_sizes.extend([15.6, 16, 17])
+                            elif isinstance(size, str) and '-' in size:
+                                min_size, max_size = map(float, size.split('-'))
+                                if min_size < 15:
+                                    larger_sizes.extend([15.6, 16, 17])
+                        except (ValueError, TypeError):
+                            pass
+                
+                if not larger_sizes:
+                    larger_sizes = [15.6, 16, 17]
+                
+                self.user_preferences['size'] = larger_sizes
+                response["message"] = "Looking for laptops with larger screens:"
+                
+                # Apply the new size filter
+                filters = {}
+                filters['size'] = self.user_preferences['size']
+                if 'brand' in self.user_preferences:
+                    filters['brand'] = self.user_preferences['brand']
+                if 'budget' in self.user_preferences:
+                    filters['budget'] = self.user_preferences['budget']
+                
+                filtered_laptops = self._filter_laptops(filters)
+                recommendations = self._get_recommendations(filtered_laptops, self.user_preferences.get('use_case', 'student'), 3)
+                response["recommendations"] = recommendations
+                self.last_recommendations = recommendations
+            
+            elif any(term in user_input.lower() for term in ["gaming", "games", "play games"]):
+                # Find gaming laptops
+                self.user_preferences['use_case'] = 'gaming'
+                self.user_preferences['performance'] = 'high'
+                
+                response["message"] = "Looking for gaming laptops with high performance:"
+                
+                # Apply gaming filters
+                filters = {}
+                if 'size' in self.user_preferences:
+                    filters['size'] = self.user_preferences['size']
+                if 'brand' in self.user_preferences:
+                    filters['brand'] = self.user_preferences['brand']
+                if 'budget' in self.user_preferences:
+                    filters['budget'] = self.user_preferences['budget']
+                filters['performance'] = 'high'
+                
+                filtered_laptops = self._filter_laptops(filters)
+                recommendations = self._get_recommendations(filtered_laptops, 'gaming', 3)
+                response["recommendations"] = recommendations
+                self.last_recommendations = recommendations
+            
+            elif any(term in user_input.lower() for term in ["business", "work", "office", "professional"]):
+                # Find business laptops
+                self.user_preferences['use_case'] = 'business'
+                
+                response["message"] = "Looking for business laptops with professional features:"
+                
+                # Apply business filters
+                filters = {}
+                if 'size' in self.user_preferences:
+                    filters['size'] = self.user_preferences['size']
+                if 'brand' in self.user_preferences:
+                    filters['brand'] = self.user_preferences['brand']
+                if 'budget' in self.user_preferences:
+                    filters['budget'] = self.user_preferences['budget']
+                
+                filtered_laptops = self._filter_laptops(filters)
+                recommendations = self._get_recommendations(filtered_laptops, 'business', 3)
+                response["recommendations"] = recommendations
+                self.last_recommendations = recommendations
+            
+            else:
+                # Process as a new input to refine search
+                new_preferences = self._analyze_preferences(user_input)
+                
+                # Update existing preferences with new ones
+                self.user_preferences.update(new_preferences)
+                
+                response["message"] = "I've updated your preferences. Here are new recommendations:"
+                
+                # Apply updated filters
+                filters = {}
+                
+                if 'size' in self.user_preferences:
+                    filters['size'] = self.user_preferences['size']
+                
+                if 'brand' in self.user_preferences:
+                    filters['brand'] = self.user_preferences['brand']
+                
+                if 'budget' in self.user_preferences:
+                    filters['budget'] = self.user_preferences['budget']
+                
+                if 'features' in self.user_preferences:
+                    filters['features'] = self.user_preferences['features']
+                
+                if 'ports' in self.user_preferences:
+                    filters['ports'] = self.user_preferences['ports']
+                
+                if 'performance' in self.user_preferences:
+                    filters['performance'] = self.user_preferences['performance']
+                
+                filtered_laptops = self._filter_laptops(filters)
+                recommendations = self._get_recommendations(filtered_laptops, self.user_preferences.get('use_case', 'student'), 3)
+                response["recommendations"] = recommendations
+                self.last_recommendations = recommendations
+        
+        return response
+
+    def _get_recommendations(self, laptops: List[Dict], use_case: str, count: int = 3) -> List[Dict]:
+        """
+        Get top laptop recommendations based on use case
+        """
+        if not laptops:
+            return []
+        
+        laptop_embeddings = self._get_laptop_embeddings(laptops)
+        use_case_embedding = self.feature_embeddings.get(use_case, self.feature_embeddings['student'])
+        
+        similarities = cosine_similarity([use_case_embedding], laptop_embeddings)[0]
+        
+        # Get top indices but limit to available laptops
+        count = min(count, len(laptops))
+        if count == 0:
+            return []
+            
+        top_indices = np.argsort(similarities)[-count:][::-1]
+        
+        recommendations = []
+        for idx in top_indices:
+            laptop = laptops[idx]
+            brand = ""
+            name = ""
+            
+            # Extract brand and name
+            for table in laptop.get('tables', []):
+                if table.get('title') == 'Product Details' and 'data' in table:
+                    brand = table['data'].get('Brand', '')
+                    name = table['data'].get('Name', '')
+                    break
+            
+            if brand and name:
+                # Extract price information
+                price_value, price_string = self._extract_price_range(laptop)
+                
+                # Get key specifications for this laptop
+                key_specs = self._get_key_specs(laptop)
+                
+                recommendations.append({
+                    'brand': brand,
+                    'name': name,
+                    'specs': self._format_laptop_description(laptop),
+                    'price': price_string if price_string else "Price not available",
+                    'key_specs': key_specs,
+                    'similarity_score': similarities[idx]
+                })
+        
+        return recommendations
+
+    def _get_key_specs(self, laptop: Dict) -> Dict:
+        """
+        Extract key specifications from a laptop for quick comparison
+        """
+        key_specs = {}
+        
+        # Processor
+        for table in laptop.get('tables', []):
+            if table.get('title') == 'Specs' and 'data' in table:
+                processor_brand = table['data'].get('Processor Brand', '')
+                processor_name = table['data'].get('Processor Name', '')
+                if processor_brand and processor_name:
+                    key_specs['Processor'] = f"{processor_brand} {processor_name}"
+                
+                # Graphics
+                graphics = table['data'].get('Graphics Card', '')
+                if graphics:
+                    key_specs['Graphics'] = graphics
+                
+                # RAM
+                memory = table['data'].get('Memory Installed', '')
+                if memory:
+                    key_specs['RAM'] = memory
+                
+                # Storage
+                storage = table['data'].get('Storage', '')
+                if storage:
+                    key_specs['Storage'] = storage
+        
+        # Screen
+        for table in laptop.get('tables', []):
+            if table.get('title') == 'Screen' and 'data' in table:
+                screen_size = table['data'].get('Size', '')
+                screen_resolution = table['data'].get('Resolution', '')
+                if screen_size:
+                    key_specs['Screen'] = screen_size
+                    if screen_resolution:
+                        key_specs['Screen'] += f" {screen_resolution}"
+                
+                refresh_rate = table['data'].get('Refresh Rate', '')
+                if refresh_rate:
+                    key_specs['Refresh Rate'] = refresh_rate
+        
+        # Battery
+        for table in laptop.get('tables', []):
+            if (table.get('title') == 'Features' or table.get('title') == 'Misc') and 'data' in table:
+                battery = table['data'].get('Battery Life', '')
+                if battery:
+                    key_specs['Battery'] = battery
+        
+        # Weight
+        for table in laptop.get('tables', []):
+            if table.get('title') == 'Product Details' and 'data' in table:
+                weight = table['data'].get('Weight', '')
+                if weight:
+                    key_specs['Weight'] = weight
+        
+        return key_specs
+
+    def _get_laptop_name(self, laptop: Dict) -> str:
+        """Helper to get a laptop's full name (brand + name)"""
+        brand = ""
+        name = ""
+        
+        for table in laptop.get('tables', []):
+            if table.get('title') == 'Product Details' and 'data' in table:
+                brand = table['data'].get('Brand', '')
+                name = table['data'].get('Name', '')
+                break
+        
+        return f"{brand} {name}".strip()
+
+    def reset_conversation(self):
+        """
+        Reset the conversation state and user preferences
+        """
+        self.conversation_state = "initial"
+        self.user_preferences = {}
+        self.last_recommendations = []
 
 def converse_with_chatbot():
     """
