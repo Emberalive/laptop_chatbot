@@ -10,20 +10,20 @@ from loguru import logger
 from datetime import datetime
 from DBAccess.dbAccess import get_db_connection, release_db_connection, init_db_pool
 from DBAccess.database_persistence_V3 import insert_configuration, insert_laptop_model,  insert_gpu_records, insert_cpu_records,  bulk_insert_storage, bulk_insert_features,  bulk_insert_ports, bulk_insert_screens
-
+from dotenv import load_dotenv
+load_dotenv()
 
 logger.remove()
 
 # Ensure the logs directory exists
 os.makedirs(os.path.join(os.path.dirname(__file__), "logs"), exist_ok=True)
 
-
 logger.add(sys.stdout, format="{time} {level} {message}")
 logger.add(os.path.join(os.path.dirname(__file__), "logs", "comparison.log"),
            rotation="10 MB", retention="35 days", compression="zip")
 logger = logger.bind(user="comparer")
 
-def get_old_path(directory='/home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data'):
+def get_old_path(directory=os.getenv('OLD_JSON_DIR')):
     # regex to extract data from filename
     pattern = re.compile(r"scrape_(\d{4}-\d{2}-\d{2})\.json")
     logger.info(f"looking for filename patterns with {pattern}")
@@ -52,7 +52,7 @@ def get_old_path(directory='/home/samuel/laptop_chatbot/Sam/server_side/scrapers
 
 # if the output says items have been removed, then the items are in the old file and not the new
 # if the output says items have been added then the items are not in the old file, but they are in the new file
-def compare_new_and_old (old_path, new_path=os.getenv('OLD_JSON')):
+def compare_new_and_old (old_path, new_path=os.getenv('NEW_JSON')):
     logger.info(f"starting the comparison between the old: {old_path} and new: {new_path} json files")
     try:
         with open(new_path) as f1, \
