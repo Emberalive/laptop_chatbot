@@ -180,10 +180,21 @@ function exitComparisonMode() {
 
 function toggleComparisonSelection() {
   // Get all recommended laptops from the chat store
-  const allLaptops = chatStore.currentRecommendations || [];
+  const allLaptops = chatStore.allRecommendations || [];
+
+  const uniqueLaptops = [];
+  const seen = new Set();
+
+  allLaptops.forEach(laptop => {
+    const key = `${laptop.brand}-${laptop.name}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      uniqueLaptops.push(laptop);
+    }
+  });
 
   // Filter out the currently selected laptop
-  availableLaptops.value = allLaptops.filter(laptop => {
+  availableLaptops.value = uniqueLaptops.filter(laptop => {
     if (!selectedLaptop.value) return true;
 
     return !(laptop.brand === selectedLaptop.value.brand &&
