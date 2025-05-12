@@ -2,7 +2,6 @@ export const useUserStore = defineStore('user', {
     state: () => ({
         isLoggedIn: false,
         currentUser: {
-            id: null,
             username: '',
             email: '',
             name: ''
@@ -20,14 +19,16 @@ export const useUserStore = defineStore('user', {
         },
 
         saveProfile(name, email) {
-            this.currentUser.name = name;
+            this.currentUser.username = username;
             this.currentUser.email = email;
+            this.currentUser.primaryUse = primaryUse;
+            this.currentUser.budget = budget;
+            return true;
         },
 
         logout() {
             this.isLoggedIn = false;
             this.currentUser = {
-                id: null,
                 username: '',
                 email: '',
                 name: ''
