@@ -6,6 +6,7 @@ const searchTerm = ref('');
 const isSearching = ref(false);
 const searchResults = ref([]);
 const selectedLaptop = ref(null);
+const limitMessage = ref('');
 const errorMessage = ref('');
 
 // Search for laptops by name
@@ -26,8 +27,11 @@ async function searchLaptops() {
       body: JSON.stringify({ searchTerm: searchTerm.value }),
       headers: { 'Content-Type': 'application/json' }
     });
-
-    if (response.results && response.results.length > 0) {
+    if(response.results && response.results.length > 5) {
+      limitMessage.value = response.results.length + ' results found. Please be more specific to narrow down your search.';
+      searchResults.value = response.results.slice(0, 5);
+    }else if (response.results && response.results.length > 0) {
+      limitMessage.value = '';
       searchResults.value = response.results;
     } else {
       errorMessage.value = 'No laptops found matching your search';
@@ -98,11 +102,8 @@ async function getLaptopDetails(modelId) {
 
       <div class="search-results-layout">
         <div class="search-results-column" :class="{ 'with-details': selectedLaptop }">
-          <div v-if="searchResults.length >= 6">
-            <h2>{{ searchResults.length }} Results Found</h2>
-            <h2> Please be more specfic </h2>
-          </div>
           <div v-if="searchResults.length > 0" class="search-results">
+            <h3 v-if="limitMessage" class="limit-message">{{ limitMessage }}</h3>
             <h2>Search Results</h2>
             <div class="results-list">
               <div
@@ -131,7 +132,7 @@ async function getLaptopDetails(modelId) {
                   <li><strong>RAM:</strong> {{ selectedLaptop.ram }}</li>
                   <li><strong>Storage:</strong> {{ selectedLaptop.storage }}</li>
                   <li><strong>Display:</strong> {{ selectedLaptop.display_size }} {{ selectedLaptop.display_resolution }}</li>
-                  <li><strong>Graphics:</strong> {{ selectedLaptop.graphics }}</li>
+                  <li><strong>Graphics:</strong> {{ selectedLaptop.graphics === 'Unknown Unknown'? 'Unknown Graphics card' : selectedLaptop.graphics }}</li>
                 </ul>
               </div>
 
@@ -140,7 +141,7 @@ async function getLaptopDetails(modelId) {
                 <ul class="spec-list">
                   <li><strong>Weight:</strong> {{ selectedLaptop.weight }} kg</li>
                   <li><strong>Battery Life:</strong> {{ selectedLaptop.battery_life }} hours</li>
-                  <li v-if="selectedLaptop.price"><strong>Price:</strong> ${{ selectedLaptop.price }}</li>
+                  <li><strong>Price:</strong> {{ selectedLaptop.price }}</li>
                 </ul>
               </div>
             </div>

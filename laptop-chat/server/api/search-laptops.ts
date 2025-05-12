@@ -24,7 +24,6 @@ export default defineEventHandler(async (event) => {
         LOWER(model_name) LIKE LOWER(${'%' + searchTerm + '%'})
         OR LOWER(brand) LIKE LOWER(${'%' + searchTerm + '%'})
       ORDER BY brand, model_name
-      LIMIT 5
     `
 
         return {
@@ -37,4 +36,4 @@ export default defineEventHandler(async (event) => {
             message: 'Error searching laptops'
         })
     }
-})
+});
