@@ -160,7 +160,7 @@ async function handleProfileUpdate(body, sql) {
 
     // Get updated user data
     const updatedUser = await sql`
-    SELECT username, email, primary_use, budget 
+    SELECT username, email, pref_laptop, budget 
     FROM users 
     WHERE username = ${username}
   `;
@@ -170,7 +170,7 @@ async function handleProfileUpdate(body, sql) {
         user: {
             username: updatedUser[0].username,
             email: updatedUser[0].email,
-            primaryUse: updatedUser[0].primary_use,
+            primaryUse: updatedUser[0].pref_laptop,
             budget: updatedUser[0].budget
         }
     };

@@ -18,7 +18,7 @@ export const useUserStore = defineStore('user', {
             return true;
         },
 
-        saveProfile(name, email) {
+        saveProfile(username, email, primaryUse, budget) {
             this.currentUser.username = username;
             this.currentUser.email = email;
             this.currentUser.primaryUse = primaryUse;
