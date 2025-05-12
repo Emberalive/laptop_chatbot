@@ -14,7 +14,7 @@ from DBAccess.database_persistence_V3 import insert_configuration, insert_laptop
 
 logger.remove()
 logger.add(sys.stdout, format="{time} {level} {message}")
-logger.add("../logs/comparison.log", rotation="10 MB", retention="35 days", compression="zip")
+logger.add("/logs/comparison.log", rotation="10 MB", retention="35 days", compression="zip")
 logger = logger.bind(user="comparer")
 
 def get_old_path(directory='/home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data'):
@@ -46,7 +46,7 @@ def get_old_path(directory='/home/samuel/laptop_chatbot/Sam/server_side/scrapers
 
 # if the output says items have been removed, then the items are in the old file and not the new
 # if the output says items have been added then the items are not in the old file, but they are in the new file
-def compare_new_and_old (old_path, new_path='/home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/latest.json'):
+def compare_new_and_old (old_path, new_path=os.getenv('OLD_JSON')):
     logger.info(f"starting the comparison between the old: {old_path} and new: {new_path} json files")
     try:
         with open(new_path) as f1, \
@@ -136,7 +136,7 @@ def process_json_diff(diff_dict, action, json_conn):
                     bluetooth = table_data.get('Bluetooth', False)
                     num_pad = table_data.get('Numeric Keyboard', False)
                     thunderbolt = table_data.get('Thunderbolt', False)
-                    display_port = table.get('Display Port', False)
+                    display_port = table_data.get('Display Port', False)
                 elif table_title == 'Screen':
                     resolution = table_data.get('Resolution')
                     size = table_data.get('Size')
@@ -177,12 +177,15 @@ def process_json_diff(diff_dict, action, json_conn):
                 models.append(laptop_model)
 
                 config_id = insert_configuration(model_id, laptop_price, weight, battery_life, memory, o_s, cpu_name, gpu_model, json_conn)
+                logger.info(f"Inserted configuration with config_id: {config_id}")
                 if not config_id:
                     logger.error(f"Failed to insert configuration for model_id {model_id}. Skipping associated data.")
-                    continue  # Skip further inserts if config insertion failed                storage_records.append((config_id, storage_type, storage_capacity))
+                    continue  # Skip further inserts if config insertion failed
+                storage_records.append((config_id, storage_type, storage_capacity))
                 feature_records.append((config_id, back_lit, num_pad, bluetooth))
                 ports_records.append((config_id, ethernet, hdmi, usb_type_c, thunderbolt, display_port))
                 screen_records.append((config_id, size, resolution, touch_screen, refresh_rate))
+
                 cpu_records.append((cpu_brand, cpu_name))
                 gpu_records.append((gpu_brand, gpu_model))
 
@@ -204,15 +207,25 @@ def process_json_diff(diff_dict, action, json_conn):
         ports_conn, ports_cur= get_db_connection()
         screens_conn, screens_cur = get_db_connection()
 
-        executor.submit(bulk_insert_storage, storage_records, storage_conn)
-        executor.submit(bulk_insert_features, feature_records, features_conn)
-        executor.submit(bulk_insert_ports, ports_records, ports_conn)
-        executor.submit(bulk_insert_screens, screen_records, screens_conn)
+        futures = [
+            executor.submit(bulk_insert_storage, storage_records, storage_conn),
+            executor.submit(bulk_insert_features, feature_records, features_conn),
+            executor.submit(bulk_insert_ports, ports_records, ports_conn),
+            executor.submit(bulk_insert_screens, screen_records, screens_conn)
+        ]
 
+        # wait for all threads to complete
+        for future in futures:
+            future.result()
+
+        # then release
         release_db_connection(storage_conn, storage_cur)
         release_db_connection(features_conn, features_cur)
         release_db_connection(ports_conn, ports_cur)
         release_db_connection(screens_conn, screens_cur)
+
+    # postgresql does not have autocommit as standard so i need to manually commi
+    json_conn.commit()
     return models
 
 def get_model_id(laptop_name):

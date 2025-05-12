@@ -20,7 +20,7 @@ logger_server = logger.bind(user="server")
 def insert_cpu_records(cpu_records: list[tuple], db_connection):
     cursor = db_connection.cursor()
     try:
-        logger_server.info("\nInserting into database table processors:")
+        logger_server.info("Inserting into database table processors:")
         cpu_query = ("INSERT INTO processors (brand, model)"
                      "VALUES(%s, %s)"
                      "ON CONFLICT (model) DO NOTHING;")
@@ -41,7 +41,7 @@ def insert_cpu_records(cpu_records: list[tuple], db_connection):
 def insert_gpu_records(gpu_records: list[tuple], db_connection):
     cursor = db_connection.cursor()
     try:
-        logger_server.info("\nInserting into database table graphics_cards:")
+        logger_server.info("Inserting into database table graphics_cards:")
         gpu_query = ("INSERT INTO graphics_cards (brand, model)"
                      "VALUES(%s, %s)"
                      "ON CONFLICT (model) DO NOTHING;")
@@ -62,7 +62,7 @@ def insert_gpu_records(gpu_records: list[tuple], db_connection):
 def insert_laptop_model(model_records: list[tuple], db_connection):
     cursor = db_connection.cursor()
     try:
-        logger_server.info("\nInserting into laptop_model")
+        logger_server.info("Inserting into laptop_model")
         laptop_model_query = (
             "INSERT INTO laptop_models (brand, model_name, image_url) "
             "VALUES(%s, %s, %s) "
@@ -89,7 +89,7 @@ def insert_configuration(model_id, price, weight, battery_life, memory_installed
     cursor = db_connection.cursor()
     try:
         logger_server.info(f"model ID: {model_id}, Weight: {weight}, Price: {price}, Battery Life: {battery_life}, Memory: {memory_installed}, Operating Sys: {os}, GPU: {gpu}, CPU: {processor}")
-        logger_server.info("\nInserting into table laptop_configurations")
+        logger_server.info("Inserting into table laptop_configurations")
         config_query = (
             "INSERT INTO laptop_configurations (model_id, price, weight, battery_life, "
             "memory_installed, operating_system, processor, graphics_card)"
@@ -99,6 +99,9 @@ def insert_configuration(model_id, price, weight, battery_life, memory_installed
         cursor.execute(config_query, config_values)
 
         db_connection.commit()
+        config_id = cursor.fetchone()[0]
+        db_connection.commit()
+        logger_server.info(f"Inserted laptop_configurations with config_id: {config_id}")
         return cursor.fetchone()[0]
     except Exception as config_insert_error:
         db_connection.rollback()
@@ -111,7 +114,7 @@ def insert_configuration(model_id, price, weight, battery_life, memory_installed
 def bulk_insert_storage(storage_records: list[tuple], db_connection):
     cursor = db_connection.cursor()
     try:
-        logger_server.info("\nInserting into database table configuration_storage")
+        logger_server.info("Inserting into database table configuration_storage")
         storage_query = ("INSERT INTO configuration_storage (config_id, storage_type, capacity)"
                          "VALUES(%s, %s, %s)")
         cursor.executemany(storage_query, storage_records)
@@ -127,7 +130,7 @@ def bulk_insert_storage(storage_records: list[tuple], db_connection):
 def bulk_insert_features(features_records: list[tuple], db_connection):
     cursor = db_connection.cursor()
     try:
-        logger_server.info("\nInserting into database table features")
+        logger_server.info("Inserting into database table features")
         features_query = ("INSERT INTO features (config_id, backlit_keyboard, numeric_keyboard, bluetooth)"
                           "VALUES(%s, %s, %s, %s)")
         cursor.executemany(features_query, features_records)
@@ -143,7 +146,7 @@ def bulk_insert_features(features_records: list[tuple], db_connection):
 def bulk_insert_ports(ports_records: list[tuple], db_connection):
     cursor = db_connection.cursor()
     try:
-        logger_server.info("\nInserting into database table ports")
+        logger_server.info("Inserting into database table ports")
         ports_query = ("INSERT INTO ports (config_id, ethernet, hdmi, usb_type_c, thunderbolt, display_port)"
                        "VALUES(%s, %s, %s, %s, %s, %s)")
         cursor.executemany(ports_query, ports_records)
@@ -159,7 +162,7 @@ def bulk_insert_ports(ports_records: list[tuple], db_connection):
 def bulk_insert_screens(screens_records: list[tuple], db_connection):
     cursor = db_connection.cursor()
     try:
-        logger_server.info("\nInserting into database table screens")
+        logger_server.info("Inserting into database table screens")
         screen_query = ("INSERT INTO screens (config_id, size, resolution, touchscreen, refresh_rate)"
                         "VALUES(%s, %s, %s, %s, %s)")
         cursor.executemany(screen_query, screens_records)
@@ -213,7 +216,7 @@ def main():
                 logger_server.error(f"Laptop path didn't work: ERROR: {laptop_path_error}")
 
     # Process each laptop in the JSON data
-    logger_server.info("Sorting through the JSON object lists\n")
+    logger_server.info("Sorting through the JSON object lists")
     for laptop_data in laptops_data:
         laptop_tables = laptop_data.get('tables', [])
 
