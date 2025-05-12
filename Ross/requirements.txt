@@ -1,3 +1,7 @@
-nguagge_transformmer
+sentence_transformers
+scikit-learn
 typing
-pyscopg2-binary
+psycopg2
+loguru
+fastapi
+uuid
