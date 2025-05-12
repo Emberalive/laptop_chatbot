@@ -98,6 +98,7 @@ def insert_configuration(model_id, price, weight, battery_life, memory_installed
         config_values = (model_id, price, weight, battery_life, memory_installed, os, processor, gpu)
         cursor.execute(config_query, config_values)
 
+        db_connection.commit()
         return cursor.fetchone()[0]
     except Exception as config_insert_error:
         db_connection.rollback()

@@ -177,7 +177,9 @@ def process_json_diff(diff_dict, action, json_conn):
                 models.append(laptop_model)
 
                 config_id = insert_configuration(model_id, laptop_price, weight, battery_life, memory, o_s, cpu_name, gpu_model, json_conn)
-                storage_records.append((config_id, storage_type, storage_capacity))
+                if not config_id:
+                    logger.error(f"Failed to insert configuration for model_id {model_id}. Skipping associated data.")
+                    continue  # Skip further inserts if config insertion failed                storage_records.append((config_id, storage_type, storage_capacity))
                 feature_records.append((config_id, back_lit, num_pad, bluetooth))
                 ports_records.append((config_id, ethernet, hdmi, usb_type_c, thunderbolt, display_port))
                 screen_records.append((config_id, size, resolution, touch_screen, refresh_rate))
