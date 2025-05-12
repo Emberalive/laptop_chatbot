@@ -10,12 +10,9 @@
       <div class="sidebar-content">
         <ul class="sidebar-nav">
           <li @click="$router.push('/profile')">Profile </li>
-          <li>Popular Laptops</li>
-          <li>Buying Guide</li>
-          <li>Compare Models</li>
-          <li>About</li>
-          <li>Contact</li>
-        </ul>
+          <li>Past Recommendations</li>
+          <li @click="$router.push('/search')">Laptop Search</li>
+          <li @click="$router.push('/about')">About</li>        </ul>
         <div style="margin-top: 30px;">
           <p>Need help finding your perfect laptop?</p>
           <p style="margin-top: 10px; color: var(--text-color-light);">Use our AI-powered chat assistant to get personalized recommendations based on your needs.</p>

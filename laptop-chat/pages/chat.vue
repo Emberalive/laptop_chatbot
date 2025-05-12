@@ -21,8 +21,22 @@
       <div class="chat-messages" ref="chatMessagesRef">
         <div v-for="(message, index) in messages" :key="index"
              class="message" :class="message.type">
-          <div class="message-content" v-html="message.content"></div>
+          <div v-if="message.type === 'recommendations'" class="recommendations">
+            <h4>Recommended Laptops:</h4>
+            <ul>
+              <li v-for="(laptop, laptopIndex) in message.content" :key="laptopIndex"
+                  class="recommendation-item"
+                  :data-laptop-id="laptopIndex"
+                  @click="showLaptopDetails(laptop)">
+                <strong>{{ laptop.brand }} {{ laptop.name }}</strong><br>
+                <span>Click for more details</span>
+              </li>
+            </ul>
+          </div>
+          <div v-else class="message-content" v-html="message.content"></div>
         </div>
+
+
 
         <div v-if="isTyping" class="message bot">
           <div class="typing-indicator">
@@ -31,21 +45,8 @@
             <span class="typing-dot"></span>
           </div>
         </div>
+    </div>
 
-        <div v-for="(rec, recIndex) in recommendations" :key="`rec-${recIndex}`"
-             class="recommendations" :data-recommendations-data="JSON.stringify(rec.laptops)">
-          <h4>Recommended Laptops:</h4>
-          <ul>
-            <li v-for="(laptop, laptopIndex) in rec.laptops" :key="laptopIndex"
-                class="recommendation-item"
-                :data-laptop-id="laptopIndex"
-                @click="showLaptopDetails(laptop)">
-              <strong>{{ laptop.brand }} {{ laptop.name }}</strong><br>
-              <span>Click for more details</span>
-            </li>
-          </ul>
-        </div>
-      </div>
 
       <div class="chat-input-container">
         <input
@@ -72,7 +73,7 @@ import { ref, onMounted, nextTick } from 'vue';
 import { useChatStore } from '~/store/chat';
 
 const chatStore = useChatStore();
-const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://86.19.219.159:8000';
 
 const userInput = ref('');
 const messages = ref([]);
@@ -127,6 +128,7 @@ function sendMessage() {
           sessionId.value = data.session_id;
         }
 
+
         // Add bot message
         messages.value.push({
           type: 'bot',
@@ -135,11 +137,11 @@ function sendMessage() {
 
         // Handle recommendations if present
         if (data.recommendations && data.recommendations.length > 0) {
-          recommendations.value.push({
-            id: Date.now(),
-            laptops: data.recommendations
+          messages.value.push({
+            type: 'recommendations',
+            content: data.recommendations
           });
-          chatStore.currentRecommendations = data.recommendations;
+          chatStore.addRecommendations(data.recommendations);
         }
 
         // Handle follow-up question if present
