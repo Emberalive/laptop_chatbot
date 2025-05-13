@@ -313,6 +313,7 @@ def process_json_diff(diff_dict, action, json_conn, json_cur):
                 else:
                     logger.warning(f"Can not delete configuration for model {laptop_model} as there is no config_id found")
                     continue
+
 def get_config_id(laptop: tuple, model)-> int or None:
     config_conn, config_cur = get_db_connection()
     try:
@@ -354,7 +355,7 @@ def delete_from_config_tables(config_id):
             ports_cur.execute(delete_laptop_ports, (config_id, ))
             screens_cur.execute(delete_laptop_screens, (config_id, ))
     except Exception as e:
-        logger.error(f"")
+        logger.error(f"Error in delete_from_config_tables: {e}")
 
     storage_conn.commit()
     features_conn.commit()
@@ -380,14 +381,6 @@ def delete_laptop_config(laptop: tuple, model):
         else:
             logger.error(f"No configuration deleted for model '{model}' — it may not exist.")
 
-        # deleted_config_id = laptop_del_cur.fetchone()
-        # if not deleted_config_id or not deleted_config_id[0]:
-        #     return None
-        # return deleted_config_id[0]
-        # if laptop_del_cur.rowcount() == 1:
-        #     logger.info(f"Laptop Configuration has been deleted")
-        # else:
-        #     logger.error(f"Failed to delete a configuration for {model}")
     except Exception as e:
         laptop_del_conn.rollback()
         logger.error(f"error attempting to delete laptop config: {e}")
