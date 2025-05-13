@@ -188,7 +188,7 @@ def process_json_diff(diff_dict, action, json_conn):
                     continue
 
                 logger.info(f"Inserted configuration with config_id: {config_id}")
-                if config_id:
+                if config_id is None:
                     storage_records.append((config_id, storage_type, storage_capacity))
                     feature_records.append((config_id, back_lit, num_pad, bluetooth))
                     ports_records.append((config_id, ethernet, hdmi, usb_type_c, thunderbolt, display_port))
@@ -196,7 +196,6 @@ def process_json_diff(diff_dict, action, json_conn):
 
                     cpu_records.append((cpu_brand, cpu_name))
                     gpu_records.append((gpu_brand, gpu_model))
-                    continue  # Skip further inserts if config insertion failed
                 else:
                     logger.error(f"Failed to insert configuration for model_id {model_id}. Skipping associated data.")
 
