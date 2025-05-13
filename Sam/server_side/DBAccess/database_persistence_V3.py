@@ -137,7 +137,7 @@ def bulk_insert_features(features_records: list[tuple], db_connection):
         features_query = ("INSERT INTO features (config_id, backlit_keyboard, numeric_keyboard, bluetooth)"
                           "VALUES(%s, %s, %s, %s)")
         cursor.executemany(features_query, features_records)
-        logger_server.info(f"inserted storages: {len(features_records)}")
+        logger_server.info(f"inserted features: {len(features_records)}")
     except Exception as features_insert_error:
         db_connection.rollback()
         logger_server.error(f"Error inserting into features: {features_insert_error}")
@@ -153,7 +153,7 @@ def bulk_insert_ports(ports_records: list[tuple], db_connection):
         ports_query = ("INSERT INTO ports (config_id, ethernet, hdmi, usb_type_c, thunderbolt, display_port)"
                        "VALUES(%s, %s, %s, %s, %s, %s)")
         cursor.executemany(ports_query, ports_records)
-        logger_server.info(f"inserted storages: {len(ports_records)}")
+        logger_server.info(f"inserted ports: {len(ports_records)}")
     except Exception as ports_insert_error:
         db_connection.rollback()
         logger_server.error(f"Error with port configuration insertion: {ports_insert_error}")
@@ -169,7 +169,7 @@ def bulk_insert_screens(screens_records: list[tuple], db_connection):
         screen_query = ("INSERT INTO screens (config_id, size, resolution, touchscreen, refresh_rate)"
                         "VALUES(%s, %s, %s, %s, %s)")
         cursor.executemany(screen_query, screens_records)
-        logger_server.info(f"inserted storages: {len(screens_records)}")
+        logger_server.info(f"inserted screens: {len(screens_records)}")
     except Exception as screen_insert_error:
         db_connection.rollback()
         logger_server.error(f"Error inserting screen configuration: {screen_insert_error}")
