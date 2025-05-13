@@ -308,7 +308,7 @@ if __name__ == "__main__":
     try:
         import uvicorn
         # Run with auto-reload for development
-        uvicorn.run("chatBotAPI:app", host="192.168.0.16", port=8000, reload=True)
+        uvicorn.run("chatBotAPI:app", host="0.0.0.0", port=8000, reload=True)
     except ImportError:
         logger.error("ERROR: uvicorn package is not installed. Please install it with:")
         logger.warning("pip install uvicorn fastapi")
