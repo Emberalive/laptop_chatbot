@@ -99,7 +99,6 @@ def insert_configuration(model_id, price, weight, battery_life, memory_installed
         cursor.execute(config_query, config_values)
 
         db_connection.commit()
-        config_id = cursor.fetchone()[0]
         db_connection.commit()
         logger_server.info(f"Inserted laptop_configurations with config_id: {config_id}")
         config_id = cursor.fetchone()
