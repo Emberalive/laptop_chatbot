@@ -207,6 +207,9 @@ def process_json_diff(diff_dict, action, json_conn):
     else:
         logger.warning(f"No laptop models found in {action} items")
 
+    if cpu_records and gpu_records and storage_records is None:
+        logger.info("There are no records to insert, Exiting the script")
+        exit
     insert_cpu_records(cpu_records, json_conn)
     insert_gpu_records(gpu_records, json_conn)
 
