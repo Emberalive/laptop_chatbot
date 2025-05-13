@@ -13,7 +13,6 @@ from DBAccess.database_persistence_V3 import insert_configuration, insert_laptop
 from dotenv import load_dotenv
 
 load_dotenv()
-logger.basicConfig(level=logger.INFO)
 
 logger.remove()
 
@@ -62,7 +61,7 @@ def compare_new_and_old (old_path, new_path=os.getenv('NEW_JSON')):
             data1 = json.load(f1)
             data2 = json.load(f2)
 
-        diff = DeepDiff(data1, data2, verbose_level=2, log_frequency_in_sec=1)
+        diff = DeepDiff(data1, data2, verbose_level=2)
 
         if diff:
             logger.info(f"Difference Stats:\n {pprint(diff.get_stats())} \n")
