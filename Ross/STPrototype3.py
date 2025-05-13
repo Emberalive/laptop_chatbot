@@ -34,7 +34,7 @@ for path in [project_root, server_side_path, dbaccess_path]:
 # First try to import database module via DBAccess
 HAS_DB_MODULE = False
 try:
-    from DBAccess.dbAccess import init_db_pool, get_db_connection, release_db_connection
+    from DBAccess.dbAccess import get_db_connection, release_db_connection
     logger.info("Successfully imported database module")
     
     # Override the database name in .env with laptopchatbot_new if needed
@@ -47,8 +47,8 @@ try:
         logger.info("Set DATABASE_NAME environment variable to laptopchatbot_new")
     
     # Initialize the database connection pool
-    init_db_pool()
-    logger.info("Database pool initialized")
+    # init_db_pool()
+    # logger.info("Database pool initialized")
     
     # Test if we can actually get a connection
     try:
@@ -87,13 +87,13 @@ def load_environment_settings():
 if not HAS_DB_MODULE:
     load_environment_settings()
     try:
-        from DBAccess.dbAccess import init_db_pool, get_db_connection, release_db_connection
+        from DBAccess.dbAccess import get_db_connection, release_db_connection
         # Force database name to be correct
         os.environ["DATABASE_NAME"] = "laptopchatbot_new"
         logger.info("Set DATABASE_NAME environment variable to laptopchatbot_new")
         
         # Try to initialize the pool again
-        init_db_pool()
+        # init_db_pool()
         
         # Test connection
         conn, cur = get_db_connection()
