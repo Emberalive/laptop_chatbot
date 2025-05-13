@@ -198,7 +198,7 @@ def main():
         from comparison import main as compare
         compare()
     except Exception as e:
-        logger.error(f"ran into an error importing and calling the comparison script")
+        logger.error(f"ran into an error importing and calling the comparison script {e}")
 
 
     logger.info(f"Scraping complete. Total laptops scraped: {len(scraped_data)}")
