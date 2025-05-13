@@ -40,9 +40,9 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # NEEDS TO UPDATED FOR PRODUCTION. It's used to speicfy the allowed origin/s 
+    allow_origins=["http://86.19.219.159:3000/"], # NEEDS TO UPDATED FOR PRODUCTION. It's used to speicfy the allowed origin/s
     allow_credentials = True,
-    allow_methods=["*"],
+    allow_methods=["GET, POST"],
     allow_headers=["*"],
 )
 
