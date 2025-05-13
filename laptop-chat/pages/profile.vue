@@ -1,9 +1,7 @@
 <template>
-  <div>
+<div class="profile-container">
     <ThemeToggle />
     <Sidebar />
-
-    <div class="profile-container">
       <div class="profile-content">
         <button class="close-profile-btn" @click="$router.push('/')">&times;</button>
 
