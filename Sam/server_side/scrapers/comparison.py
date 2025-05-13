@@ -440,8 +440,8 @@ def main():
     else:
         logger.info("Nothing needs to be inserted or deleted")
 
-# if __name__ == "__main__":
-#     init_db_pool()  # Initialize the pool first
-#     # Now you can safely use get_db_connection()
-#     conn, cur = get_db_connection()
-#     main()
+if __name__ == "__main__":
+    # init_db_pool()  # Initialize the pool first
+    # Now you can safely use get_db_connection()
+    # conn, cur = get_db_connection()
+    main()
