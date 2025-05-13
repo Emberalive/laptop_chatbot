@@ -152,12 +152,6 @@ def save_scraped_data(directory="scraped_data/old_data"):
     except Exception as e:
         logger.error(f"could not archive old data {e}")
 
-    try:
-        from comparison import main as compare
-        compare()
-    except Exception as e:
-        logger.error(f"ran into an error importing and calling the comparison script")
-
 
 def main():
     input_file = os.path.join("scraped_data", "laptop_links.txt")
@@ -199,6 +193,12 @@ def main():
     # Save the combined data
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(existing_data + scraped_data, f, indent=4, ensure_ascii=False)
+
+    try:
+        from comparison import main as compare
+        compare()
+    except Exception as e:
+        logger.error(f"ran into an error importing and calling the comparison script")
 
 
     logger.info(f"Scraping complete. Total laptops scraped: {len(scraped_data)}")
