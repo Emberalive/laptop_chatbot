@@ -313,6 +313,7 @@ def get_model_id(laptop_name):
 
 
 def update_changes (json_diff_data):
+    init_db_pool()  # Initialize the pool first
     changes_conn, changes_cur = get_db_connection()
 
     json_diff_added = json_diff_data.get('iterable_item_added')
