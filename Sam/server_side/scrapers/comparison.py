@@ -374,14 +374,20 @@ def delete_laptop_config(laptop: tuple, model):
         delete_config_query = ("DELETE FROM laptop_configurations WHERE price = %s AND weight = %s AND battery_life = %s AND memory_installed = %s AND operating_system = %s AND processor = %s AND graphics_card = %s")
         laptop_del_cur.execute(delete_config_query, laptop)
 
-        deleted_config_id = laptop_del_cur.fetchone()
+        if laptop_del_cur.rowcount == 1:
+            logger.info(f"Laptop configuration for model '{model}' has been deleted.")
+            laptop_del_conn.commit()
+        else:
+            logger.error(f"No configuration deleted for model '{model}' — it may not exist.")
+
+        # deleted_config_id = laptop_del_cur.fetchone()
         # if not deleted_config_id or not deleted_config_id[0]:
         #     return None
         # return deleted_config_id[0]
-        if laptop_del_cur.rowcount() ==1:
-            logger.info(f"Laptop Configuration has been deleted")
-        else:
-            logger.error(f"Failed to delete a configuration for {model}")
+        # if laptop_del_cur.rowcount() == 1:
+        #     logger.info(f"Laptop Configuration has been deleted")
+        # else:
+        #     logger.error(f"Failed to delete a configuration for {model}")
     except Exception as e:
         laptop_del_conn.rollback()
         logger.error(f"error attempting to delete laptop config: {e}")
