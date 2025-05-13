@@ -312,7 +312,7 @@ def process_json_diff(diff_dict, action, json_conn, json_cur):
                     delete_from_config_tables(config_id)
                     delete_laptop_config(laptop_to_delete)
                 else:
-                    logger.warn(f"Can not delete configuration for model {laptop_model} as there is no config_id found")
+                    logger.warning(f"Can not delete configuration for model {laptop_model} as there is no config_id found")
                     continue
 def get_config_id(laptop: tuple, model)-> int or None:
     config_conn, config_cur = get_db_connection()
