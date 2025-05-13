@@ -442,5 +442,5 @@ def main():
     else:
         logger.info("Nothing needs to be inserted or deleted")
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
