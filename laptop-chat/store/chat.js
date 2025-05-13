@@ -64,7 +64,7 @@ export const useChatStore = defineStore('chat', {
                 sender: 'bot'
             }];
             this.currentRecommendations = [];
-            // Note: We're not clearing allRecommendations to keep history
+            this.allRecommendations = [];
         }
     }
 });

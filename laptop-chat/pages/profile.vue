@@ -123,8 +123,6 @@
   </div>
 </template>
 
-// Changes for profile.vue
-// Modified script section
 <script setup>
 import ThemeToggle from '~/components/ThemeToggle.vue';
 import Sidebar from '~/components/Sidebar.vue';
@@ -159,8 +157,15 @@ watch(() => userStore.isLoggedIn, (isLoggedIn) => {
   if (isLoggedIn) {
     profileForm.name = userStore.currentUser.username;
     profileForm.email = userStore.currentUser.email || '';
+    profileForm.primaryUse = userStore.currentUser.primaryUse || 'general';
+    profileForm.budget = userStore.currentUser.budget || 'midrange';
   }
 }, { immediate: true });
+
+// Check for existing authentication when component mounts
+onMounted(async () => {
+  await userStore.checkAuth();
+});
 
 async function handleLogin() {
   if (!loginForm.username || !loginForm.password) {
@@ -273,8 +278,8 @@ async function saveProfileChanges() {
   }
 }
 
-function handleLogout() {
-  userStore.logout();
+async function handleLogout() {
+  await userStore.logout();
   navigateTo('/');
 }
 </script>
