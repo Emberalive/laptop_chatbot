@@ -152,6 +152,13 @@ def save_scraped_data(directory="scraped_data/old_data"):
     except Exception as e:
         logger.error(f"could not archive old data {e}")
 
+    try:
+        from comparison import main as compare
+        compare()
+    except Exception as e:
+        logger.error(f"ran into an error importing and calling the comparison script")
+
+
 def main():
     input_file = os.path.join("scraped_data", "laptop_links.txt")
     output_file = os.path.join("scraped_data", "latest.json")
