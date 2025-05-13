@@ -280,9 +280,8 @@ def process_json_diff(diff_dict, action, json_conn, json_cur):
                         gpu_components = gpu_info.split(" ")
                         gpu_model = " ".join(gpu_components[1:]) if len(gpu_components) > 1 else "Unknown"
 
-                        memory_info = table_data.get('Memory Installed')
-                        memory_components = memory_info.split(' ')
-                        memory = memory_components[0] if memory_components else 'Unknown'
+                        memory = table_data.get('Memory Installed')
+
                     elif table_title == "Features":
                         o_s = table_data.get('Operating System', 'Not specified')
                         battery_life = table_data.get('Battery Life', 'Unkown')
