@@ -1,0 +1,467 @@
+2025-05-13 19:23:19.098 | INFO     | __main__:get_old_path:29 - looking for filename patterns with re.compile('scrape_(\\d{4}-\\d{2}-\\d{2})\\.json')
+2025-05-13 19:23:19.099 | INFO     | __main__:get_old_path:47 - found latest file: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-06.json
+2025-05-13 19:23:19.099 | INFO     | __main__:main:433 - found old scrape /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-06.json
+2025-05-13 19:23:19.099 | INFO     | __main__:compare_new_and_old:56 - starting the comparison between the old: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-06.json and new: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/latest.json json files
+2025-05-13 19:23:19.170 | ERROR    | __main__:compare_new_and_old:74 - error in attempting to compare the old and new json data Expecting value: line 267199 column 1 (char 8982060)
+2025-05-13 19:23:19.170 | INFO     | __main__:main:441 - Nothing needs to be inserted or deleted
+2025-05-13 19:27:37.006 | INFO     | __main__:get_old_path:29 - looking for filename patterns with re.compile('scrape_(\\d{4}-\\d{2}-\\d{2})\\.json')
+2025-05-13 19:27:37.007 | INFO     | __main__:get_old_path:47 - found latest file: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-06.json
+2025-05-13 19:27:37.007 | INFO     | __main__:main:433 - found old scrape /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-06.json
+2025-05-13 19:27:37.007 | INFO     | __main__:compare_new_and_old:56 - starting the comparison between the old: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-06.json and new: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/latest.json json files
+2025-05-13 19:27:44.768 | INFO     | __main__:compare_new_and_old:66 - Differences found:
+2025-05-13 19:27:44.769 | INFO     | __main__:compare_new_and_old:67 - None
+2025-05-13 19:27:44.770 | INFO     | DBAccess.dbAccess:init_db_pool:19 - Creating PostgreSQL connection pool...
+2025-05-13 19:27:44.847 | INFO     | DBAccess.dbAccess:init_db_pool:29 - Connection pool created successfully
+2025-05-13 19:27:44.847 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 19:27:44.848 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 19:27:44.848 | INFO     | __main__:process_json_diff:89 - Processing added items
+2025-05-13 19:27:44.848 | DEBUG    | __main__:process_json_diff:100 - Processing laptop: root[4798]
+2025-05-13 19:27:44.848 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 19:27:44.886 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 19:27:44.886 | INFO     | __main__:get_model_id:389 - Looking up model_id for laptop_name: 'Tecra A50-J-13W'
+2025-05-13 19:27:44.899 | INFO     | __main__:get_model_id:392 - Row count: 1
+2025-05-13 19:27:44.899 | INFO     | __main__:get_model_id:404 - Found model_id: 3081
+2025-05-13 19:27:44.902 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 19:27:44.902 | INFO     | __main__:process_json_diff:175 - Laptop details for Tecra A50-J-13W:
+--------------------------------------------------------------------------------
+model_id = 3081
+Weight: 1.65 kg
+Processor: Core i7-1165G7
+Graphics card: Iris Xe Graphics
+Memory: 16 GB
+OS: Windows 10 Professional
+Battery: Up to 8 hours
+
+2025-05-13 19:27:44.902 | INFO     | DBAccess.database_persistence_V3:insert_configuration:91 - model ID: 3081, Weight: 1.65 kg, Price: No Price available, Battery Life: Up to 8 hours, Memory: 16 GB, Operating Sys: Windows 10 Professional, GPU: Iris Xe Graphics, CPU: Core i7-1165G7
+2025-05-13 19:27:44.902 | INFO     | DBAccess.database_persistence_V3:insert_configuration:92 - Inserting into table laptop_configurations
+2025-05-13 19:27:44.919 | INFO     | DBAccess.database_persistence_V3:insert_configuration:103 - Inserted laptop_configurations with config_id: (9522,)
+2025-05-13 19:27:44.920 | DEBUG    | __main__:process_json_diff:100 - Processing laptop: root[4799]
+2025-05-13 19:27:44.920 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 19:27:44.920 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 19:27:44.920 | INFO     | __main__:get_model_id:389 - Looking up model_id for laptop_name: 'Tecra A50-J-10X'
+2025-05-13 19:27:44.927 | INFO     | __main__:get_model_id:392 - Row count: 1
+2025-05-13 19:27:44.927 | INFO     | __main__:get_model_id:404 - Found model_id: 806
+2025-05-13 19:27:44.931 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 19:27:44.931 | INFO     | __main__:process_json_diff:175 - Laptop details for Tecra A50-J-10X:
+--------------------------------------------------------------------------------
+model_id = 806
+Weight: 1.65 kg
+Processor: Core i5-1135G7
+Graphics card: Iris Xe Graphics
+Memory: 8 GB
+OS: Windows 10 Professional
+Battery: Up to 9 hours
+
+2025-05-13 19:27:44.931 | INFO     | DBAccess.database_persistence_V3:insert_configuration:91 - model ID: 806, Weight: 1.65 kg, Price: No Price available, Battery Life: Up to 9 hours, Memory: 8 GB, Operating Sys: Windows 10 Professional, GPU: Iris Xe Graphics, CPU: Core i5-1135G7
+2025-05-13 19:27:44.931 | INFO     | DBAccess.database_persistence_V3:insert_configuration:92 - Inserting into table laptop_configurations
+2025-05-13 19:27:44.946 | INFO     | DBAccess.database_persistence_V3:insert_configuration:103 - Inserted laptop_configurations with config_id: (9523,)
+2025-05-13 19:27:44.946 | INFO     | __main__:process_json_diff:207 - Laptop model(s) to added: ['Tecra A50-J-13W', 'Tecra A50-J-10X']
+2025-05-13 19:27:44.946 | INFO     | DBAccess.database_persistence_V3:insert_cpu_records:23 - Inserting into database table processors:
+2025-05-13 19:27:44.964 | INFO     | DBAccess.database_persistence_V3:insert_gpu_records:44 - Inserting into database table graphics_cards:
+2025-05-13 19:27:44.976 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 19:27:44.976 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 19:27:44.976 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 19:27:45.040 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 19:27:45.040 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 19:27:45.090 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 19:27:45.090 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 19:27:45.138 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 19:27:45.138 | INFO     | DBAccess.database_persistence_V3:bulk_insert_storage:118 - Inserting into database table configuration_storage
+2025-05-13 19:27:45.139 | INFO     | DBAccess.database_persistence_V3:bulk_insert_features:134 - Inserting into database table features
+2025-05-13 19:27:45.139 | INFO     | DBAccess.database_persistence_V3:bulk_insert_ports:150 - Inserting into database table ports
+2025-05-13 19:27:45.139 | INFO     | DBAccess.database_persistence_V3:bulk_insert_screens:166 - Inserting into database table screens
+2025-05-13 19:27:45.157 | INFO     | DBAccess.database_persistence_V3:bulk_insert_screens:170 - inserted screens: 2
+2025-05-13 19:27:45.157 | INFO     | DBAccess.database_persistence_V3:bulk_insert_storage:122 - inserted storages: 2
+2025-05-13 19:27:45.157 | INFO     | DBAccess.database_persistence_V3:bulk_insert_features:138 - inserted features: 2
+2025-05-13 19:27:45.157 | INFO     | DBAccess.database_persistence_V3:bulk_insert_ports:154 - inserted ports: 2
+2025-05-13 19:27:45.174 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 19:27:45.174 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 19:27:45.174 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 19:27:45.174 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 19:27:45.179 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 20:12:38.722 | INFO     | __main__:get_old_path:29 - looking for filename patterns with re.compile('scrape_(\\d{4}-\\d{2}-\\d{2})\\.json')
+2025-05-13 20:12:38.723 | INFO     | __main__:get_old_path:47 - found latest file: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-06.json
+2025-05-13 20:12:38.723 | INFO     | __main__:main:433 - found old scrape /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-06.json
+2025-05-13 20:12:38.723 | INFO     | __main__:compare_new_and_old:56 - starting the comparison between the old: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-06.json and new: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/latest.json json files
+2025-05-13 20:12:46.548 | INFO     | __main__:compare_new_and_old:66 - Differences found:
+2025-05-13 20:12:46.549 | INFO     | __main__:compare_new_and_old:67 - None
+2025-05-13 20:12:46.550 | INFO     | DBAccess.dbAccess:init_db_pool:19 - Creating PostgreSQL connection pool...
+2025-05-13 20:12:46.589 | INFO     | DBAccess.dbAccess:init_db_pool:29 - Connection pool created successfully
+2025-05-13 20:12:46.589 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 20:12:46.589 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 20:12:46.589 | INFO     | __main__:process_json_diff:89 - Processing added items
+2025-05-13 20:12:46.589 | DEBUG    | __main__:process_json_diff:100 - Processing laptop: root[4798]
+2025-05-13 20:12:46.589 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 20:12:46.641 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 20:12:46.641 | INFO     | __main__:get_model_id:389 - Looking up model_id for laptop_name: 'Tecra A50-J-13W'
+2025-05-13 20:12:46.651 | INFO     | __main__:get_model_id:392 - Row count: 1
+2025-05-13 20:12:46.652 | INFO     | __main__:get_model_id:404 - Found model_id: 3081
+2025-05-13 20:12:46.657 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 20:12:46.657 | INFO     | __main__:process_json_diff:175 - Laptop details for Tecra A50-J-13W:
+--------------------------------------------------------------------------------
+model_id = 3081
+Weight: 1.65 kg
+Processor: Core i7-1165G7
+Graphics card: Iris Xe Graphics
+Memory: 16 GB
+OS: Windows 10 Professional
+Battery: Up to 8 hours
+
+2025-05-13 20:12:46.657 | INFO     | DBAccess.database_persistence_V3:insert_configuration:91 - model ID: 3081, Weight: 1.65 kg, Price: No Price available, Battery Life: Up to 8 hours, Memory: 16 GB, Operating Sys: Windows 10 Professional, GPU: Iris Xe Graphics, CPU: Core i7-1165G7
+2025-05-13 20:12:46.658 | INFO     | DBAccess.database_persistence_V3:insert_configuration:92 - Inserting into table laptop_configurations
+2025-05-13 20:12:46.672 | INFO     | DBAccess.database_persistence_V3:insert_configuration:103 - Inserted laptop_configurations with config_id: (9524,)
+2025-05-13 20:12:46.672 | DEBUG    | __main__:process_json_diff:100 - Processing laptop: root[4799]
+2025-05-13 20:12:46.672 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 20:12:46.672 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 20:12:46.673 | INFO     | __main__:get_model_id:389 - Looking up model_id for laptop_name: 'Tecra A50-J-10X'
+2025-05-13 20:12:46.680 | INFO     | __main__:get_model_id:392 - Row count: 1
+2025-05-13 20:12:46.680 | INFO     | __main__:get_model_id:404 - Found model_id: 806
+2025-05-13 20:12:46.685 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 20:12:46.685 | INFO     | __main__:process_json_diff:175 - Laptop details for Tecra A50-J-10X:
+--------------------------------------------------------------------------------
+model_id = 806
+Weight: 1.65 kg
+Processor: Core i5-1135G7
+Graphics card: Iris Xe Graphics
+Memory: 8 GB
+OS: Windows 10 Professional
+Battery: Up to 9 hours
+
+2025-05-13 20:12:46.686 | INFO     | DBAccess.database_persistence_V3:insert_configuration:91 - model ID: 806, Weight: 1.65 kg, Price: No Price available, Battery Life: Up to 9 hours, Memory: 8 GB, Operating Sys: Windows 10 Professional, GPU: Iris Xe Graphics, CPU: Core i5-1135G7
+2025-05-13 20:12:46.686 | INFO     | DBAccess.database_persistence_V3:insert_configuration:92 - Inserting into table laptop_configurations
+2025-05-13 20:12:46.702 | INFO     | DBAccess.database_persistence_V3:insert_configuration:103 - Inserted laptop_configurations with config_id: (9525,)
+2025-05-13 20:12:46.702 | INFO     | __main__:process_json_diff:207 - Laptop model(s) to added: ['Tecra A50-J-13W', 'Tecra A50-J-10X']
+2025-05-13 20:12:46.702 | INFO     | DBAccess.database_persistence_V3:insert_cpu_records:23 - Inserting into database table processors:
+2025-05-13 20:12:46.722 | INFO     | DBAccess.database_persistence_V3:insert_gpu_records:44 - Inserting into database table graphics_cards:
+2025-05-13 20:12:46.728 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 20:12:46.729 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 20:12:46.729 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 20:12:46.769 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 20:12:46.769 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 20:12:46.825 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 20:12:46.826 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 20:12:46.863 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 20:12:46.864 | INFO     | DBAccess.database_persistence_V3:bulk_insert_storage:118 - Inserting into database table configuration_storage
+2025-05-13 20:12:46.864 | INFO     | DBAccess.database_persistence_V3:bulk_insert_features:134 - Inserting into database table features
+2025-05-13 20:12:46.864 | INFO     | DBAccess.database_persistence_V3:bulk_insert_ports:150 - Inserting into database table ports
+2025-05-13 20:12:46.865 | INFO     | DBAccess.database_persistence_V3:bulk_insert_screens:166 - Inserting into database table screens
+2025-05-13 20:12:46.879 | INFO     | DBAccess.database_persistence_V3:bulk_insert_ports:154 - inserted ports: 2
+2025-05-13 20:12:46.880 | INFO     | DBAccess.database_persistence_V3:bulk_insert_features:138 - inserted features: 2
+2025-05-13 20:12:46.881 | INFO     | DBAccess.database_persistence_V3:bulk_insert_storage:122 - inserted storages: 2
+2025-05-13 20:12:46.881 | INFO     | DBAccess.database_persistence_V3:bulk_insert_screens:170 - inserted screens: 2
+2025-05-13 20:12:46.912 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 20:12:46.912 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 20:12:46.912 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 20:12:46.912 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 20:12:46.917 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 20:29:09.376 | INFO     | __main__:get_old_path:29 - looking for filename patterns with re.compile('scrape_(\\d{4}-\\d{2}-\\d{2})\\.json')
+2025-05-13 20:29:09.377 | INFO     | __main__:get_old_path:47 - found latest file: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-06.json
+2025-05-13 20:29:09.377 | INFO     | __main__:main:433 - found old scrape /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-06.json
+2025-05-13 20:29:09.377 | INFO     | __main__:compare_new_and_old:56 - starting the comparison between the old: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-06.json and new: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/latest.json json files
+2025-05-13 20:29:17.201 | INFO     | __main__:compare_new_and_old:71 - No differences found between the two files.
+2025-05-13 20:29:17.202 | INFO     | __main__:main:441 - Nothing needs to be inserted or deleted
+2025-05-13 20:41:31.807 | INFO     | __main__:get_old_path:30 - looking for filename patterns with re.compile('scrape_(\\d{4}-\\d{2}-\\d{2})\\.json')
+2025-05-13 20:41:31.808 | INFO     | __main__:get_old_path:48 - found latest file: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-06.json
+2025-05-13 20:41:31.808 | INFO     | __main__:main:434 - found old scrape /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-06.json
+2025-05-13 20:41:31.808 | INFO     | __main__:compare_new_and_old:57 - starting the comparison between the old: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-06.json and new: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/latest.json json files
+2025-05-13 20:41:39.615 | ERROR    | __main__:compare_new_and_old:76 - error in attempting to compare the old and new json data 'module' object is not callable
+2025-05-13 20:41:39.615 | INFO     | __main__:main:442 - Nothing needs to be inserted or deleted
+2025-05-13 20:43:34.678 | INFO     | __main__:get_old_path:30 - looking for filename patterns with re.compile('scrape_(\\d{4}-\\d{2}-\\d{2})\\.json')
+2025-05-13 20:43:34.679 | INFO     | __main__:get_old_path:48 - found latest file: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-06.json
+2025-05-13 20:43:34.679 | INFO     | __main__:main:434 - found old scrape /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-06.json
+2025-05-13 20:43:34.679 | INFO     | __main__:compare_new_and_old:57 - starting the comparison between the old: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-06.json and new: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/latest.json json files
+2025-05-13 20:43:42.527 | INFO     | __main__:compare_new_and_old:68 - Differences found:
+2025-05-13 20:43:42.528 | INFO     | __main__:compare_new_and_old:69 - None
+2025-05-13 20:43:42.528 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 20:43:42.528 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 20:43:42.528 | INFO     | __main__:process_json_diff:91 - Processing added items
+2025-05-13 20:43:42.528 | DEBUG    | __main__:process_json_diff:102 - Processing laptop: root[4799]
+2025-05-13 20:43:42.528 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 20:43:42.590 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 20:43:42.590 | INFO     | __main__:get_model_id:391 - Looking up model_id for laptop_name: 'Tecra A50-J-10X'
+2025-05-13 20:43:42.610 | INFO     | __main__:get_model_id:394 - Row count: 1
+2025-05-13 20:43:42.610 | INFO     | __main__:get_model_id:406 - Found model_id: 806
+2025-05-13 20:43:42.613 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 20:43:42.614 | INFO     | __main__:process_json_diff:177 - Laptop details for Tecra A50-J-10X:
+--------------------------------------------------------------------------------
+model_id = 806
+Weight: 1.65 kg
+Processor: Core i5-1135G7
+Graphics card: Iris Xe Graphics
+Memory: 8 GB
+OS: Windows 10 Professional
+Battery: Up to 9 hours
+
+2025-05-13 20:43:42.614 | INFO     | DBAccess.database_persistence_V3:insert_configuration:91 - model ID: 806, Weight: 1.65 kg, Price: No Price available, Battery Life: Up to 9 hours, Memory: 8 GB, Operating Sys: Windows 10 Professional, GPU: Iris Xe Graphics, CPU: Core i5-1135G7
+2025-05-13 20:43:42.614 | INFO     | DBAccess.database_persistence_V3:insert_configuration:92 - Inserting into table laptop_configurations
+2025-05-13 20:43:42.647 | INFO     | DBAccess.database_persistence_V3:insert_configuration:103 - Inserted laptop_configurations with config_id: (9526,)
+2025-05-13 20:43:42.647 | INFO     | __main__:process_json_diff:209 - Laptop model(s) to added: ['Tecra A50-J-10X']
+2025-05-13 20:43:42.647 | INFO     | DBAccess.database_persistence_V3:insert_cpu_records:23 - Inserting into database table processors:
+2025-05-13 20:43:42.660 | INFO     | DBAccess.database_persistence_V3:insert_gpu_records:44 - Inserting into database table graphics_cards:
+2025-05-13 20:43:42.664 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 20:43:42.665 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 20:43:42.665 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 20:43:42.730 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 20:43:42.730 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 20:43:42.790 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 20:43:42.790 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 20:43:42.858 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 20:43:42.859 | INFO     | DBAccess.database_persistence_V3:bulk_insert_storage:118 - Inserting into database table configuration_storage
+2025-05-13 20:43:42.859 | INFO     | DBAccess.database_persistence_V3:bulk_insert_features:134 - Inserting into database table features
+2025-05-13 20:43:42.859 | INFO     | DBAccess.database_persistence_V3:bulk_insert_ports:150 - Inserting into database table ports
+2025-05-13 20:43:42.860 | INFO     | DBAccess.database_persistence_V3:bulk_insert_screens:166 - Inserting into database table screens
+2025-05-13 20:43:42.871 | INFO     | DBAccess.database_persistence_V3:bulk_insert_screens:170 - inserted screens: 1
+2025-05-13 20:43:42.871 | INFO     | DBAccess.database_persistence_V3:bulk_insert_storage:122 - inserted storages: 1
+2025-05-13 20:43:42.871 | INFO     | DBAccess.database_persistence_V3:bulk_insert_ports:154 - inserted ports: 1
+2025-05-13 20:43:42.872 | INFO     | DBAccess.database_persistence_V3:bulk_insert_features:138 - inserted features: 1
+2025-05-13 20:43:42.889 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 20:43:42.889 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 20:43:42.889 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 20:43:42.890 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 20:43:42.896 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 20:47:48.781 | INFO     | __main__:get_old_path:30 - looking for filename patterns with re.compile('scrape_(\\d{4}-\\d{2}-\\d{2})\\.json')
+2025-05-13 20:47:48.781 | INFO     | __main__:get_old_path:48 - found latest file: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-06.json
+2025-05-13 20:47:48.781 | INFO     | __main__:main:433 - found old scrape /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-06.json
+2025-05-13 20:47:48.781 | INFO     | __main__:compare_new_and_old:57 - starting the comparison between the old: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-06.json and new: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/latest.json json files
+2025-05-13 20:47:56.610 | INFO     | __main__:compare_new_and_old:67 - Differences found:
+2025-05-13 20:47:56.611 | INFO     | __main__:compare_new_and_old:68 - None
+2025-05-13 20:47:56.611 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 20:47:56.611 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 20:47:56.611 | INFO     | __main__:process_json_diff:252 - Processing removed items
+2025-05-13 20:47:56.611 | DEBUG    | __main__:process_json_diff:262 - Processing laptop: root[4799]
+2025-05-13 20:47:56.611 | INFO     | __main__:process_json_diff:299 - Found laptop to delete from the database
+2025-05-13 20:47:56.611 | INFO     | __main__:process_json_diff:300 - Laptop details for Tecra A50-J-10X:
+--------------------------------------------------------------------------------
+Weight: 1.65 kg
+Processor: Core i5-1135G7
+Graphics card: Iris Xe Graphics
+Memory: 8
+OS: Windows 10 Professional
+Battery: Up to 9 hours
+
+2025-05-13 20:47:56.611 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 20:47:56.661 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 20:47:56.662 | INFO     | __main__:get_config_id:320 - getting the config_id for a config of Tecra A50-J-10X
+2025-05-13 20:47:56.681 | WARNING  | __main__:get_config_id:329 - No config_id found for the given laptop config.
+2025-05-13 20:47:56.687 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 20:49:05.872 | INFO     | __main__:get_old_path:30 - looking for filename patterns with re.compile('scrape_(\\d{4}-\\d{2}-\\d{2})\\.json')
+2025-05-13 20:49:05.873 | INFO     | __main__:get_old_path:48 - found latest file: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-06.json
+2025-05-13 20:49:05.873 | INFO     | __main__:main:433 - found old scrape /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-06.json
+2025-05-13 20:49:05.873 | INFO     | __main__:compare_new_and_old:57 - starting the comparison between the old: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-06.json and new: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/latest.json json files
+2025-05-13 20:49:13.657 | INFO     | __main__:compare_new_and_old:67 - Differences found:
+2025-05-13 20:49:13.658 | INFO     | __main__:compare_new_and_old:68 - None
+2025-05-13 20:49:13.658 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 20:49:13.658 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 20:49:13.658 | INFO     | __main__:process_json_diff:252 - Processing removed items
+2025-05-13 20:49:13.658 | DEBUG    | __main__:process_json_diff:262 - Processing laptop: root[4799]
+2025-05-13 20:49:13.658 | INFO     | __main__:process_json_diff:299 - Found laptop to delete from the database
+2025-05-13 20:49:13.658 | INFO     | __main__:process_json_diff:300 - Laptop details for Tecra A50-J-10X:
+--------------------------------------------------------------------------------
+Weight: 1.65 kg
+Processor: Core i5-1135G7
+Graphics card: Iris Xe Graphics
+Memory: 8
+OS: Windows 10 Professional
+Battery: Up to 9 hours
+
+2025-05-13 20:49:13.658 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 20:49:13.705 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 20:49:13.705 | INFO     | __main__:get_config_id:320 - getting the config_id for a config of Tecra A50-J-10X
+2025-05-13 20:49:13.718 | WARNING  | __main__:get_config_id:329 - No config_id found for the given laptop config.
+2025-05-13 20:49:13.723 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 20:49:13.723 | WARNING  | __main__:process_json_diff:315 - Can not delete configuration for model Tecra A50-J-10X as there is no config_id found
+2025-05-13 21:34:01.879 | INFO     | __main__:get_old_path:30 - looking for filename patterns with re.compile('scrape_(\\d{4}-\\d{2}-\\d{2})\\.json')
+2025-05-13 21:34:01.880 | INFO     | __main__:get_old_path:48 - found latest file: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-06.json
+2025-05-13 21:34:01.880 | INFO     | __main__:main:433 - found old scrape /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-06.json
+2025-05-13 21:34:01.880 | INFO     | __main__:compare_new_and_old:57 - starting the comparison between the old: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-06.json and new: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/latest.json json files
+2025-05-13 21:34:09.717 | INFO     | __main__:compare_new_and_old:67 - Differences found:
+2025-05-13 21:34:09.718 | INFO     | __main__:compare_new_and_old:68 - None
+2025-05-13 21:34:09.719 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 21:34:09.719 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 21:34:09.719 | INFO     | __main__:process_json_diff:252 - Processing removed items
+2025-05-13 21:34:09.719 | DEBUG    | __main__:process_json_diff:262 - Processing laptop: root[4799]
+2025-05-13 21:34:09.719 | INFO     | __main__:process_json_diff:299 - Found laptop to delete from the database
+2025-05-13 21:34:09.719 | INFO     | __main__:process_json_diff:300 - Laptop details for Tecra A50-J-10X:
+--------------------------------------------------------------------------------
+Weight: 1.65 kg
+Processor: Core i5-1135G7
+Graphics card: Iris Xe Graphics
+Memory: 8
+OS: Windows 10 Professional
+Battery: Up to 9 hours
+
+2025-05-13 21:34:09.719 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 21:34:09.771 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 21:34:09.771 | INFO     | __main__:get_config_id:320 - getting the config_id for a config of Tecra A50-J-10X
+2025-05-13 21:34:09.779 | WARNING  | __main__:get_config_id:329 - No config_id found for the given laptop config.
+2025-05-13 21:34:09.783 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 21:34:09.783 | WARNING  | __main__:process_json_diff:315 - Can not delete configuration for model Tecra A50-J-10X as there is no config_id found
+2025-05-13 22:25:16.905 | INFO     | comparison:get_old_path:30 - looking for filename patterns with re.compile('scrape_(\\d{4}-\\d{2}-\\d{2})\\.json')
+2025-05-13 22:25:16.907 | INFO     | comparison:get_old_path:48 - found latest file: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-13.json
+2025-05-13 22:25:16.907 | INFO     | comparison:main:433 - found old scrape /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-13.json
+2025-05-13 22:25:16.907 | INFO     | comparison:compare_new_and_old:57 - starting the comparison between the old: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-13.json and new: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/latest.json json files
+2025-05-13 22:25:24.776 | INFO     | comparison:compare_new_and_old:67 - Differences found:
+2025-05-13 22:25:24.777 | INFO     | comparison:compare_new_and_old:68 - None
+2025-05-13 22:25:24.777 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 22:25:24.777 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 22:25:24.777 | INFO     | comparison:process_json_diff:90 - Processing added items
+2025-05-13 22:25:24.777 | DEBUG    | comparison:process_json_diff:101 - Processing laptop: root[4799]
+2025-05-13 22:25:24.777 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 22:25:24.850 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 22:25:24.851 | INFO     | comparison:get_model_id:390 - Looking up model_id for laptop_name: 'Tecra A50-J-10X'
+2025-05-13 22:25:24.857 | INFO     | comparison:get_model_id:393 - Row count: 1
+2025-05-13 22:25:24.857 | INFO     | comparison:get_model_id:405 - Found model_id: 806
+2025-05-13 22:25:24.861 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 22:25:24.861 | INFO     | comparison:process_json_diff:176 - Laptop details for Tecra A50-J-10X:
+--------------------------------------------------------------------------------
+model_id = 806
+Weight: 1.65 kg
+Processor: Core i5-1135G7
+Graphics card: Iris Xe Graphics
+Memory: 8 GB
+OS: Windows 10 Professional
+Battery: Up to 9 hours
+
+2025-05-13 22:25:24.861 | INFO     | DBAccess.database_persistence_V3:insert_configuration:91 - model ID: 806, Weight: 1.65 kg, Price: No Price available, Battery Life: Up to 9 hours, Memory: 8 GB, Operating Sys: Windows 10 Professional, GPU: Iris Xe Graphics, CPU: Core i5-1135G7
+2025-05-13 22:25:24.861 | INFO     | DBAccess.database_persistence_V3:insert_configuration:92 - Inserting into table laptop_configurations
+2025-05-13 22:25:24.885 | INFO     | DBAccess.database_persistence_V3:insert_configuration:103 - Inserted laptop_configurations with config_id: (9527,)
+2025-05-13 22:25:24.885 | INFO     | comparison:process_json_diff:208 - Laptop model(s) to added: ['Tecra A50-J-10X']
+2025-05-13 22:25:24.885 | INFO     | DBAccess.database_persistence_V3:insert_cpu_records:23 - Inserting into database table processors:
+2025-05-13 22:25:24.891 | INFO     | DBAccess.database_persistence_V3:insert_gpu_records:44 - Inserting into database table graphics_cards:
+2025-05-13 22:25:24.895 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 22:25:24.895 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 22:25:24.895 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 22:25:24.965 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 22:25:24.965 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 22:25:25.024 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 22:25:25.024 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 22:25:25.077 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 22:25:25.078 | INFO     | DBAccess.database_persistence_V3:bulk_insert_storage:118 - Inserting into database table configuration_storage
+2025-05-13 22:25:25.079 | INFO     | DBAccess.database_persistence_V3:bulk_insert_features:134 - Inserting into database table features
+2025-05-13 22:25:25.079 | INFO     | DBAccess.database_persistence_V3:bulk_insert_ports:150 - Inserting into database table ports
+2025-05-13 22:25:25.079 | INFO     | DBAccess.database_persistence_V3:bulk_insert_screens:166 - Inserting into database table screens
+2025-05-13 22:25:25.091 | INFO     | DBAccess.database_persistence_V3:bulk_insert_screens:170 - inserted screens: 1
+2025-05-13 22:25:25.092 | INFO     | DBAccess.database_persistence_V3:bulk_insert_storage:122 - inserted storages: 1
+2025-05-13 22:25:25.100 | INFO     | DBAccess.database_persistence_V3:bulk_insert_ports:154 - inserted ports: 1
+2025-05-13 22:25:25.100 | INFO     | DBAccess.database_persistence_V3:bulk_insert_features:138 - inserted features: 1
+2025-05-13 22:25:25.117 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 22:25:25.118 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 22:25:25.118 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 22:25:25.118 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 22:25:25.122 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 22:25:25.122 | INFO     | __main__:main:204 - Scraping complete. Total laptops scraped: 1
+2025-05-13 22:48:06.305 | INFO     | comparison:get_old_path:30 - looking for filename patterns with re.compile('scrape_(\\d{4}-\\d{2}-\\d{2})\\.json')
+2025-05-13 22:48:06.306 | INFO     | comparison:get_old_path:48 - found latest file: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-13.json
+2025-05-13 22:48:06.306 | INFO     | comparison:main:433 - found old scrape /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-13.json
+2025-05-13 22:48:06.306 | INFO     | comparison:compare_new_and_old:57 - starting the comparison between the old: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-13.json and new: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/latest.json json files
+2025-05-13 22:48:14.170 | INFO     | comparison:compare_new_and_old:71 - No differences found between the two files.
+2025-05-13 22:48:14.170 | INFO     | comparison:main:441 - Nothing needs to be inserted or deleted
+2025-05-13 22:48:14.170 | INFO     | __main__:main:204 - Scraping complete. Total laptops scraped: 0
+2025-05-13 22:52:21.919 | INFO     | comparison:get_old_path:30 - looking for filename patterns with re.compile('scrape_(\\d{4}-\\d{2}-\\d{2})\\.json')
+2025-05-13 22:52:21.921 | INFO     | comparison:get_old_path:48 - found latest file: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-13.json
+2025-05-13 22:52:21.921 | INFO     | comparison:main:433 - found old scrape /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-13.json
+2025-05-13 22:52:21.921 | INFO     | comparison:compare_new_and_old:57 - starting the comparison between the old: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-13.json and new: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/latest.json json files
+2025-05-13 22:52:29.739 | INFO     | comparison:compare_new_and_old:67 - Differences found:
+2025-05-13 22:52:29.741 | INFO     | comparison:compare_new_and_old:68 - None
+2025-05-13 22:52:29.741 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 22:52:29.741 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 22:52:29.741 | INFO     | comparison:process_json_diff:90 - Processing added items
+2025-05-13 22:52:29.741 | DEBUG    | comparison:process_json_diff:101 - Processing laptop: root[4797]
+2025-05-13 22:52:29.741 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 22:52:29.796 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 22:52:29.796 | INFO     | comparison:get_model_id:390 - Looking up model_id for laptop_name: 'Tecra A50-J-13W'
+2025-05-13 22:52:29.811 | INFO     | comparison:get_model_id:393 - Row count: 1
+2025-05-13 22:52:29.811 | INFO     | comparison:get_model_id:405 - Found model_id: 3081
+2025-05-13 22:52:29.816 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 22:52:29.816 | INFO     | comparison:process_json_diff:176 - Laptop details for Tecra A50-J-13W:
+--------------------------------------------------------------------------------
+model_id = 3081
+Weight: 1.65 kg
+Processor: Core i7-1165G7
+Graphics card: Iris Xe Graphics
+Memory: 16 GB
+OS: Windows 10 Professional
+Battery: Up to 8 hours
+
+2025-05-13 22:52:29.816 | INFO     | DBAccess.database_persistence_V3:insert_configuration:91 - model ID: 3081, Weight: 1.65 kg, Price: No Price available, Battery Life: Up to 8 hours, Memory: 16 GB, Operating Sys: Windows 10 Professional, GPU: Iris Xe Graphics, CPU: Core i7-1165G7
+2025-05-13 22:52:29.816 | INFO     | DBAccess.database_persistence_V3:insert_configuration:92 - Inserting into table laptop_configurations
+2025-05-13 22:52:29.839 | INFO     | DBAccess.database_persistence_V3:insert_configuration:103 - Inserted laptop_configurations with config_id: (9528,)
+2025-05-13 22:52:29.839 | DEBUG    | comparison:process_json_diff:101 - Processing laptop: root[4798]
+2025-05-13 22:52:29.839 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 22:52:29.839 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 22:52:29.839 | INFO     | comparison:get_model_id:390 - Looking up model_id for laptop_name: 'LifeBook E5510'
+2025-05-13 22:52:29.851 | INFO     | comparison:get_model_id:393 - Row count: 1
+2025-05-13 22:52:29.851 | INFO     | comparison:get_model_id:405 - Found model_id: 2413
+2025-05-13 22:52:29.860 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 22:52:29.860 | INFO     | comparison:process_json_diff:176 - Laptop details for LifeBook E5510:
+--------------------------------------------------------------------------------
+model_id = 2413
+Weight: 2.04 kg
+Processor: Core i5-10210U
+Graphics card: UHD Graphics for 10th Gen Intel Processors
+Memory: 8 GB
+OS: Windows 10 Professional
+Battery: Up to 10 hours
+
+2025-05-13 22:52:29.860 | INFO     | DBAccess.database_persistence_V3:insert_configuration:91 - model ID: 2413, Weight: 2.04 kg, Price: No Price available, Battery Life: Up to 10 hours, Memory: 8 GB, Operating Sys: Windows 10 Professional, GPU: UHD Graphics for 10th Gen Intel Processors, CPU: Core i5-10210U
+2025-05-13 22:52:29.860 | INFO     | DBAccess.database_persistence_V3:insert_configuration:92 - Inserting into table laptop_configurations
+2025-05-13 22:52:29.875 | INFO     | DBAccess.database_persistence_V3:insert_configuration:103 - Inserted laptop_configurations with config_id: (9529,)
+2025-05-13 22:52:29.875 | DEBUG    | comparison:process_json_diff:101 - Processing laptop: root[4799]
+2025-05-13 22:52:29.875 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 22:52:29.875 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 22:52:29.876 | INFO     | comparison:get_model_id:390 - Looking up model_id for laptop_name: 'Tecra A50-J-10X'
+2025-05-13 22:52:29.884 | INFO     | comparison:get_model_id:393 - Row count: 1
+2025-05-13 22:52:29.885 | INFO     | comparison:get_model_id:405 - Found model_id: 806
+2025-05-13 22:52:29.891 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 22:52:29.892 | INFO     | comparison:process_json_diff:176 - Laptop details for Tecra A50-J-10X:
+--------------------------------------------------------------------------------
+model_id = 806
+Weight: 1.65 kg
+Processor: Core i5-1135G7
+Graphics card: Iris Xe Graphics
+Memory: 8 GB
+OS: Windows 10 Professional
+Battery: Up to 9 hours
+
+2025-05-13 22:52:29.892 | INFO     | DBAccess.database_persistence_V3:insert_configuration:91 - model ID: 806, Weight: 1.65 kg, Price: No Price available, Battery Life: Up to 9 hours, Memory: 8 GB, Operating Sys: Windows 10 Professional, GPU: Iris Xe Graphics, CPU: Core i5-1135G7
+2025-05-13 22:52:29.892 | INFO     | DBAccess.database_persistence_V3:insert_configuration:92 - Inserting into table laptop_configurations
+2025-05-13 22:52:29.911 | INFO     | DBAccess.database_persistence_V3:insert_configuration:103 - Inserted laptop_configurations with config_id: (9530,)
+2025-05-13 22:52:29.911 | INFO     | comparison:process_json_diff:208 - Laptop model(s) to added: ['Tecra A50-J-13W', 'LifeBook E5510', 'Tecra A50-J-10X']
+2025-05-13 22:52:29.911 | INFO     | DBAccess.database_persistence_V3:insert_cpu_records:23 - Inserting into database table processors:
+2025-05-13 22:52:29.926 | INFO     | DBAccess.database_persistence_V3:insert_gpu_records:44 - Inserting into database table graphics_cards:
+2025-05-13 22:52:29.941 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 22:52:29.941 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 22:52:29.941 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 22:52:29.993 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 22:52:29.993 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 22:52:30.037 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 22:52:30.037 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-13 22:52:30.075 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-13 22:52:30.075 | INFO     | DBAccess.database_persistence_V3:bulk_insert_storage:118 - Inserting into database table configuration_storage
+2025-05-13 22:52:30.076 | INFO     | DBAccess.database_persistence_V3:bulk_insert_features:134 - Inserting into database table features
+2025-05-13 22:52:30.076 | INFO     | DBAccess.database_persistence_V3:bulk_insert_ports:150 - Inserting into database table ports
+2025-05-13 22:52:30.076 | INFO     | DBAccess.database_persistence_V3:bulk_insert_screens:166 - Inserting into database table screens
+2025-05-13 22:52:30.091 | INFO     | DBAccess.database_persistence_V3:bulk_insert_storage:122 - inserted storages: 3
+2025-05-13 22:52:30.091 | INFO     | DBAccess.database_persistence_V3:bulk_insert_features:138 - inserted features: 3
+2025-05-13 22:52:30.091 | INFO     | DBAccess.database_persistence_V3:bulk_insert_ports:154 - inserted ports: 3
+2025-05-13 22:52:30.091 | INFO     | DBAccess.database_persistence_V3:bulk_insert_screens:170 - inserted screens: 3
+2025-05-13 22:52:30.125 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 22:52:30.126 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 22:52:30.126 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 22:52:30.126 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 22:52:30.130 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-13 22:52:30.130 | INFO     | __main__:main:204 - Scraping complete. Total laptops scraped: 3
+2025-05-13 22:53:41.967 | INFO     | comparison:get_old_path:30 - looking for filename patterns with re.compile('scrape_(\\d{4}-\\d{2}-\\d{2})\\.json')
+2025-05-13 22:53:41.968 | INFO     | comparison:get_old_path:48 - found latest file: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-13.json
+2025-05-13 22:53:41.968 | INFO     | comparison:main:433 - found old scrape /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-13.json
+2025-05-13 22:53:41.968 | INFO     | comparison:compare_new_and_old:57 - starting the comparison between the old: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-13.json and new: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/latest.json json files
+2025-05-13 22:53:49.826 | INFO     | comparison:compare_new_and_old:71 - No differences found between the two files.
+2025-05-13 22:53:49.826 | INFO     | comparison:main:441 - Nothing needs to be inserted or deleted
+2025-05-13 22:53:49.826 | INFO     | __main__:main:204 - Scraping complete. Total laptops scraped: 0
+2025-05-13 22:54:11.452 | INFO     | comparison:get_old_path:30 - looking for filename patterns with re.compile('scrape_(\\d{4}-\\d{2}-\\d{2})\\.json')
+2025-05-13 22:54:11.452 | INFO     | comparison:get_old_path:48 - found latest file: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-13.json
+2025-05-13 22:54:11.452 | INFO     | comparison:main:433 - found old scrape /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-13.json
+2025-05-13 22:54:11.452 | INFO     | comparison:compare_new_and_old:57 - starting the comparison between the old: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/old_data/scrape_2025-05-13.json and new: /home/samuel/laptop_chatbot/Sam/server_side/scrapers/scraped_data/latest.json json files
+2025-05-13 22:54:19.253 | INFO     | comparison:compare_new_and_old:71 - No differences found between the two files.
+2025-05-13 22:54:19.253 | INFO     | comparison:main:441 - Nothing needs to be inserted or deleted
+2025-05-13 22:54:19.253 | INFO     | __main__:main:204 - Scraping complete. Total laptops scraped: 0
