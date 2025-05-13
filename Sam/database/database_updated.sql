@@ -103,3 +103,13 @@ CREATE TABLE pref_laptop (
     FOREIGN KEY (username) REFERENCES users (username),
     PRIMARY KEY(config_id, username) 
 );
+CREATE TABLE past_recommendations (
+                                                    rec_id SERIAL PRIMARY KEY,
+                                                    username VARCHAR(100) NOT NULL REFERENCES users(username),
+                                                    model_id VARCHAR(100) NOT NULL,
+                                                    model_name VARCHAR(255) NOT NULL,
+                                                    model_brand VARCHAR(100) NOT NULL,
+                                                    rec_date TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_past_recommendations_username ON past_recommendations(username);
