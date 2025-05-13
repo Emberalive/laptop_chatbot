@@ -110,7 +110,7 @@ def process_json_diff(diff_dict, action, json_conn, json_cur):
             cpu_brand = cpu_name = gpu_model = gpu_brand = None
 
 
-            if tables and isinstance(tables, list) and action == "added":
+            if tables and isinstance(tables, list):
                 for table in tables:
                     table_data = table.get('data', {})  # Get the data dictionary
                     table_title = table.get('title', '')  # Fixed: use () not []
@@ -262,8 +262,8 @@ def process_json_diff(diff_dict, action, json_conn, json_cur):
             tables = laptop_data.get('tables', [])
 
             #initialize variables
-
-            if tables and isinstance(tables, list) and action == "added":
+            laptop_price = weight = cpu_name = memory = o_s = battery_life = laptop_model = gpu_model = None
+            if tables and isinstance(tables, list):
                 for table in tables:
                     table_data = table.get('data', {})  # Get the data dictionary
                     table_title = table.get('title', '')  # Fixed: use () not []
@@ -271,14 +271,116 @@ def process_json_diff(diff_dict, action, json_conn, json_cur):
                     if table_title == "Product Details":
                         laptop_model = table_data.get('Name', '')
                         laptop_brand = table_data.get('Brand', '')
+                        weight = table_data.get('Weight', '')
                     elif table_title == "Specs":
                         cpu_name = table_data.get('Processor Name', '')
 
                         gpu_info = table_data.get('Graphics Card', '')
                         gpu_components = gpu_info.split(" ")
-                        gpu_brand = gpu_components[0] if gpu_components else "Unknown"
                         gpu_model = " ".join(gpu_components[1:]) if len(gpu_components) > 1 else "Unknown"
 
+                        memory_info = table_data.get('Memory Installed')
+                        memory_components = memory_info.split(' ')
+                        memory = memory_components[0] if memory_components else 'Unknown'
+                    elif table_title == "Features":
+                        o_s = table_data.get('Operating System', 'Not specified')
+                        battery_life = table_data.get('Battery Life', 'Unkown')
+                    elif table_title == "Prices":
+                        if isinstance(table_data, list) and len(table_data) > 0:
+                            first_entry = table_data[0]
+                            laptop_price = first_entry.get('price', 'No Price available')
+                            laptop_shop_url = first_entry.get('shop_url', 'No Shop available')
+                        else:
+                            laptop_price = 'No Price available'
+                            laptop_shop_url = 'No Shop available'
+
+            if laptop_model:
+                logger.info("Found laptop to delete from the database")
+                logger.info(f"Laptop details for {laptop_model}:\n"
+                            f"--------------------------------------------------------------------------------\n"
+                            f"Weight: {weight}\n"
+                            f"Processor: {cpu_name}\n"
+                            f"Graphics card: {gpu_model}\n"
+                            f"Memory: {memory}\n"
+                            f"OS: {o_s}\n"
+                            f"Battery: {battery_life}\n")
+
+                laptop_to_delete = (laptop_price, weight, battery_life, memory, o_s, cpu_name, gpu_model)
+                config_id = get_config_id(laptop_to_delete, laptop_model)
+                if config_id is not None:
+                    delete_from_config_tables(config_id)
+                    delete_laptop_config(laptop_to_delete)
+                else:
+                    logger.warn(f"Can not delete configuration for model {laptop_model} as there is no config_id found")
+                    continue
+def get_config_id(laptop: tuple, model)-> int or None:
+    config_conn, config_cur = get_db_connection()
+    try:
+        logger.info(f"getting the config_id for a config of {model}")
+        config_id_query = ("SELECT config_id FROM laptop_configurations WHERE price = %s AND weight = %s AND battery_life = %s AND memory_installed = %s AND operating_system = %s AND processor = %s AND graphics_card = %s")
+        config_cur.execute(config_id_query, laptop)
+        config_id = config_cur.fetchall()
+
+        if len(config_id) > 1:
+            logger.warning("More than one config_id found for laptop config — should be unique.")
+            return None
+        elif len(config_id) == 0:
+            logger.warning("No config_id found for the given laptop config.")
+            return None
+        return config_id[0][0]
+    except Exception as e:
+        logger.error(f"faild to get the config_id for a laptop_config {model}. ERROR: {e}")
+        return None
+    finally:
+        release_db_connection(config_conn, config_cur)
+
+def delete_from_config_tables(config_id):
+    try:
+        logger.info(f"Attempting to delete from all referenced tables for config_id {config_id}")
+        delete_laptop_storage = ("DELETE FROM configuration_storage WHERE config_id = %s")
+        delete_laptop_features = ("DELETE FROM features WHERE config_id = %s")
+        delete_laptop_ports = ("DELETE FROM ports WHERE config_id = %s")
+        delete_laptop_screens = ("DELETE FROM screens WHERE config_id = %s")
+
+        with ThreadPoolExecutor(max_workers=11) as executor:
+            # Get one connection per thread
+            storage_conn, storage_cur = get_db_connection()
+            features_conn, features_cur = get_db_connection()
+            ports_conn, ports_cur = get_db_connection()
+            screens_conn, screens_cur = get_db_connection()
+
+            storage_cur.execute(delete_laptop_storage, config_id)
+            features_cur.execute(delete_laptop_features, config_id)
+            ports_cur.execute(delete_laptop_ports, config_id)
+            screens_cur.execute(delete_laptop_screens, config_id)
+    except Exception as e:
+        logger.error(f"")
+
+    storage_conn.commit()
+    features_conn.commit()
+    ports_conn.commit()
+    screens_conn.commit()
+
+    release_db_connection(storage_conn, storage_cur)
+    release_db_connection(features_conn, features_cur)
+    release_db_connection(ports_conn, ports_cur)
+    release_db_connection(screens_conn, screens_cur)
+
+
+def delete_laptop_config(laptop: tuple, model):
+    laptop_del_conn, laptop_del_cur = get_db_connection()
+    try:
+        logger.info(f"Attempting to delete a configuration for the laptop_model: {model}")
+        delete_config_query = ("DELETE FROM laptop_confgurations WHERE price = %s AND weight = %s AND battery_life = %s AND memory_installed = %s AND operating_system = %s AND processor = %s AND graphics_card = %s")
+        laptop_del_cur.execute(delete_config_query, laptop)
+
+        deleted_config_id = laptop_del_cur.fetchone()
+        if not deleted_config_id or not deleted_config_id[0]:
+            return None
+        return deleted_config_id[0]
+    except Exception as e:
+        laptop_del_conn.rollback()
+        logger.error(f"error attempting to delete laptop config: {e}")
 
 def get_model_id(laptop_name):
     model_id_conn, model_id_cur = get_db_connection()
