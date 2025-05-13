@@ -371,7 +371,7 @@ def delete_laptop_config(laptop: tuple, model):
     laptop_del_conn, laptop_del_cur = get_db_connection()
     try:
         logger.info(f"Attempting to delete a configuration for the laptop_model: {model}")
-        delete_config_query = ("DELETE FROM laptop_confgurations WHERE price = %s AND weight = %s AND battery_life = %s AND memory_installed = %s AND operating_system = %s AND processor = %s AND graphics_card = %s")
+        delete_config_query = ("DELETE FROM laptop_configurations WHERE price = %s AND weight = %s AND battery_life = %s AND memory_installed = %s AND operating_system = %s AND processor = %s AND graphics_card = %s")
         laptop_del_cur.execute(delete_config_query, laptop)
 
         deleted_config_id = laptop_del_cur.fetchone()
