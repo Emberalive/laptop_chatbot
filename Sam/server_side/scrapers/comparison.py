@@ -64,7 +64,7 @@ def compare_new_and_old (old_path, new_path=os.getenv('NEW_JSON')):
         diff = DeepDiff(data1, data2, verbose_level=2)
 
         if diff:
-            logger.info(f"Difference Stats:\n {pprint(diff.get_stats())} \n")
+            # logger.info(f"Difference Stats:\n {pprint(diff.get_stats())} \n")
             logger.info("Differences found:")
             logger.info(pprint.pprint(diff))
             return diff
