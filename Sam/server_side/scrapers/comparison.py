@@ -8,7 +8,7 @@ import sys
 import os
 from loguru import logger
 from datetime import datetime
-from DBAccess.dbAccess import get_db_connection, release_db_connection, init_db_pool
+from DBAccess.dbAccess import get_db_connection, release_db_connection
 from DBAccess.database_persistence_V3 import insert_configuration, insert_laptop_model,  insert_gpu_records, insert_cpu_records,  bulk_insert_storage, bulk_insert_features,  bulk_insert_ports, bulk_insert_screens
 from dotenv import load_dotenv
 load_dotenv()
@@ -415,7 +415,6 @@ def get_model_id(laptop_name):
 
 
 def update_changes (json_diff_data):
-    init_db_pool()  # Initialize the pool first
     changes_conn, changes_cur = get_db_connection()
 
     json_diff_added = json_diff_data.get('iterable_item_added')
@@ -441,7 +440,4 @@ def main():
         logger.info("Nothing needs to be inserted or deleted")
 
 if __name__ == "__main__":
-    # init_db_pool()  # Initialize the pool first
-    # Now you can safely use get_db_connection()
-    # conn, cur = get_db_connection()
     main()
