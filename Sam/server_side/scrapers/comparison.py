@@ -188,7 +188,7 @@ def process_json_diff(diff_dict, action, json_conn, json_cur):
                         logger.warning("laptop configuration already exists, moving to the next possible insert if any")
                         continue
 
-                    if config_id is None:
+                    if config_id:
                         storage_records.append((config_id, storage_type, storage_capacity))
                         feature_records.append((config_id, back_lit, num_pad, bluetooth))
                         ports_records.append((config_id, ethernet, hdmi, usb_type_c, thunderbolt, display_port))
