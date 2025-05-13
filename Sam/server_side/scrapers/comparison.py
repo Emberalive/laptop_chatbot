@@ -11,7 +11,9 @@ from datetime import datetime
 from DBAccess.dbAccess import get_db_connection, release_db_connection
 from DBAccess.database_persistence_V3 import insert_configuration, insert_laptop_model,  insert_gpu_records, insert_cpu_records,  bulk_insert_storage, bulk_insert_features,  bulk_insert_ports, bulk_insert_screens
 from dotenv import load_dotenv
+
 load_dotenv()
+logger.basicConfig(level=logger.INFO)
 
 logger.remove()
 
