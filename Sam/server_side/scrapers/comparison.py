@@ -232,6 +232,10 @@ def process_json_diff(diff_dict, action, json_conn, json_cur):
             # wait for all threads to complete
             for future in futures:
                 future.result()
+            storage_conn.commit()
+            features_conn.commit()
+            ports_conn.commit()
+            screens_conn.commit()
 
             # then release
             release_db_connection(storage_conn, storage_cur)

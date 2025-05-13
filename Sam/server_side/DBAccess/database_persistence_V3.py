@@ -409,12 +409,22 @@ def main():
             executor.submit(bulk_insert_features, features, features_conn)
             executor.submit(bulk_insert_ports, ports, ports_conn)
             executor.submit(bulk_insert_screens, screens, screens_conn)
+
     except Exception as worker_error:
         logger.error(f"Error with one of the workers ERROR:{worker_error}")
     global_db_connection.commit()
 
-    # return the database connection to the pool
+    # return the database connections to the pool
     release_db_connection(global_db_connection, global_db_connection)
+    storage_conn.commit()
+    features_conn.commit()
+    ports_conn.commit()
+    screens_conn.commit()
+
+    release_db_connection(storage_conn, storage_cur)
+    release_db_connection(features_conn, features_cur)
+    release_db_connection(ports_conn, ports_cur)
+    release_db_connection(screens_conn, screens_cur)
 
 if __name__ == "__main__":
     # Initialize the logger
