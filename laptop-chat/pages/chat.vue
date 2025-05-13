@@ -45,7 +45,7 @@
             <span class="typing-dot"></span>
           </div>
         </div>
-    </div>
+      </div>
 
 
       <div class="chat-input-container">
@@ -71,10 +71,12 @@
 <script setup>
 import { ref, onMounted, nextTick } from 'vue';
 import { useChatStore } from '~/store/chat';
+import { useUserStore } from '~/store/user';
 
 const chatStore = useChatStore();
 const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://86.19.219.159:8000';
 
+const userStore = useUserStore();
 const userInput = ref('');
 const messages = ref([]);
 const recommendations = ref([]);
@@ -128,7 +130,6 @@ function sendMessage() {
           sessionId.value = data.session_id;
         }
 
-
         // Add bot message
         messages.value.push({
           type: 'bot',
@@ -142,6 +143,24 @@ function sendMessage() {
             content: data.recommendations
           });
           chatStore.addRecommendations(data.recommendations);
+
+          // Automatically save each recommendation to the database
+          if (userStore.isLoggedIn) {
+            data.recommendations.forEach(laptop => {
+              useFetch('/api/db', {
+                method: 'POST',
+                body: {
+                  action: 'saveRecommendation',
+                  username: userStore.currentUser.username,
+                  model_id: laptop.id || `${laptop.brand}-${laptop.name}`,
+                  model_name: laptop.name,
+                  model_brand: laptop.brand
+                }
+              }).catch(error => {
+                console.error('Error auto-saving recommendation:', error);
+              });
+            });
+          }
         }
 
         // Handle follow-up question if present

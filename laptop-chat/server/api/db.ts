@@ -255,7 +255,7 @@ async function handleSaveRecommendation(body, sql) {
 
     // Check if this recommendation already exists for this user
     const existing = await sql`
-        SELECT rec_id FROM past_recommendations 
+        SELECT rec_id FROM past_recommendations
         WHERE username = ${username} AND model_id = ${model_id}
     `;
 

@@ -9,8 +9,9 @@
       </div>
       <div class="sidebar-content">
         <ul class="sidebar-nav">
+          <li @click="$router.push('/')">Home</li>
           <li @click="$router.push('/profile')">Profile </li>
-          <li>Past Recommendations</li>
+          <li @click="$router.push('/pastrecs')">Past Recommendations</li>
           <li @click="$router.push('/search')">Laptop Search</li>
           <li @click="$router.push('/about')">About</li>        </ul>
         <div style="margin-top: 30px;">

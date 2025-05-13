@@ -15,6 +15,8 @@ export const useUserStore = defineStore('user', {
             this.currentUser.username = user.username;
             this.currentUser.email = user.email;
             this.currentUser.name = user.username; // Default name to username
+            this.currentUser.primaryUse = user.primaryUse;
+            this.currentUser.budget = user.budget;
             return true;
         },
 
@@ -26,7 +28,36 @@ export const useUserStore = defineStore('user', {
             return true;
         },
 
-        logout() {
+        async checkAuth() {
+            try {
+                const { data } = await useFetch('/api/db', {
+                    method: 'POST',
+                    body: {
+                        action: 'verify'
+                    }
+                });
+
+                if (data.value?.success) {
+                    this.setUser(data.value.user);
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                console.error('Auth check error:', error);
+                return false;
+            }
+        },
+
+        async logout() {
+            try {
+                await useFetch('/api/db', {
+                    method: 'POST',
+                    body: { action: 'logout' }
+                });
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+
             this.isLoggedIn = false;
             this.currentUser = {
                 username: '',
