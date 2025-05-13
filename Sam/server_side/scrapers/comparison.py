@@ -183,7 +183,7 @@ def process_json_diff(diff_dict, action, json_conn):
                 models.append(laptop_model)
 
                 config_id = insert_configuration(model_id, laptop_price, weight, battery_life, memory, o_s, cpu_name, gpu_model, json_conn)
-                if not config_id:
+                if not config_id or config_id is None:
                     logger.warning("laptop configuration already exists, moving to the next possible insert if any")
                     continue
 
