@@ -99,11 +99,12 @@ def insert_configuration(model_id, price, weight, battery_life, memory_installed
         cursor.execute(config_query, config_values)
 
         db_connection.commit()
+        config_id = cursor.fetchone()
         db_connection.commit()
+        logger_server.info(f"Inserted laptop_configurations with config_id: {config_id}")
         config_id = cursor.fetchone()
         if not config_id or not config_id[0]:
             return None
-        logger_server.info(f"Inserted laptop_configurations with config_id: {config_id}")
         return cursor.fetchone()[0]
     except Exception as config_insert_error:
         db_connection.rollback()
