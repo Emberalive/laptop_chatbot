@@ -322,7 +322,7 @@ def get_config_id(laptop: tuple, model)-> int or None:
         config_id = config_cur.fetchall()
 
         if len(config_id) > 1:
-            logger.warning("More than one config_id found for laptop config — should be unique.")
+            logger.warning("More than one config_id found for laptop config - should be unique.")
             return None
         elif len(config_id) == 0:
             logger.warning("No config_id found for the given laptop config.")
