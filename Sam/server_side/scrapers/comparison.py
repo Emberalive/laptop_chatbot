@@ -58,10 +58,10 @@ def compare_new_and_old (old_path, new_path=os.getenv('NEW_JSON')):
     try:
         with open(new_path) as f1, \
              open(old_path) as f2:
-            data1 = json.load(f1)
-            data2 = json.load(f2)
+            new_json = json.load(f1)
+            old_json = json.load(f2)
 
-        diff = DeepDiff(data1, data2, verbose_level=2)
+        diff = DeepDiff(old_json, new_json, verbose_level=2)
 
         if diff:
             logger.info("Differences found:")
