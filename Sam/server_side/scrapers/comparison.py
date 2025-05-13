@@ -349,10 +349,10 @@ def delete_from_config_tables(config_id):
             ports_conn, ports_cur = get_db_connection()
             screens_conn, screens_cur = get_db_connection()
 
-            storage_cur.execute(delete_laptop_storage, config_id)
-            features_cur.execute(delete_laptop_features, config_id)
-            ports_cur.execute(delete_laptop_ports, config_id)
-            screens_cur.execute(delete_laptop_screens, config_id)
+            storage_cur.execute(delete_laptop_storage, (config_id, ))
+            features_cur.execute(delete_laptop_features, (config_id, ))
+            ports_cur.execute(delete_laptop_ports, (config_id, ))
+            screens_cur.execute(delete_laptop_screens, (config_id, ))
     except Exception as e:
         logger.error(f"")
 
