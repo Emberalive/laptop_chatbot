@@ -1,4 +1,4 @@
-# Enhanced Sentence Transformer Chatbot with Improved Database Integration
+# Enhanced Sentence Transformer Chatbot with Improved Database Integration and Random Selection
 
 from sentence_transformers import SentenceTransformer
 import numpy as np
@@ -11,6 +11,8 @@ import re
 import psycopg2
 from collections import defaultdict
 from loguru import logger
+import random  # Import random module for random selection
+import time 
 
 # Setup logger
 logger.remove()
@@ -181,6 +183,10 @@ class LaptopRecommendationBot:
         self.conversation_state = "initial"
         self.user_preferences = {}
         self.last_recommendations = []  # Store last recommendations for reference
+        
+        # Add new variables for storing top similar laptops and search criteria
+        self.top_similar_laptops = []  # Store the top 15 most similar laptops
+        self.last_search_criteria = {}  # Store the last search criteria to detect repeats
         
         # Expanded predefined questions for gathering user preferences
         self.questions = {
@@ -1249,6 +1255,196 @@ class LaptopRecommendationBot:
         
         return preferences
 
+    def _get_search_criteria_hash(self, filters: Dict, use_case: str) -> str:
+        """
+        Create a simple hash of search criteria to detect repeated searches
+        """
+        # Create a simple representation of the search criteria
+        hash_components = [f"use_case={use_case}"]
+        
+        for key, value in sorted(filters.items()):
+            if isinstance(value, (list, tuple)) and all(isinstance(v, (str, int, float)) for v in value):
+                hash_components.append(f"{key}={','.join(str(v) for v in value)}")
+            elif isinstance(value, dict):
+                hash_components.append(f"{key}={','.join(sorted(value.keys()))}")
+            elif isinstance(value, tuple) and len(value) == 2:
+                # Handle budget range
+                min_val, max_val = value
+                hash_components.append(f"{key}={min_val}_{max_val}")
+            else:
+                hash_components.append(f"{key}={value}")
+        
+        return "|".join(hash_components)
+
+    def _get_recommendations(self, laptops: List[Dict], use_case: str, count: int = 3) -> List[Dict]:
+        """
+        Get laptop recommendations based on use case with random selection from top 15
+        """
+        if not laptops:
+            return []
+        
+        # Create a hash of the current search criteria
+        current_filters = {}
+        for key, value in self.user_preferences.items():
+            if key not in ['use_case']:  # Use case is handled separately
+                current_filters[key] = value
+        
+        search_hash = self._get_search_criteria_hash(current_filters, use_case)
+        logger.info(f"Search criteria hash: {search_hash}")
+        
+        # Check if this is the same search as before
+        is_same_search = search_hash == self.last_search_criteria.get('hash', '')
+        logger.info(f"Is same search: {is_same_search}")
+        
+        # If it's the same search and we already have the top 15, use those
+        if is_same_search and self.top_similar_laptops:
+            logger.info(f"Using previously computed top {len(self.top_similar_laptops)} laptops")
+            # Pick random laptops from the top 15
+            count = min(count, len(self.top_similar_laptops))
+            if count == 0:
+                return []
+            
+            # Randomly select unique laptops
+            selected_indices = random.sample(range(len(self.top_similar_laptops)), count)
+            recommendations = [self.top_similar_laptops[i] for i in selected_indices]
+            
+            logger.info(f"Randomly selected {count} laptops from previous top {len(self.top_similar_laptops)}")
+            return recommendations
+        
+        # Otherwise, compute the top similar laptops
+        laptop_embeddings = self._get_laptop_embeddings(laptops)
+        use_case_embedding = self.feature_embeddings.get(use_case, self.feature_embeddings['student'])
+        
+        similarities = cosine_similarity([use_case_embedding], laptop_embeddings)[0]
+        
+        # Get top 15 indices but limit to available laptops
+        top_count = min(15, len(laptops))
+        if top_count == 0:
+            return []
+            
+        top_indices = np.argsort(similarities)[-top_count:][::-1]
+        
+        # Store the top 15 laptops with their scores for future use
+        self.top_similar_laptops = []
+        for idx in top_indices:
+            laptop = laptops[idx]
+            brand = ""
+            name = ""
+            
+            # Extract brand and name
+            for table in laptop.get('tables', []):
+                if table.get('title') == 'Product Details' and 'data' in table:
+                    brand = table['data'].get('Brand', '')
+                    name = table['data'].get('Name', '')
+                    break
+            
+            if brand and name:
+                # Extract price information
+                price_value, price_string = self._extract_price_range(laptop)
+                
+                # Get key specifications for this laptop
+                key_specs = self._get_key_specs(laptop)
+                
+                self.top_similar_laptops.append({
+                    'brand': brand,
+                    'name': name,
+                    'specs': self._format_laptop_description(laptop),
+                    'price': price_string if price_string else "Price not available",
+                    'key_specs': key_specs,
+                    'similarity_score': similarities[idx]
+                })
+        
+        # Store the search criteria hash
+        self.last_search_criteria = {
+            'hash': search_hash,
+            'timestamp': time.time()  # If we want to expire cached results after some time
+        }
+        
+        logger.info(f"Computed new top {len(self.top_similar_laptops)} laptops")
+        
+        # Randomly select from the top 15
+        count = min(count, len(self.top_similar_laptops))
+        if count == 0:
+            return []
+            
+        selected_indices = random.sample(range(len(self.top_similar_laptops)), count)
+        recommendations = [self.top_similar_laptops[i] for i in selected_indices]
+        
+        logger.info(f"Randomly selected {count} laptops from new top {len(self.top_similar_laptops)}")
+        return recommendations
+
+    def _get_key_specs(self, laptop: Dict) -> Dict:
+        """
+        Extract key specifications from a laptop for quick comparison
+        """
+        key_specs = {}
+        
+        # Processor
+        for table in laptop.get('tables', []):
+            if table.get('title') == 'Specs' and 'data' in table:
+                processor_brand = table['data'].get('Processor Brand', '')
+                processor_name = table['data'].get('Processor Name', '')
+                if processor_brand and processor_name:
+                    key_specs['Processor'] = f"{processor_brand} {processor_name}"
+                
+                # Graphics
+                graphics = table['data'].get('Graphics Card', '')
+                if graphics:
+                    key_specs['Graphics'] = graphics
+                
+                # RAM
+                memory = table['data'].get('Memory Installed', '')
+                if memory:
+                    key_specs['RAM'] = memory
+                
+                # Storage
+                storage = table['data'].get('Storage', '')
+                if storage:
+                    key_specs['Storage'] = storage
+        
+        # Screen
+        for table in laptop.get('tables', []):
+            if table.get('title') == 'Screen' and 'data' in table:
+                screen_size = table['data'].get('Size', '')
+                screen_resolution = table['data'].get('Resolution', '')
+                if screen_size:
+                    key_specs['Screen'] = screen_size
+                    if screen_resolution:
+                        key_specs['Screen'] += f" {screen_resolution}"
+                
+                refresh_rate = table['data'].get('Refresh Rate', '')
+                if refresh_rate:
+                    key_specs['Refresh Rate'] = refresh_rate
+        
+        # Battery
+        for table in laptop.get('tables', []):
+            if (table.get('title') == 'Features' or table.get('title') == 'Misc') and 'data' in table:
+                battery = table['data'].get('Battery Life', '')
+                if battery:
+                    key_specs['Battery'] = battery
+        
+        # Weight
+        for table in laptop.get('tables', []):
+            if table.get('title') == 'Product Details' and 'data' in table:
+                weight = table['data'].get('Weight', '')
+                if weight:
+                    key_specs['Weight'] = weight
+        
+        return key_specs
+
+    def _get_laptop_name(self, laptop: Dict) -> str:
+        """Helper to get a laptop's full name (brand + name)"""
+        brand = ""
+        name = ""
+        
+        for table in laptop.get('tables', []):
+            if table.get('title') == 'Product Details' and 'data' in table:
+                brand = table['data'].get('Brand', '')
+                name = table['data'].get('Name', '')
+                break
+        
+        return f"{brand} {name}".strip()
+
     def process_input(self, user_input: str) -> Dict:
         """
         Process user input and return appropriate response
@@ -1456,7 +1652,7 @@ class LaptopRecommendationBot:
             
             if filtered_laptops:
                 # Get recommendations based on use case and filtered laptops
-                recommendations = self._get_recommendations(filtered_laptops, self.user_preferences.get('use_case', 'student'), 5)
+                recommendations = self._get_recommendations(filtered_laptops, self.user_preferences.get('use_case', 'student'), 3)
                 
                 if recommendations:
                     response["recommendations"] = recommendations
@@ -1511,19 +1707,11 @@ class LaptopRecommendationBot:
                 
                 filtered_laptops = self._filter_laptops(filters)
                 
-                # Skip laptops that were already recommended
-                previous_names = [rec['name'] for rec in self.last_recommendations]
-                new_laptops = [laptop for laptop in filtered_laptops if not any(
-                    self._get_laptop_name(laptop) == name for name in previous_names
-                )]
-                
-                if new_laptops:
-                    recommendations = self._get_recommendations(new_laptops, use_case, 3)
-                    response["recommendations"] = recommendations
-                    self.last_recommendations.extend(recommendations)
-                    response["message"] = "Here are some additional options that might interest you:"
-                else:
-                    response["message"] = "I don't have any more recommendations matching your criteria. Would you like to broaden your search?"
+                # Use same search criteria to get different random selections
+                recommendations = self._get_recommendations(filtered_laptops, use_case, 3)
+                response["recommendations"] = recommendations
+                self.last_recommendations = recommendations
+                response["message"] = "Here are some alternative options that might interest you:"
             
             # Handle specific refinement requests
             elif any(term in user_input.lower() for term in ["cheaper", "less expensive", "lower price", "budget", "affordable"]):
@@ -1729,128 +1917,6 @@ class LaptopRecommendationBot:
         
         return response
 
-    def _get_recommendations(self, laptops: List[Dict], use_case: str, count: int = 3) -> List[Dict]:
-        """
-        Get top laptop recommendations based on use case
-        """
-        if not laptops:
-            return []
-        
-        laptop_embeddings = self._get_laptop_embeddings(laptops)
-        use_case_embedding = self.feature_embeddings.get(use_case, self.feature_embeddings['student'])
-        
-        similarities = cosine_similarity([use_case_embedding], laptop_embeddings)[0]
-        
-        # Get top indices but limit to available laptops
-        count = min(count, len(laptops))
-        if count == 0:
-            return []
-            
-        top_indices = np.argsort(similarities)[-count:][::-1]
-        
-        recommendations = []
-        for idx in top_indices:
-            laptop = laptops[idx]
-            brand = ""
-            name = ""
-            
-            # Extract brand and name
-            for table in laptop.get('tables', []):
-                if table.get('title') == 'Product Details' and 'data' in table:
-                    brand = table['data'].get('Brand', '')
-                    name = table['data'].get('Name', '')
-                    break
-            
-            if brand and name:
-                # Extract price information
-                price_value, price_string = self._extract_price_range(laptop)
-                
-                # Get key specifications for this laptop
-                key_specs = self._get_key_specs(laptop)
-                
-                recommendations.append({
-                    'brand': brand,
-                    'name': name,
-                    'specs': self._format_laptop_description(laptop),
-                    'price': price_string if price_string else "Price not available",
-                    'key_specs': key_specs,
-                    'similarity_score': similarities[idx]
-                })
-        
-        return recommendations
-
-    def _get_key_specs(self, laptop: Dict) -> Dict:
-        """
-        Extract key specifications from a laptop for quick comparison
-        """
-        key_specs = {}
-        
-        # Processor
-        for table in laptop.get('tables', []):
-            if table.get('title') == 'Specs' and 'data' in table:
-                processor_brand = table['data'].get('Processor Brand', '')
-                processor_name = table['data'].get('Processor Name', '')
-                if processor_brand and processor_name:
-                    key_specs['Processor'] = f"{processor_brand} {processor_name}"
-                
-                # Graphics
-                graphics = table['data'].get('Graphics Card', '')
-                if graphics:
-                    key_specs['Graphics'] = graphics
-                
-                # RAM
-                memory = table['data'].get('Memory Installed', '')
-                if memory:
-                    key_specs['RAM'] = memory
-                
-                # Storage
-                storage = table['data'].get('Storage', '')
-                if storage:
-                    key_specs['Storage'] = storage
-        
-        # Screen
-        for table in laptop.get('tables', []):
-            if table.get('title') == 'Screen' and 'data' in table:
-                screen_size = table['data'].get('Size', '')
-                screen_resolution = table['data'].get('Resolution', '')
-                if screen_size:
-                    key_specs['Screen'] = screen_size
-                    if screen_resolution:
-                        key_specs['Screen'] += f" {screen_resolution}"
-                
-                refresh_rate = table['data'].get('Refresh Rate', '')
-                if refresh_rate:
-                    key_specs['Refresh Rate'] = refresh_rate
-        
-        # Battery
-        for table in laptop.get('tables', []):
-            if (table.get('title') == 'Features' or table.get('title') == 'Misc') and 'data' in table:
-                battery = table['data'].get('Battery Life', '')
-                if battery:
-                    key_specs['Battery'] = battery
-        
-        # Weight
-        for table in laptop.get('tables', []):
-            if table.get('title') == 'Product Details' and 'data' in table:
-                weight = table['data'].get('Weight', '')
-                if weight:
-                    key_specs['Weight'] = weight
-        
-        return key_specs
-
-    def _get_laptop_name(self, laptop: Dict) -> str:
-        """Helper to get a laptop's full name (brand + name)"""
-        brand = ""
-        name = ""
-        
-        for table in laptop.get('tables', []):
-            if table.get('title') == 'Product Details' and 'data' in table:
-                brand = table['data'].get('Brand', '')
-                name = table['data'].get('Name', '')
-                break
-        
-        return f"{brand} {name}".strip()
-
     def reset_conversation(self):
         """
         Reset the conversation state and user preferences
@@ -1858,6 +1924,8 @@ class LaptopRecommendationBot:
         self.conversation_state = "initial"
         self.user_preferences = {}
         self.last_recommendations = []
+        self.top_similar_laptops = []
+        self.last_search_criteria = {}
 
 def converse_with_chatbot():
     """
