@@ -336,7 +336,7 @@ def main():
     if json_diff:
         update_changes(json_diff)
     else:
-        logger.info("There are no differences between the two scrapes, no changes needed")
+        logger.info("Nothing needs to be inserted or deleted")
 
 # if __name__ == "__main__":
 #     init_db_pool()  # Initialize the pool first
