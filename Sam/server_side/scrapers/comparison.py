@@ -333,7 +333,10 @@ def main():
             json_diff = compare_new_and_old(latest_json_archive)
         except UnboundLocalError as e:
             logger.error(f"could not find an old path for the json data ERROR: {e}")
-    update_changes(json_diff)
+    if json_diff:
+        update_changes(json_diff)
+    else:
+        logger.info("There are no differences between the two scrapes, no changes needed")
 
 # if __name__ == "__main__":
 #     init_db_pool()  # Initialize the pool first
