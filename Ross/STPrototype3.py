@@ -194,7 +194,7 @@ class LaptopRecommendationBot:
             "purpose": "What will you primarily use the laptop for (e.g., gaming, work, studies, design)?",
             "size": "Do you have a preferred screen size (e.g., 13\", 14\", 15.6\", 16\", 17\")? You can also say small, medium, or large.",
             "budget": "What's your approximate budget range? This helps me find laptops that fit your price expectations.",
-            "brand": "Do you have any preferred brands?",
+            "brand": "Do you have any preferred brands? You can also tell me if there are brands you want to exclude.",
             "features": "Are there any specific features you need (e.g., touchscreen, backlit keyboard, long battery life)?",
             "performance": "How important is performance to you (e.g., high, medium, basic needs)?",
             "ports": "Do you need any specific ports (e.g., HDMI, Ethernet, USB-C, Thunderbolt)?",
@@ -843,6 +843,26 @@ class LaptopRecommendationBot:
             filtered_laptops = brand_filtered
             logger.info(f"After brand filtering: {len(filtered_laptops)} laptops")
         
+        # Filter out blacklisted brands
+        if 'blacklisted_brands' in filters and filters['blacklisted_brands']:
+            blacklist_filtered = []
+            blacklisted_brand_names = [b.lower() for b in filters['blacklisted_brands']]
+            
+            for laptop in filtered_laptops:
+                exclude_laptop = False
+                for table in laptop.get('tables', []):
+                    if table.get('title') == 'Product Details' and 'data' in table:
+                        brand = table['data'].get('Brand', '').lower()
+                        if brand and any(b == brand for b in blacklisted_brand_names):
+                            exclude_laptop = True
+                            break
+                
+                if not exclude_laptop:
+                    blacklist_filtered.append(laptop)
+            
+            filtered_laptops = blacklist_filtered
+            logger.info(f"After blacklist filtering: {len(filtered_laptops)} laptops")
+        
         # Filter by budget - IMPROVED VERSION
         if 'budget' in filters and (filters['budget'][0] is not None or filters['budget'][1] is not None):
             min_budget, max_budget = filters['budget']
@@ -1184,6 +1204,53 @@ class LaptopRecommendationBot:
         
         return brands
 
+    def _extract_blacklisted_brands_from_input(self, user_input: str) -> List[str]:
+        """
+        Extract brands that the user wants to blacklist from the input
+        Returns a list of brand names
+        """
+        blacklisted_brands = []
+        common_brands = [
+            "dell", "lenovo", "hp", "asus", "acer", "apple", "msi", 
+            "samsung", "microsoft", "lg", "razer", "toshiba", "alienware",
+            "huawei", "sony", "fujitsu", "gigabyte", "chuwi"
+        ]
+        
+        # Convert input to lowercase for case-insensitive comparison
+        user_input_lower = user_input.lower()
+        
+        # Look for negative expressions with brand names
+        negative_patterns = [
+            r"no (.*)",
+            r"not (.*)",
+            r"don't (?:like|want) (.*)",
+            r"avoid (.*)",
+            r"exclude (.*)",
+            r"blacklist (.*)",
+            r"hate (.*)",
+            r"dislike (.*)"
+        ]
+        
+        for pattern in negative_patterns:
+            matches = re.findall(pattern, user_input_lower)
+            for match in matches:
+                # Check if any known brand is in the match
+                for brand in common_brands:
+                    if brand in match and brand not in blacklisted_brands:
+                        # Verify it's not part of another word
+                        if re.search(r'\b' + brand + r'\b', match):
+                            blacklisted_brands.append(brand)
+        
+        # Also check for direct mentions in patterns like "blacklist dell and hp" or "no dell or hp"
+        for brand in common_brands:
+            negative_prefixes = ["no", "not", "don't want", "don't like", "avoid", "exclude", "blacklist", "hate", "dislike"]
+            for prefix in negative_prefixes:
+                if f"{prefix} {brand}" in user_input_lower or f"{prefix} {brand}," in user_input_lower:
+                    if brand not in blacklisted_brands:
+                        blacklisted_brands.append(brand)
+        
+        return blacklisted_brands
+
     def _extract_performance_level(self, user_input: str) -> str:
         """
         Determine the performance level preference from user input
@@ -1290,6 +1357,11 @@ class LaptopRecommendationBot:
         brand_pref = self._extract_brands_from_input(user_input)
         if brand_pref:
             preferences['brand'] = brand_pref
+        
+        # Extract blacklisted brands
+        blacklisted_brands = self._extract_blacklisted_brands_from_input(user_input)
+        if blacklisted_brands:
+            preferences['blacklisted_brands'] = blacklisted_brands
         
         # Extract budget range
         budget_match = re.search(r'\b(?:budget|price|cost|spend|around|under|below|max)\b[^.]*?(\d[\d,.]*)', user_input, re.IGNORECASE)
@@ -1638,6 +1710,43 @@ class LaptopRecommendationBot:
             self.conversation_state = "initial"
             return response
 
+        # Check for blacklist expressions regardless of conversation state
+        blacklisted_brands = self._extract_blacklisted_brands_from_input(user_input)
+        if blacklisted_brands:
+            if 'blacklisted_brands' not in self.user_preferences:
+                self.user_preferences['blacklisted_brands'] = []
+            
+            # Add new brands to blacklist, avoiding duplicates
+            for brand in blacklisted_brands:
+                if brand not in self.user_preferences['blacklisted_brands']:
+                    self.user_preferences['blacklisted_brands'].append(brand)
+            
+            # Update the response to mention the blacklisted brands
+            brand_list = ", ".join(self.user_preferences['blacklisted_brands'])
+            response["message"] = f"I've blacklisted these brands: {brand_list}. "
+            
+            # If we have recommendations, regenerate them without the blacklisted brands
+            if self.conversation_state == "refine" or self.conversation_state == "performance":
+                # Apply filters with the updated blacklist
+                filters = {}
+                for key, value in self.user_preferences.items():
+                    if key != 'use_case' and value:
+                        filters[key] = value
+                
+                filtered_laptops = self._filter_laptops(filters)
+                recommendations = self._get_recommendations(filtered_laptops, self.user_preferences.get('use_case', 'student'), 3)
+                
+                response["recommendations"] = recommendations
+                self.last_recommendations = recommendations
+                
+                if recommendations:
+                    response["message"] += "Here are updated recommendations excluding those brands:"
+                else:
+                    response["message"] += "I couldn't find recommendations after excluding those brands. Consider relaxing some other requirements."
+                
+                # No need to re-ask if we're already showing recommendations
+                return response
+
         # Process based on conversation state
         if self.conversation_state == "initial":
             # Analyze initial input comprehensively
@@ -1652,6 +1761,9 @@ class LaptopRecommendationBot:
             # Add details about detected preferences
             if 'brand' in preferences:
                 response["message"] += f" You mentioned {', '.join(preferences['brand'])} brand(s)."
+            
+            if 'blacklisted_brands' in preferences:
+                response["message"] += f" I'll exclude {', '.join(preferences['blacklisted_brands'])} from recommendations."
             
             if 'size' in preferences:
                 response["message"] += f" You're interested in {', '.join(str(s) for s in preferences['size'])}\" screen size."
@@ -1771,16 +1883,36 @@ class LaptopRecommendationBot:
             return response
         
         elif self.conversation_state == "brand":
-            # Extract brand preferences
+            # First check if user is saying they have no preference
             if any(term in user_input.lower() for term in ["no", "none", "any", "no preference", "doesn't matter"]):
                 response["message"] = "Got it, I won't filter by brand."
             else:
-                brands = self._extract_brands_from_input(user_input)
-                if brands:
-                    self.user_preferences['brand'] = brands
-                    response["message"] = f"I'll focus on {', '.join(brands)} laptops."
+                # Extract both preferred and blacklisted brands
+                preferred_brands = self._extract_brands_from_input(user_input)
+                blacklisted_new = self._extract_blacklisted_brands_from_input(user_input)
+                
+                # Remove any brands that are in both lists (prefer the blacklist)
+                preferred_brands = [b for b in preferred_brands if b not in blacklisted_new]
+                
+                # Process preferred brands
+                if preferred_brands:
+                    self.user_preferences['brand'] = preferred_brands
+                    response["message"] = f"I'll focus on {', '.join(preferred_brands)} laptops."
                 else:
-                    response["message"] = "I couldn't identify specific brand preferences. I'll show options from various manufacturers."
+                    response["message"] = "I'll consider options from various manufacturers."
+                
+                # Process blacklisted brands
+                if blacklisted_new:
+                    if 'blacklisted_brands' not in self.user_preferences:
+                        self.user_preferences['blacklisted_brands'] = []
+                    
+                    # Add new brands to blacklist, avoiding duplicates
+                    for brand in blacklisted_new:
+                        if brand not in self.user_preferences['blacklisted_brands']:
+                            self.user_preferences['blacklisted_brands'].append(brand)
+                    
+                    brand_list = ", ".join(blacklisted_new)
+                    response["message"] += f" I'll exclude {brand_list} from the recommendations."
             
             # Move to features question
             self.conversation_state = "features"
@@ -1830,6 +1962,9 @@ class LaptopRecommendationBot:
             if 'brand' in self.user_preferences:
                 filters['brand'] = self.user_preferences['brand']
             
+            if 'blacklisted_brands' in self.user_preferences:
+                filters['blacklisted_brands'] = self.user_preferences['blacklisted_brands']
+            
             if 'budget' in self.user_preferences:
                 filters['budget'] = self.user_preferences['budget']
             
@@ -1868,6 +2003,8 @@ class LaptopRecommendationBot:
                     minimal_filters['budget'] = filters['budget']
                 if 'brand' in filters:
                     minimal_filters['brand'] = filters['brand']
+                if 'blacklisted_brands' in filters:
+                    minimal_filters['blacklisted_brands'] = filters['blacklisted_brands']
                 
                 minimal_laptops = self._filter_laptops(minimal_filters)
                 recommendations = self._get_recommendations(minimal_laptops, self.user_preferences.get('use_case', 'student'), 3)
@@ -1878,7 +2015,34 @@ class LaptopRecommendationBot:
             response["next_question"] = "Would you like to refine your search or see more options?"
         
         elif self.conversation_state == "refine":
-            # First check if it's a price-related refinement
+            # First check for explicit blacklist requests
+            if any(term in user_input.lower() for term in ["exclude", "blacklist", "no more", "don't show", "don't want"]):
+                blacklisted_brands = self._extract_blacklisted_brands_from_input(user_input)
+                if blacklisted_brands:
+                    # Add to blacklist
+                    if 'blacklisted_brands' not in self.user_preferences:
+                        self.user_preferences['blacklisted_brands'] = []
+                    
+                    for brand in blacklisted_brands:
+                        if brand not in self.user_preferences['blacklisted_brands']:
+                            self.user_preferences['blacklisted_brands'].append(brand)
+                    
+                    response["message"] = f"I've excluded {', '.join(blacklisted_brands)}. Here are updated recommendations:"
+                    
+                    # Apply filters with the updated blacklist
+                    filters = {}
+                    for key, value in self.user_preferences.items():
+                        if key != 'use_case' and value:
+                            filters[key] = value
+                    
+                    filtered_laptops = self._filter_laptops(filters)
+                    recommendations = self._get_recommendations(filtered_laptops, self.user_preferences.get('use_case', 'student'), 3)
+                    
+                    response["recommendations"] = recommendations
+                    self.last_recommendations = recommendations
+                    return response  # Return here to avoid other refine logic
+            
+            # Check if it's a price-related refinement
             filtered_laptops, price_message = self._handle_price_refinement(user_input)
             
             if filtered_laptops is not None and price_message is not None:
@@ -1900,6 +2064,9 @@ class LaptopRecommendationBot:
                 
                 if 'brand' in self.user_preferences:
                     filters['brand'] = self.user_preferences['brand']
+                
+                if 'blacklisted_brands' in self.user_preferences:
+                    filters['blacklisted_brands'] = self.user_preferences['blacklisted_brands']
                 
                 if 'budget' in self.user_preferences:
                     filters['budget'] = self.user_preferences['budget']
@@ -1946,6 +2113,8 @@ class LaptopRecommendationBot:
                 filters['size'] = self.user_preferences['size']
                 if 'brand' in self.user_preferences:
                     filters['brand'] = self.user_preferences['brand']
+                if 'blacklisted_brands' in self.user_preferences:
+                    filters['blacklisted_brands'] = self.user_preferences['blacklisted_brands']
                 if 'budget' in self.user_preferences:
                     filters['budget'] = self.user_preferences['budget']
                 
@@ -1953,7 +2122,7 @@ class LaptopRecommendationBot:
                 recommendations = self._get_recommendations(filtered_laptops, 'portable', 3)
                 response["recommendations"] = recommendations
                 self.last_recommendations = recommendations
-            
+                    
             elif any(term in user_input.lower() for term in ["larger", "bigger screen", "larger display"]):
                 # Find laptops with larger screens
                 larger_sizes = []
