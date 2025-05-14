@@ -79,7 +79,7 @@ import { useChatStore } from '~/store/chat';
 import { useUserStore } from '~/store/user';
 
 const chatStore = useChatStore();
-const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://86.19.219.159:8000';
+const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 const userStore = useUserStore();
 const userInput = ref('');
