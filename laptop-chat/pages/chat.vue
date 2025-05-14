@@ -29,7 +29,12 @@
                   :data-laptop-id="laptopIndex"
                   @click="showLaptopDetails(laptop)">
                 <strong>{{ laptop.brand }} {{ laptop.name }}</strong><br>
-                <span>Click for more details</span>
+                <span class="laptop-highlights">
+                <span v-if="laptop.key_specs?.processor || laptop.cpu">{{ laptop.key_specs?.processor || laptop.cpu }}</span>
+                <span v-if="laptop.key_specs?.memory || laptop.ram">{{ laptop.key_specs?.memory || laptop.ram }}</span>
+                <span v-if="laptop.price">{{ formatPrice(laptop.price) }}</span>
+                </span><br>
+                <span class="laptop-details-cta">Click for more details</span>
               </li>
             </ul>
           </div>
@@ -74,7 +79,7 @@ import { useChatStore } from '~/store/chat';
 import { useUserStore } from '~/store/user';
 
 const chatStore = useChatStore();
-const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://86.19.219.159:8000';
+const API_URL = process.env.NUXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 const userStore = useUserStore();
 const userInput = ref('');
@@ -92,6 +97,11 @@ messages.value.push({
   type: 'bot',
   content: "Hello! I'm your laptop recommendation assistant. Tell me what type of laptop you're looking for and I'll find the best options for you."
 });
+function formatPrice(price) {
+  if (!price) return 'Not specified';
+  // Remove the 'Â' character that appears before £ symbol due to encoding issues
+  return price.replace(/Â/g, '');
+}
 
 function sendMessage() {
   const message = userInput.value.trim();
@@ -124,6 +134,7 @@ function sendMessage() {
         return response.json();
       })
       .then(data => {
+        console.log('Response:', data);
         isTyping.value = false;
 
         if (data.session_id) {
@@ -193,22 +204,18 @@ function resetConversation() {
       .then(response => response.json())
       .then(data => {
         if (data.success) {
+          // Reset all chat-related data
           messages.value = [{
             type: 'bot',
             content: "Hello! I'm your laptop recommendation assistant. Tell me what type of laptop you're looking for and I'll find the best options for you."
           }];
-          recommendations.value = [];
+          sessionId.value = data.session_id;
+          chatStore.resetChat();
 
-          // Close laptop details panel if open
-          if (isDetailsPanelOpen.value) {
-            isDetailsPanelOpen.value = false;
-            isComparisonMode.value = false;
-          }
-
-          // Show reset confirmation
+          // Show temporary success message
           const tempAlert = document.createElement('div');
-          tempAlert.className = 'alert-popup';
-          tempAlert.textContent = data.message;
+          tempAlert.className = 'alert-message';
+          tempAlert.textContent = 'Conversation has been reset!';
           document.body.appendChild(tempAlert);
           setTimeout(() => { tempAlert.classList.add('fade-out'); }, 2000);
           setTimeout(() => { document.body.removeChild(tempAlert); }, 4000);
@@ -227,6 +234,9 @@ function scrollToBottom() {
 
 function showLaptopDetails(laptop) {
   if (detailsPanelRef.value) {
+    if (laptop.price) {
+      laptop.price = formatPrice(laptop.price);
+    }
     detailsPanelRef.value.showLaptopDetails(laptop);
     isDetailsPanelOpen.value = true;
   }
