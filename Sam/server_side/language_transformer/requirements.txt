@@ -1,0 +1,7 @@
+sentence_transformers
+scikit-learn
+typing
+psycopg2
+loguru
+fastapi
+uuid
