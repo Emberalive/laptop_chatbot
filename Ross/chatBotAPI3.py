@@ -202,6 +202,8 @@ def cleanup_inactive_sessions():
 
     logger.info(f"Cleaned up {len(sessions_to_remove)} inactive sessions. {len(active_sessions)} sessions remaining.")
 
+# This fix focuses on properly extracting RAM information from multiple sources in the data structure
+
 def extract_detailed_laptop_info(laptop_data: Dict) -> Dict:
     """
     Extract detailed information from the laptop data object
@@ -246,7 +248,9 @@ def extract_detailed_laptop_info(laptop_data: Dict) -> Dict:
         # Misc Data
         elif title == 'Misc':
             if isinstance(data, dict):
-                detailed_info['ram'] = data.get('Memory Installed')
+                # Save RAM from Memory Installed if it exists
+                if data.get('Memory Installed'):
+                    detailed_info['ram'] = data.get('Memory Installed')
                 detailed_info['operating_system'] = data.get('Operating System')
                 detailed_info['battery_life'] = data.get('Battery Life')
         
@@ -261,6 +265,10 @@ def extract_detailed_laptop_info(laptop_data: Dict) -> Dict:
                 detailed_info['graphics'] = data.get('Graphics Card')
                 detailed_info['storage'] = data.get('Storage')
                 
+                # Some laptops might have RAM info in the specs table instead
+                if data.get('RAM') and not detailed_info['ram']:
+                    detailed_info['ram'] = data.get('RAM')
+                    
                 # Infer performance level from specs
                 if processor_name and ('i7' in processor_name or 'i9' in processor_name or 
                                      'Ryzen 7' in processor_name or 'Ryzen 9' in processor_name):
@@ -323,6 +331,10 @@ def convert_to_recommendation_model(recommendations, raw_laptops=None):
                 for name, value in rec["key_specs"].items():
                     features.append({"name": name, "value": value})
                 recommendation["features"] = features
+            
+            # Extract RAM information from key_specs if available
+            if "RAM" in rec["key_specs"] and (recommendation.get("ram") is None):
+                recommendation["ram"] = rec["key_specs"]["RAM"]
         
         # Find the raw laptop data if provided to extract more details
         if raw_laptops:
@@ -345,10 +357,33 @@ def convert_to_recommendation_model(recommendations, raw_laptops=None):
                     recommendation.update(detailed_info)
                     break
         
+        # Additional check: try to extract RAM from specs string if it's still not available
+        if not recommendation.get("ram") and "specs" in recommendation:
+            specs = recommendation["specs"]
+            ram_match = re.search(r"(\d+\s*GB\s*RAM)", specs, re.IGNORECASE)
+            if ram_match:
+                recommendation["ram"] = ram_match.group(1)
+        
+        # Final fallback: Check if RAM is mentioned in the laptop description
+        if not recommendation.get("ram") and "specs" in recommendation:
+            specs = recommendation["specs"]
+            # Look for patterns like "8GB RAM", "16 GB RAM", etc.
+            ram_patterns = [
+                r"(\d+\s*GB)\s+RAM",
+                r"RAM\s+(\d+\s*GB)",
+                r"Memory\s+(\d+\s*GB)",
+                r"(\d+\s*GB)\s+Memory"
+            ]
+            
+            for pattern in ram_patterns:
+                ram_match = re.search(pattern, specs, re.IGNORECASE)
+                if ram_match:
+                    recommendation["ram"] = ram_match.group(1)
+                    break
+        
         result.append(recommendation)
                 
     return result
-
 # API Endpoints
 @app.get("/api/health", response_model=HealthResponse)
 async def health_check():
