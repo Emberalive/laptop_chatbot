@@ -1,4 +1,4 @@
-# This is the REST API interface to the laptop chatbot version 3
+# This is the enhanced REST API interface to the laptop chatbot version 3.5
 
 import os 
 import sys
@@ -28,8 +28,8 @@ from STPrototype3 import LaptopRecommendationBot
 # This initializes the FASTAPI app
 app = FastAPI(
     title = "Enhanced Laptop Recommendation API",
-    description = "API for the improved laptop recommendation chatbot",
-    version = "3.1.0" 
+    description = "API for the improved laptop recommendation chatbot with detailed features",
+    version = "3.5.0" 
 )
 
 # Add CORS middleware to allow cross-origin requests
@@ -37,7 +37,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Allow all origins
     allow_credentials = True,
-    allow_methods=["POST"],  # Allow GET for health check and POST for chat
+    allow_methods=["GET", "POST"],  # Allow GET and POST methods
     allow_headers=["*"],
 )
 
@@ -51,7 +51,7 @@ class LaptopFeature(BaseModel):
     name: str
     value: Union[str, bool, int, float]
 
-# Keeping this class as similar as possible to the original per request
+# Enhanced LaptopRecommendation model with more detailed information
 class LaptopRecommendation(BaseModel):
     brand: str
     name: str
@@ -59,12 +59,36 @@ class LaptopRecommendation(BaseModel):
     price: Optional[str] = None
     similarity_score: Optional[float] = None
     features: Optional[List[LaptopFeature]] = None
-    # Added key_specs from STPrototype3 but making it optional to maintain compatibility
     key_specs: Optional[Dict[str, str]] = None
+    # Extended information fields
+    image: Optional[str] = None
+    has_touchscreen: Optional[bool] = None
+    cpu: Optional[str] = None
+    ram: Optional[str] = None
+    storage: Optional[str] = None
+    screen_size: Optional[str] = None
+    screen_resolution: Optional[str] = None
+    refresh_rate: Optional[str] = None
+    graphics: Optional[str] = None
+    operating_system: Optional[str] = None
+    battery_life: Optional[str] = None
+    weight: Optional[str] = None
+    # Ports
+    has_usb_c: Optional[bool] = None
+    has_hdmi: Optional[bool] = None
+    has_ethernet: Optional[bool] = None
+    has_thunderbolt: Optional[bool] = None
+    has_display_port: Optional[bool] = None
+    # Additional features
+    has_backlit_keyboard: Optional[bool] = None
+    has_numeric_keyboard: Optional[bool] = None
+    has_bluetooth: Optional[bool] = None
+    # Performance category
+    performance_level: Optional[str] = None
 
 class ChatResponse(BaseModel):
     message: str
-    recommendations: List[LaptopRecommendation] = []  # Fixed field name to match STPrototype3
+    recommendations: List[LaptopRecommendation] = []  # Using the enhanced model
     next_question: Optional[str] = None
     session_id: str
     detected_use_case: Optional[str] = None
@@ -178,9 +202,107 @@ def cleanup_inactive_sessions():
 
     logger.info(f"Cleaned up {len(sessions_to_remove)} inactive sessions. {len(active_sessions)} sessions remaining.")
 
-def convert_to_recommendation_model(recommendations):
-    """Convert the recommendation data from STPrototype3 format to API response format"""
+def extract_detailed_laptop_info(laptop_data: Dict) -> Dict:
+    """
+    Extract detailed information from the laptop data object
+    to provide rich information to the frontend
+    """
+    detailed_info = {
+        "has_touchscreen": False,
+        "has_usb_c": False,
+        "has_hdmi": False,
+        "has_ethernet": False,
+        "has_thunderbolt": False,
+        "has_display_port": False,
+        "has_backlit_keyboard": False,
+        "has_numeric_keyboard": False,
+        "has_bluetooth": False,
+        "cpu": None,
+        "ram": None,
+        "storage": None,
+        "screen_size": None,
+        "screen_resolution": None,
+        "refresh_rate": None,
+        "graphics": None,
+        "operating_system": None,
+        "battery_life": None,
+        "weight": None,
+        "image": None,
+        "performance_level": None
+    }
+    
+    # Extract information from the nested table structure
+    for table in laptop_data.get('tables', []):
+        title = table.get('title', '')
+        data = table.get('data', {})
+        
+        # Product Details
+        if title == 'Product Details':
+            if isinstance(data, dict):
+                detailed_info['weight'] = data.get('Weight')
+                # Get image URL if available
+                detailed_info['image'] = data.get('image')
+        
+        # Misc Data
+        elif title == 'Misc':
+            if isinstance(data, dict):
+                detailed_info['ram'] = data.get('Memory Installed')
+                detailed_info['operating_system'] = data.get('Operating System')
+                detailed_info['battery_life'] = data.get('Battery Life')
+        
+        # Specs
+        elif title == 'Specs':
+            if isinstance(data, dict):
+                processor_brand = data.get('Processor Brand', '')
+                processor_name = data.get('Processor Name', '')
+                if processor_brand and processor_name:
+                    detailed_info['cpu'] = f"{processor_brand} {processor_name}"
+                
+                detailed_info['graphics'] = data.get('Graphics Card')
+                detailed_info['storage'] = data.get('Storage')
+                
+                # Infer performance level from specs
+                if processor_name and ('i7' in processor_name or 'i9' in processor_name or 
+                                     'Ryzen 7' in processor_name or 'Ryzen 9' in processor_name):
+                    detailed_info['performance_level'] = 'high'
+                elif processor_name and ('i5' in processor_name or 'Ryzen 5' in processor_name):
+                    detailed_info['performance_level'] = 'medium'
+                elif processor_name:
+                    detailed_info['performance_level'] = 'basic'
+        
+        # Screen
+        elif title == 'Screen':
+            if isinstance(data, dict):
+                detailed_info['screen_size'] = data.get('Size')
+                detailed_info['screen_resolution'] = data.get('Resolution')
+                detailed_info['refresh_rate'] = data.get('Refresh Rate')
+                detailed_info['has_touchscreen'] = bool(data.get('Touchscreen'))
+        
+        # Features
+        elif title == 'Features':
+            if isinstance(data, dict):
+                detailed_info['has_backlit_keyboard'] = bool(data.get('Backlit Keyboard'))
+                detailed_info['has_numeric_keyboard'] = bool(data.get('Numeric Keyboard'))
+                detailed_info['has_bluetooth'] = bool(data.get('Bluetooth'))
+        
+        # Ports
+        elif title == 'Ports':
+            if isinstance(data, dict):
+                detailed_info['has_ethernet'] = bool(data.get('Ethernet (RJ45)'))
+                detailed_info['has_hdmi'] = bool(data.get('HDMI'))
+                detailed_info['has_usb_c'] = bool(data.get('USB Type-C'))
+                detailed_info['has_thunderbolt'] = bool(data.get('Thunderbolt'))
+                detailed_info['has_display_port'] = bool(data.get('Display Port'))
+    
+    return detailed_info
+
+def convert_to_recommendation_model(recommendations, raw_laptops=None):
+    """
+    Convert the recommendation data from STPrototype3 format to API response format
+    with enhanced information
+    """
     result = []
+    
     for rec in recommendations:
         # Create a base recommendation object
         recommendation = {
@@ -201,8 +323,30 @@ def convert_to_recommendation_model(recommendations):
                 for name, value in rec["key_specs"].items():
                     features.append({"name": name, "value": value})
                 recommendation["features"] = features
+        
+        # Find the raw laptop data if provided to extract more details
+        if raw_laptops:
+            # Find matching laptop in raw data
+            for laptop in raw_laptops:
+                laptop_brand = ""
+                laptop_name = ""
                 
+                for table in laptop.get('tables', []):
+                    if table.get('title') == 'Product Details' and 'data' in table:
+                        laptop_brand = table['data'].get('Brand', '')
+                        laptop_name = table['data'].get('Name', '')
+                        break
+                
+                # Check if this is the same laptop
+                if laptop_brand.lower() == rec["brand"].lower() and laptop_name.lower() == rec["name"].lower():
+                    # Extract detailed information
+                    detailed_info = extract_detailed_laptop_info(laptop)
+                    # Update recommendation with detailed info
+                    recommendation.update(detailed_info)
+                    break
+        
         result.append(recommendation)
+                
     return result
 
 # API Endpoints
@@ -214,7 +358,7 @@ async def health_check():
 
     return {
         "status": "ok",
-        "version": "3.1.0", 
+        "version": "3.5.0", 
         "active_sessions": len(active_sessions),
         "uptime": uptime_str
     }
@@ -236,8 +380,24 @@ async def chat(request: ChatRequest, background_tasks: BackgroundTasks):
         if 'recommendations' in response_data and response_data['recommendations']:
             session.track_recommendations(len(response_data['recommendations']))
             
-            # Convert recommendations to the API response format
-            response_data['recommendations'] = convert_to_recommendation_model(response_data['recommendations'])
+            # Get filtered laptops to find raw data for detailed information
+            filtered_laptops = None
+            try:
+                filters = {}
+                for key, value in chatbot.user_preferences.items():
+                    if key != 'use_case' and value:
+                        filters[key] = value
+                
+                filtered_laptops = chatbot._filter_laptops(filters)
+                logger.info(f"Found {len(filtered_laptops)} filtered laptops to extract detailed information")
+            except Exception as e:
+                logger.error(f"Error getting filtered laptops: {e}")
+            
+            # Convert recommendations to the API response format with enhanced information
+            response_data['recommendations'] = convert_to_recommendation_model(
+                response_data['recommendations'], 
+                filtered_laptops
+            )
 
         # Add session and conversation state info to the response
         response_data["session_id"] = session.session_id
@@ -319,13 +479,18 @@ async def list_sessions(admin_key: Optional[str] = Header(None)):
     
     sessions_info = []
     for session_id, session in active_sessions.items():
+        # Safely access chatbot attributes
+        conversation_state = "unknown"
+        if session.chatbot:
+            conversation_state = session.chatbot.conversation_state
+            
         sessions_info.append({
             "session_id": session_id,
             "user_id": session.user_id,
             "created_at": session.created_at.isoformat(),
             "last_activity": session.last_activity.isoformat(),
             "age_minutes": session.get_age_minutes(),
-            "conversation_state": session.chatbot.conversation_state,
+            "conversation_state": conversation_state,
             "total_recommendations": session.total_recommendations
         })
     
@@ -351,6 +516,119 @@ async def database_status():
             "status": "error",
             "error": str(e)
         }
+
+# New endpoint to get full laptop details
+@app.get("/api/laptop/{brand}/{name}")
+async def get_laptop_details(brand: str, name: str):
+    """Get detailed information about a specific laptop by brand and name"""
+    try:
+        # Create a chatbot to access laptop data
+        chatbot = LaptopRecommendationBot()
+        
+        # Search for the laptop
+        found_laptop = None
+        for laptop in chatbot.laptops:
+            laptop_brand = ""
+            laptop_name = ""
+            
+            for table in laptop.get('tables', []):
+                if table.get('title') == 'Product Details' and 'data' in table:
+                    laptop_brand = table['data'].get('Brand', '')
+                    laptop_name = table['data'].get('Name', '')
+                    break
+            
+            if laptop_brand.lower() == brand.lower() and laptop_name.lower() == name.lower():
+                found_laptop = laptop
+                break
+                
+        if not found_laptop:
+            raise HTTPException(status_code=404, detail=f"Laptop {brand} {name} not found")
+            
+        # Extract detailed information
+        detailed_info = extract_detailed_laptop_info(found_laptop)
+        
+        # Add basic info
+        detailed_info["brand"] = brand
+        detailed_info["name"] = name
+        detailed_info["specs"] = chatbot._format_laptop_description(found_laptop)
+        
+        # Add price
+        price_value, price_string = chatbot._extract_price_range(found_laptop)
+        detailed_info["price"] = price_string if price_string else "Price not available"
+        
+        # Add key specs
+        detailed_info["key_specs"] = chatbot._get_key_specs(found_laptop)
+        
+        return detailed_info
+        
+    except Exception as e:
+        logger.error(f"Error getting laptop details: {e}")
+        raise HTTPException(status_code=500, detail=f"Error getting laptop details: {str(e)}")
+
+@app.get("/api/features")
+async def get_available_features():
+    """Get a list of all available laptop features in the database"""
+    try:
+        # Create a chatbot to access laptop data
+        chatbot = LaptopRecommendationBot()
+        
+        # Collect all unique features
+        features = {
+            "brands": set(),
+            "screen_sizes": set(),
+            "processors": set(),
+            "graphics_cards": set(),
+            "ram_options": set(),
+            "storage_options": set(),
+            "operating_systems": set(),
+            "special_features": ["touchscreen", "backlit_keyboard", "numeric_keyboard", "bluetooth"],
+            "ports": ["usb_c", "hdmi", "ethernet", "thunderbolt", "display_port"]
+        }
+        
+        # Go through all laptops to collect unique features
+        for laptop in chatbot.laptops:
+            for table in laptop.get('tables', []):
+                title = table.get('title', '')
+                data = table.get('data', {})
+                
+                if title == 'Product Details' and isinstance(data, dict):
+                    brand = data.get('Brand')
+                    if brand:
+                        features["brands"].add(brand)
+                
+                elif title == 'Screen' and isinstance(data, dict):
+                    size = data.get('Size')
+                    if size:
+                        features["screen_sizes"].add(size)
+                
+                elif title == 'Specs' and isinstance(data, dict):
+                    processor = data.get('Processor Name')
+                    if processor:
+                        features["processors"].add(processor)
+                    
+                    graphics = data.get('Graphics Card')
+                    if graphics:
+                        features["graphics_cards"].add(graphics)
+                
+                elif title == 'Misc' and isinstance(data, dict):
+                    ram = data.get('Memory Installed')
+                    if ram:
+                        features["ram_options"].add(ram)
+                    
+                    os = data.get('Operating System')
+                    if os:
+                        features["operating_systems"].add(os)
+        
+        # Convert sets to lists for JSON serialization
+        for key in features:
+            if isinstance(features[key], set):
+                features[key] = sorted(list(features[key]))
+        
+        return features
+        
+    except Exception as e:
+        logger.error(f"Error getting available features: {e}")
+        raise HTTPException(status_code=500, detail=f"Error getting available features: {str(e)}")
 
 if __name__ == "__main__":
     try:
