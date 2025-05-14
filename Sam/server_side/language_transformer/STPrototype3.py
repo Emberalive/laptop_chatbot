@@ -17,8 +17,8 @@ import time
 # Setup logger
 logger.remove()
 logger.add(sys.stdout, format="{time} {level} {message}")
-logger.add("../logs/API.log", rotation="10 MB", retention="35 days", compression="zip")
-logger = logger.bind(user="API")
+logger.add("../logs/AI.log", rotation="10 MB", retention="35 days", compression="zip")
+logger = logger.bind(user="AI")
 
 # Add paths for imports
 current_dir = os.path.dirname(os.path.abspath(__file__))
