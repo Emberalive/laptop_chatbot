@@ -196,6 +196,9 @@ function sendMessage() {
 }
 
 function resetConversation() {
+  if (isDetailsPanelOpen.value) {
+    closeDetailsPanel();
+  }
   fetch(`${API_URL}/api/reset`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
