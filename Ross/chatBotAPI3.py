@@ -1,5 +1,3 @@
-#HAWK TUAH 
-
 # This is the REST API interface to the laptop chatbot version 3
 
 import os 
@@ -37,9 +35,9 @@ app = FastAPI(
 # Add CORS middleware to allow cross-origin requests
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://86.19.219.159:3000/"],
+    allow_origins=["*"],  # Allow all origins
     allow_credentials = True,
-    allow_methods=["POST"], 
+    allow_methods=["POST"],  # Allow GET for health check and POST for chat
     allow_headers=["*"],
 )
 
@@ -103,7 +101,20 @@ class SessionInfo:
         self.user_id = user_id
         self.created_at = datetime.now()
         self.last_activity = datetime.now()
-        self.chatbot = LaptopRecommendationBot()
+        
+        # Initialize chatbot
+        try:
+            self.chatbot = LaptopRecommendationBot()
+            if hasattr(self.chatbot, 'laptops'):
+                logger.info(f"Created chatbot instance with {len(self.chatbot.laptops)} laptops for session {session_id}")
+            else:
+                logger.warning(f"Created chatbot instance but no laptops found for session {session_id}")
+        except Exception as e:
+            logger.error(f"Error initializing chatbot: {e}")
+            # Initialize with empty laptops as fallback
+            self.chatbot = LaptopRecommendationBot([])
+            logger.info(f"Initialized fallback chatbot with empty laptop list for session {session_id}")
+            
         self.total_recommendations = 0
 
     def update_activity(self):
@@ -203,7 +214,7 @@ async def health_check():
 
     return {
         "status": "ok",
-        "version": "3.0.1",  # Updated version
+        "version": "3.1.0", 
         "active_sessions": len(active_sessions),
         "uptime": uptime_str
     }
@@ -242,7 +253,7 @@ async def chat(request: ChatRequest, background_tasks: BackgroundTasks):
         logger.error(f"Error processing chat message: {e}")
         raise HTTPException(status_code=500, detail=f"Error processing message: {str(e)}")
 
-@app.post("/api/reset", response_model=ResetResponse)  # Fixed response model name
+@app.post("/api/reset", response_model=ResetResponse)
 async def reset_conversation(request: ResetRequest):
     # Reset the conversation state or create a new session
     session_id = request.session_id
@@ -326,9 +337,11 @@ async def database_status():
     try:
         # Create a temporary chatbot to test database connection
         test_bot = LaptopRecommendationBot()
+        laptop_count = len(test_bot.laptops) if hasattr(test_bot, 'laptops') else 0
+        
         db_status = {
-            "status": "ok" if test_bot.laptops else "no_data",
-            "laptop_count": len(test_bot.laptops),
+            "status": "ok" if laptop_count > 0 else "no_data",
+            "laptop_count": laptop_count,
             "data_source": "database" if hasattr(test_bot, '_db_source') and test_bot._db_source == "database" else "json_fallback"
         }
         return db_status
@@ -342,8 +355,30 @@ async def database_status():
 if __name__ == "__main__":
     try:
         import uvicorn
+        
+        # Find an available port if 8000 is already in use
+        import socket
+        port = 8000
+        max_port = 8100  # Don't try forever
+        
+        while port < max_port:
+            try:
+                # Try to create a socket on the port
+                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                    s.bind(('0.0.0.0', port))
+                # If we get here, the port is available
+                break
+            except socket.error:
+                logger.warning(f"Port {port} is already in use, trying {port+1}")
+                port += 1
+                
+        if port >= max_port:
+            logger.error(f"Could not find an available port between 8000 and {max_port-1}")
+            sys.exit(1)
+            
         # Run with auto-reload for development
-        uvicorn.run("chatBotAPI3:app", host="86.19.219.159", port=8000, reload=True)
+        logger.info(f"Starting server on 0.0.0.0:{port}")
+        uvicorn.run("chatBotAPI3:app", host="0.0.0.0", port=port, reload=True)
     except ImportError:
         logger.error("ERROR: uvicorn package is not installed. Please install it with:")
         logger.warning("pip install uvicorn fastapi")
