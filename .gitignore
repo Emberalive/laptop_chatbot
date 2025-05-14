@@ -1,3 +1,4 @@
 .data
 package-lock.json
 .venv
+.idea
