@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from loguru import logger
 
 logger.add(sys.stdout, format="{time} {level} {message}")
-logger.add("../logs/database.log", rotation="2 MB", retention="20 days", compression="zip")
+logger.add("../logs/database.log", rotation="10 MB", retention="20 days", compression="zip")
 logger = logger.bind(user="database")
 
 connection_pool = None

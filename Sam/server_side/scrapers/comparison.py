@@ -16,12 +16,8 @@ load_dotenv()
 
 logger.remove()
 
-# Ensure the logs directory exists
-os.makedirs(os.path.join(os.path.dirname(__file__), "logs"), exist_ok=True)
-
 logger.add(sys.stdout, format="{time} {level} {message}")
-logger.add(os.path.join(os.path.dirname(__file__), "logs", "comparison.log"),
-           rotation="10 MB", retention="35 days", compression="zip")
+logger.add("../logs/comparison.log", rotation="20MB", retention="4 months", compression="zip"),
 logger = logger.bind(user="comparer")
 
 def get_old_path(directory=os.getenv('OLD_JSON_DIR')):
