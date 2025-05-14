@@ -10,6 +10,7 @@ from pydantic import BaseModel
 import json
 import uuid 
 import time
+import re  # Added this import to fix the error
 from loguru import logger
 
 logger.remove()
