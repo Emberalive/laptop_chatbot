@@ -295,9 +295,7 @@
               <h4>{{ laptop.brand }} {{ laptop.name }}</h4>
               <div class="laptop-specs-preview">
                 <span>{{ formatSpecValue(laptop.cpu) }}</span>
-                <span>
-              {{ formatSpecValue(selectedLaptop.key_specs?.RAM || findFeatureValue(selectedLaptop, 'RAM')) }}
-                </span>
+                <span>{{ formatSpecValue(laptop.ram) }}</span>
                 <span>{{ formatPrice(laptop.price) }}</span>
               </div>
             </div>
