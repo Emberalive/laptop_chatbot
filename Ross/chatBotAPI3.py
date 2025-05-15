@@ -670,6 +670,9 @@ if __name__ == "__main__":
     try:
         import uvicorn
         
+
+        """
+        Incremental checker for free ports [DEPRECATED]
         # Find an available port if 8000 is already in use
         import socket
         port = 8000
@@ -689,7 +692,8 @@ if __name__ == "__main__":
         if port >= max_port:
             logger.error(f"Could not find an available port between 8000 and {max_port-1}")
             sys.exit(1)
-            
+        """
+        port = 8000
         # Run with auto-reload for development
         logger.info(f"Starting server on 0.0.0.0:{port}")
         uvicorn.run("chatBotAPI3:app", host="0.0.0.0", port=port, reload=True)
