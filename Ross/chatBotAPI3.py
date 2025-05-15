@@ -10,7 +10,7 @@ from pydantic import BaseModel
 import json
 import uuid 
 import time
-import re  # Added this import to fix the error
+import re
 from loguru import logger
 
 logger.remove()
@@ -95,6 +95,7 @@ class ChatResponse(BaseModel):
     detected_use_case: Optional[str] = None
     detected_preferences: Optional[Dict[str, Any]] = None
     conversation_state: Optional[str] = None
+    blacklisted_brands: Optional[List[str]] = None  # New field for blacklisted brands
 
 class ResetRequest(BaseModel):
     session_id: Optional[str] = None
@@ -112,6 +113,7 @@ class DebugInfoResponse(BaseModel):
     session_id: str
     last_activity: Optional[str] = None
     total_recommendations: int = 0
+    blacklisted_brands: Optional[List[str]] = None  # Added for blacklisted brands
 
 class HealthResponse(BaseModel):
     status: str
@@ -126,9 +128,17 @@ class SessionInfo:
         self.user_id = user_id
         self.created_at = datetime.now()
         self.last_activity = datetime.now()
+        self.total_recommendations = 0
         
-        # Initialize chatbot
+        # Log session creation with user ID if available
+        log_message = f"Creating new session {session_id}"
+        if user_id:
+            log_message += f" for user {user_id}"
+        logger.info(log_message)
+        
+        # Initialize chatbot with lazy loading to improve speed
         try:
+            # Initialize the chatbot immediately to prevent delay in first response
             self.chatbot = LaptopRecommendationBot()
             if hasattr(self.chatbot, 'laptops'):
                 logger.info(f"Created chatbot instance with {len(self.chatbot.laptops)} laptops for session {session_id}")
@@ -139,24 +149,23 @@ class SessionInfo:
             # Initialize with empty laptops as fallback
             self.chatbot = LaptopRecommendationBot([])
             logger.info(f"Initialized fallback chatbot with empty laptop list for session {session_id}")
-            
-        self.total_recommendations = 0
 
     def update_activity(self):
         self.last_activity = datetime.now()
-        logger.info(f"Updating activity to: {self.last_activity}")
+        logger.info(f"Updating activity for session {self.session_id} to: {self.last_activity}")
 
     def track_recommendations(self, count: int):
         self.total_recommendations += count
-        logger.info(f"Adding a new total recommendations count: {self.total_recommendations}")
+        logger.info(f"Adding {count} recommendations for session {self.session_id}. Total: {self.total_recommendations}")
 
     def get_age_minutes(self) -> float:
         age_minutes = (datetime.now() - self.created_at).total_seconds() / 60
-        logger.info(f"Age of session: {age_minutes} minutes")
         return age_minutes
 
 # Store active chatbot sessions
 active_sessions = {}
+# Map user_ids to session_ids for faster lookup
+user_id_to_session_id = {}
 
 # API startup time for uptime calculations
 start_time = datetime.now()
@@ -170,21 +179,34 @@ SESSION_TIMEOUT_MINUTES = 20  # Timeout for inactive sessions
 def generate_session_id() -> str:
     # Generate a unique session ID
     new_id = str(uuid.uuid4())
-    logger.info(f"Initializing session id: {new_id}")
+    logger.info(f"Generating new session id: {new_id}")
     return new_id
 
 def get_or_create_session(session_id: Optional[str] = None, user_id: Optional[str] = None) -> SessionInfo:
-    # Get an existing session or create a new one
+    # First try to find a session by session_id
     if session_id and session_id in active_sessions:
         session = active_sessions[session_id]
         session.update_activity()
-        logger.info(f"Using existing session: {session_id}, for user: {user_id}")
+        logger.info(f"Using existing session by session_id: {session_id}, for user: {user_id}")
         return session
 
-    logger.warning(f"No session found for user: {user_id}")
-    # Create new session 
+    # If session_id not found but user_id is provided, try to find a session for this user
+    if user_id and user_id in user_id_to_session_id:
+        existing_session_id = user_id_to_session_id[user_id]
+        if existing_session_id in active_sessions:
+            session = active_sessions[existing_session_id]
+            session.update_activity()
+            logger.info(f"Found existing session {existing_session_id} for user: {user_id}")
+            return session
+    
+    # If no session found by session_id or user_id, create a new one
     new_session_id = session_id or generate_session_id()
     active_sessions[new_session_id] = SessionInfo(new_session_id, user_id)
+    
+    # Map user_id to session_id if user_id is provided
+    if user_id:
+        user_id_to_session_id[user_id] = new_session_id
+        
     logger.info(f"Created new session: {new_session_id} for user: {user_id}")
     return active_sessions[new_session_id]
 
@@ -197,14 +219,17 @@ def cleanup_inactive_sessions():
         inactive_time = (current_time - session.last_activity).total_seconds() / 60
         if inactive_time > SESSION_TIMEOUT_MINUTES:
             sessions_to_remove.append(session_id)
+            # Also remove user_id mapping if this session has a user_id
+            if session.user_id and session.user_id in user_id_to_session_id:
+                if user_id_to_session_id[session.user_id] == session_id:  # Make sure we're removing the right mapping
+                    del user_id_to_session_id[session.user_id]
             
     for session_id in sessions_to_remove:
         del active_sessions[session_id]
 
-    logger.info(f"Cleaned up {len(sessions_to_remove)} inactive sessions. {len(active_sessions)} sessions remaining.")
+    logger.info(f"Cleaned up {len(sessions_to_remove)} inactive sessions. {len(active_sessions)} sessions remaining. User ID mappings: {len(user_id_to_session_id)}")
 
 # This fix focuses on properly extracting RAM information from multiple sources in the data structure
-
 def extract_detailed_laptop_info(laptop_data: Dict) -> Dict:
     """
     Extract detailed information from the laptop data object
@@ -385,6 +410,7 @@ def convert_to_recommendation_model(recommendations, raw_laptops=None):
         result.append(recommendation)
                 
     return result
+
 # API Endpoints
 @app.get("/api/health", response_model=HealthResponse)
 async def health_check():
@@ -403,10 +429,18 @@ async def health_check():
 async def chat(request: ChatRequest, background_tasks: BackgroundTasks):
     # Process a chat message and return recommendations
     try:
-        logger.info(f"Processing chat message for session: {request.session_id}")
-        # Get or create a session
+        # Log the request details
+        logger.info(f"Processing chat message for session: {request.session_id}, user: {request.user_id}")
+        
+        # Get or create a session - prioritizing existing sessions by user_id
         session = get_or_create_session(request.session_id, request.user_id)
         background_tasks.add_task(cleanup_inactive_sessions)
+
+        # If the request had a session_id but we got a different one (found by user_id),
+        # return the actual session_id being used so the client can update
+        actual_session_id = session.session_id
+        if request.session_id and request.session_id != actual_session_id:
+            logger.info(f"Session ID changed from {request.session_id} to {actual_session_id}")
 
         # Process the user's message
         chatbot = session.chatbot
@@ -443,6 +477,10 @@ async def chat(request: ChatRequest, background_tasks: BackgroundTasks):
         if hasattr(chatbot, 'user_preferences') and 'use_case' in chatbot.user_preferences:
             response_data["detected_use_case"] = chatbot.user_preferences['use_case']
 
+        # Add blacklisted brands to the response if present
+        if hasattr(chatbot, 'user_preferences') and 'blacklisted_brands' in chatbot.user_preferences:
+            response_data["blacklisted_brands"] = chatbot.user_preferences['blacklisted_brands']
+
         return response_data
 
     except Exception as e:
@@ -455,10 +493,11 @@ async def reset_conversation(request: ResetRequest):
     session_id = request.session_id
     user_id = request.user_id
 
+    # First check if session exists by session_id
     if session_id and session_id in active_sessions:
         try: 
             # Reset existing session
-            logger.info(f"Attempting to reset existing session: {session_id}")
+            logger.info(f"Resetting existing session by session_id: {session_id}")
             session = active_sessions[session_id]
             session.chatbot.reset_conversation()
             session.update_activity()
@@ -472,7 +511,26 @@ async def reset_conversation(request: ResetRequest):
             logger.error(f"Could not reset the session: {e}")
             raise HTTPException(status_code=500, detail=f"Error resetting conversation: {str(e)}")
     else:
-        # Create a new session
+        # Try to find a session by user_id if provided
+        if user_id and user_id in user_id_to_session_id:
+            existing_session_id = user_id_to_session_id[user_id]
+            if existing_session_id in active_sessions:
+                try:
+                    # Reset existing session found by user_id
+                    logger.info(f"Resetting existing session by user_id: {existing_session_id}")
+                    session = active_sessions[existing_session_id]
+                    session.chatbot.reset_conversation()
+                    session.update_activity()
+                    return {
+                        "message": "Conversation has been reset.",
+                        "success": True,
+                        "session_id": existing_session_id
+                    }
+                except Exception as e:
+                    logger.error(f"Could not reset the session by user_id: {e}")
+                    raise HTTPException(status_code=500, detail=f"Error resetting conversation: {str(e)}")
+
+        # Create a new session if none found
         try:
             logger.info(f"Creating a new session for user: {user_id}")
             new_session = get_or_create_session(user_id=user_id)
@@ -496,7 +554,7 @@ async def get_debug_info(session_id: str):
     session = active_sessions[session_id]
     chatbot = session.chatbot
 
-    return {
+    debug_info = {
         "message": "Debug information",
         "user_preferences": chatbot.user_preferences,
         "conversation_state": chatbot.conversation_state,
@@ -504,6 +562,12 @@ async def get_debug_info(session_id: str):
         "last_activity": session.last_activity.isoformat(),
         "total_recommendations": session.total_recommendations
     }
+    
+    # Add blacklisted brands if they exist
+    if hasattr(chatbot, 'user_preferences') and 'blacklisted_brands' in chatbot.user_preferences:
+        debug_info["blacklisted_brands"] = chatbot.user_preferences['blacklisted_brands']
+    
+    return debug_info
 
 @app.get("/api/admin/sessions", response_model=List[Dict])
 async def list_sessions(admin_key: Optional[str] = Header(None)):
@@ -531,6 +595,21 @@ async def list_sessions(admin_key: Optional[str] = Header(None)):
         })
     
     return sessions_info
+
+@app.get("/api/user-to-session/{user_id}")
+async def get_session_by_user_id(user_id: str, admin_key: Optional[str] = Header(None)):
+    """Admin endpoint to get session ID for a user ID"""
+    # Simple admin key check - should be improved for production
+    if not admin_key or admin_key != "admin-secret-key":
+        logger.warning(f"Admin key was incorrect: {admin_key}")
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    if user_id in user_id_to_session_id:
+        session_id = user_id_to_session_id[user_id]
+        if session_id in active_sessions:
+            return {"user_id": user_id, "session_id": session_id, "found": True}
+    
+    return {"user_id": user_id, "session_id": None, "found": False}
 
 @app.get("/api/database-status")
 async def database_status():
@@ -670,29 +749,6 @@ if __name__ == "__main__":
     try:
         import uvicorn
         
-
-        """
-        Incremental checker for free ports [DEPRECATED]
-        # Find an available port if 8000 is already in use
-        import socket
-        port = 8000
-        max_port = 8100  # Don't try forever
-        
-        while port < max_port:
-            try:
-                # Try to create a socket on the port
-                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                    s.bind(('0.0.0.0', port))
-                # If we get here, the port is available
-                break
-            except socket.error:
-                logger.warning(f"Port {port} is already in use, trying {port+1}")
-                port += 1
-                
-        if port >= max_port:
-            logger.error(f"Could not find an available port between 8000 and {max_port-1}")
-            sys.exit(1)
-        """
         port = 8000
         # Run with auto-reload for development
         logger.info(f"Starting server on 0.0.0.0:{port}")
