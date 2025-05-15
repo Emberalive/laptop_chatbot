@@ -207,30 +207,34 @@ function resetConversation() {
   if (isDetailsPanelOpen.value) {
     closeDetailsPanel();
   }
-  fetch(`${API_URL}/api/reset`, {
+
+  fetch(`${API_URL}/api/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ session_id: sessionId.value, user_id: userId.value })
+    body: JSON.stringify({
+      message: "restart",
+      session_id: sessionId.value,
+      user_id: userId.value
+    })
   })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          // Reset all chat-related data
-          messages.value = [{
-            type: 'bot',
-            content: "Hello! I'm your laptop recommendation assistant. Tell me what type of laptop you're looking for and I'll find the best options for you."
-          }];
-          sessionId.value = data.session_id;
-          chatStore.resetChat();
+      .then(() => {
+        // Reset the chat store to clear recommendations
+        chatStore.resetChat();
 
-          // Show temporary success message
-          const tempAlert = document.createElement('div');
-          tempAlert.className = 'alert-message';
-          tempAlert.textContent = 'Conversation has been reset!';
-          document.body.appendChild(tempAlert);
-          setTimeout(() => { tempAlert.classList.add('fade-out'); }, 2000);
-          setTimeout(() => { document.body.removeChild(tempAlert); }, 4000);
-        }
+
+        // Clear messages and add initial greeting
+        messages.value = [{
+          type: 'bot',
+          content: "Hello! I'm your laptop recommendation assistant. Tell me what type of laptop you're looking for and I'll find the best options for you."
+        }];
+
+        // Show temporary success message
+        const tempAlert = document.createElement('div');
+        tempAlert.className = 'alert-message';
+        tempAlert.textContent = 'Conversation has been reset!';
+        document.body.appendChild(tempAlert);
+        setTimeout(() => { tempAlert.classList.add('fade-out'); }, 2000);
+        setTimeout(() => { document.body.removeChild(tempAlert); }, 4000);
       })
       .catch(error => console.error('Error resetting conversation:', error));
 }

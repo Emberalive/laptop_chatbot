@@ -1,9 +1,7 @@
 <template>
   <div class="laptop-details-panel" :class="{ 'open': isOpen, 'comparison-mode': isComparisonMode }">
     <div class="laptop-details-header">
-      <button class="laptop-details-close" @click="closeLaptopDetails">
-        <i class="fas fa-arrow-right"></i>
-      </button>
+      <button class="laptop-details-close" @click="closeLaptopDetails">X</button>
       <h2 v-if="!isComparisonMode">Laptop Details</h2>
       <h2 v-else>Laptop Comparison</h2>
     </div>
