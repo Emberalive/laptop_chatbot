@@ -92,6 +92,13 @@ const isDetailsPanelOpen = ref(false);
 const isComparisonMode = ref(false);
 const sessionId = ref('');
 
+
+// Generate a random session ID if one isn't provided
+function generateSessionId() {
+  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+}
+sessionId.value = generateSessionId();
+
 // Initial greeting
 messages.value.push({
   type: 'bot',
