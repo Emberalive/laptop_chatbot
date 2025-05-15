@@ -31,9 +31,7 @@
 
         <div class="laptop-spec">
           <div class="laptop-spec-label">RAM</div>
-          <div class="laptop-spec-value">
-            {{ formatSpecValue(selectedLaptop.key_specs?.RAM || findFeatureValue(selectedLaptop, 'RAM')) }}
-          </div>
+          <div class="laptop-spec-value">{{ formatSpecValue(selectedLaptop.ram) }}</div>
         </div>
 
         <div class="laptop-spec">
@@ -125,9 +123,7 @@
 
           <div class="laptop-spec">
             <div class="laptop-spec-label">RAM</div>
-            <div class="laptop-spec-value">
-              {{ formatSpecValue(selectedLaptop.key_specs?.RAM || findFeatureValue(selectedLaptop, 'RAM')) }}
-            </div>
+            <div class="laptop-spec-value">{{ formatSpecValue(selectedLaptop.ram) }}</div>
           </div>
 
           <div class="laptop-spec">
@@ -212,9 +208,7 @@
 
           <div class="laptop-spec">
             <div class="laptop-spec-label">RAM</div>
-            <div class="laptop-spec-value">
-              {{ formatSpecValue(selectedLaptop.key_specs?.RAM || findFeatureValue(selectedLaptop, 'RAM')) }}
-            </div>
+            <div class="laptop-spec-value">{{ formatSpecValue(selectedLaptop.ram) }}</div>
           </div>
 
           <div class="laptop-spec">
