@@ -91,7 +91,7 @@ const detailsPanelRef = ref(null);
 const isDetailsPanelOpen = ref(false);
 const isComparisonMode = ref(false);
 const sessionId = ref('');
-
+const userId = ref(userStore.currentUser ? userStore.currentUser.username : null);
 
 // Generate a random session ID if one isn't provided
 function generateSessionId() {
@@ -133,7 +133,8 @@ function sendMessage() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       message: message,
-      session_id: sessionId.value
+      session_id: sessionId.value,
+      user_id: userId.value
     })
   })
       .then(response => {
@@ -209,7 +210,7 @@ function resetConversation() {
   fetch(`${API_URL}/api/reset`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ session_id: sessionId.value })
+    body: JSON.stringify({ session_id: sessionId.value, user_id: userId.value })
   })
       .then(response => response.json())
       .then(data => {
