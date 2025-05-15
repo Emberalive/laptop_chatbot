@@ -91,13 +91,6 @@ const detailsPanelRef = ref(null);
 const isDetailsPanelOpen = ref(false);
 const isComparisonMode = ref(false);
 const sessionId = ref('');
-const userId = ref(userStore.currentUser ? userStore.currentUser.username : null);
-
-// Generate a random session ID if one isn't provided
-function generateSessionId() {
-  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-}
-sessionId.value = generateSessionId();
 
 // Initial greeting
 messages.value.push({
@@ -134,7 +127,6 @@ function sendMessage() {
     body: JSON.stringify({
       message: message,
       session_id: sessionId.value,
-      user_id: userId.value
     })
   })
       .then(response => {
@@ -214,7 +206,6 @@ function resetConversation() {
     body: JSON.stringify({
       message: "restart",
       session_id: sessionId.value,
-      user_id: userId.value
     })
   })
       .then(() => {
