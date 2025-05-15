@@ -1,0 +1,19 @@
+2025-05-15 00:21:05.419 | INFO     | DBAccess.dbAccess:init_db_pool:19 - Creating PostgreSQL connection pool...
+2025-05-15 00:21:05.842 | INFO     | DBAccess.dbAccess:init_db_pool:29 - Connection pool created successfully
+2025-05-15 00:21:05.843 | INFO     | STPrototype3:<module>:38 - Successfully imported database module
+2025-05-15 00:21:05.843 | INFO     | STPrototype3:<module>:44 - Database name overridden from laptopchatbot_new to laptopchatbot_new
+2025-05-15 00:21:05.843 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-15 00:21:05.843 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-15 00:21:05.843 | INFO     | STPrototype3:<module>:57 - Successfully connected to database pool
+2025-05-15 00:21:05.843 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-15 00:21:05.851 | INFO     | __main__:<module>:163 - Start time of the API - session: 2025-05-15 00:21:05.851625
+2025-05-15 00:21:05.891 | INFO     | __main__:<module>:694 - Starting server on 0.0.0.0:8000
+2025-05-15 00:21:09.680 | INFO     | DBAccess.dbAccess:init_db_pool:19 - Creating PostgreSQL connection pool...
+2025-05-15 00:21:10.126 | INFO     | DBAccess.dbAccess:init_db_pool:29 - Connection pool created successfully
+2025-05-15 00:21:10.127 | INFO     | STPrototype3:<module>:38 - Successfully imported database module
+2025-05-15 00:21:10.127 | INFO     | STPrototype3:<module>:44 - Database name overridden from laptopchatbot_new to laptopchatbot_new
+2025-05-15 00:21:10.127 | INFO     | DBAccess.dbAccess:get_db_connection:35 - grabbing a connection from the pool
+2025-05-15 00:21:10.127 | INFO     | DBAccess.dbAccess:get_db_connection:39 - Connection successful
+2025-05-15 00:21:10.127 | INFO     | STPrototype3:<module>:57 - Successfully connected to database pool
+2025-05-15 00:21:10.127 | INFO     | DBAccess.dbAccess:release_db_connection:54 - Connection has been returned to the pool
+2025-05-15 00:21:10.133 | INFO     | __mp_main__:<module>:163 - Start time of the API - session: 2025-05-15 00:21:10.133204
