@@ -1,0 +1,11 @@
+sentence_transformers
+scikit-learn
+typing
+psycopg2-binary
+loguru
+fastapi
+uuid
+bs4
+requests
+dotenv
+deepdiff
