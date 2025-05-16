@@ -1,0 +1,5 @@
+.venv/
+.laptop_chatbot_venv/
+.laptopchatbot_venv/
+logs/*
+.idea/
