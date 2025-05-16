@@ -36,7 +36,7 @@ app = FastAPI(
 # Add CORS middleware to allow cross-origin requests
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://laptopadviser.emberalive.com"],  # Allow all origins
+    allow_origins=["*"],  # Allow all origins
     allow_credentials = True,
     allow_methods=["GET", "POST"],  # Allow GET and POST methods
     allow_headers=["*"],
