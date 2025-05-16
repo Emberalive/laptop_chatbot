@@ -1,4 +1,4 @@
-# This is the enhanced REST API interface to the laptop chatbot version 3.5
+# This is the enhanced REST API interface to the laptop chatbot version 3
 
 import os 
 import sys
