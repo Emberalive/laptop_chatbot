@@ -1,7 +1,7 @@
 sentence_transformers
 scikit-learn
 typing
-psycopg2
+psycopg2-binary
 loguru
 fastapi
 uuid
